@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  drafted
+  created
+  pending
+  paid
+  canceled
+}
+
+model Customer {
+  id       Int      @id @default(autoincrement())
+  name     String
+  email    String?  @unique
+  phone    String?
+  createAt DateTime @default(now())
+  orders   Order[]
+}
+
+model Expenses {
+  id          Int       @id @default(autoincrement())
+  type        String
+  description String?
+  isRecurring Boolean   @default(false)
+  frequency   String?
+  nextDueDate DateTime?
+  createdAt   DateTime  @default(now())
+  product     Product[]
+}
+
+// prisma/schema.prisma
+model Order {
+  id          Int         @id @default(autoincrement())
+  customerId  Int?
+  totalAmount Float
+  status      OrderStatus @default(created)
+  createdAt   DateTime    @default(now())
+  orderItems  OrderItem[]
+  customer    Customer?   @relation(fields: [customerId], references: [id])
+  sales       Sales[]
+}
+
+model Product {
+  id            Int         @id @default(autoincrement())
+  name          String
+  stockQuantity Int
+  price         Float
+  buyingPrice   Float
+  expenses      Expenses[]
+  orderItems    OrderItem[]
+  sales         Sales[]
+}
+
+model Sales {
+  id          Int      @id @default(autoincrement())
+  orderId     Int
+  productId   Int
+  quantity    Int
+  totalAmount Float
+  createdAt   DateTime @default(now())
+  order       Order    @relation(fields: [orderId], references: [id])
+  product     Product  @relation(fields: [productId], references: [id])
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
