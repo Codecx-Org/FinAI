@@ -4,6 +4,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { createObjectCsvWriter } from 'csv-writer';
 import prisma from '../utils/prisma';
+import { Pick } from '@prisma/client/runtime/library';
 
 // Redis connection (reuse from your redisService or define here)
 const connection = new IORedis('redis://localhost:6379'); // Adjust URL as needed
@@ -15,6 +16,8 @@ const orderQueue = new Queue('order-completion-queue', { connection });
 // Directories for CSV files
 const SALES_DIR = path.join(__dirname, '../../Sales');
 const INVENTORY_TRENDS_DIR = path.join(__dirname, '../../Inventory_Trends');
+
+//Ensures that the directories for the AI to access are available
 fs.ensureDirSync(SALES_DIR);
 fs.ensureDirSync(INVENTORY_TRENDS_DIR);
 
@@ -35,7 +38,7 @@ new Worker(
       throw new Error('Order or items not found');
     }
 
-    const sales = [];
+    const sales: any[] = [];
     for (const item of order.orderItems) {
       const sale = await prisma.sales.create({
         data: {

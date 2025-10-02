@@ -7,6 +7,10 @@ interface RedisConfig {
   retryDelay?: number;
 }
 
+//NB: You should have the redis server up and runnig locally
+//if it is running at a different port then adjust the url
+//Responsible for establishing a singleton instance of the service
+//Denys multiple connection to the redis server
 export class RedisService {
   private client: Redis;
   private subscribers: Map<string, Redis>; // Track subscribers for cleanup
