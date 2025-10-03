@@ -189,7 +189,8 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   created: 'created',
   pending: 'pending',
   paid: 'paid',
-  canceled: 'canceled'
+  canceled: 'canceled',
+  failed: 'failed'
 };
 
 exports.Prisma.ModelName = {

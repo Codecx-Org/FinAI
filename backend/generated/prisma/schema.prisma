@@ -20,6 +20,7 @@ enum OrderStatus {
   pending
   paid
   canceled
+  failed
 }
 
 model Customer {

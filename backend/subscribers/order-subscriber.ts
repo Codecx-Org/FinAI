@@ -1,5 +1,5 @@
-import { RedisService } from "../services/redis-service";
-import { runOrderCompletionWorkflow } from "../workflows/order-completion-workflow";
+import { RedisService } from "../services/redis-service.js";
+import { runOrderCompletionWorkflow } from "../workflows/order-completion-workflow.js";
 const redisService = new RedisService()
 
 //the function is responsible for triggering the order completion workflow

@@ -4,8 +4,10 @@
 // For production, ensure webhook endpoint is public (use ngrok for local testing).
 // This service initiates STK Push and handles webhooks to update order status.
 import Mpesa from 'mpesa-node';
-import { redisService } from './redis-service'; // From previous RedisService
-import prisma from '../utils/prisma';
+import { redisService } from './redis-service.js'; // From previous RedisService
+import prisma from '../utils/prisma.js';
+import { BadRequestError, InternalServerError, NotFoundError } from '../utils/types/errors.js';
+import { OrderStatus } from '../generated/prisma/client.js';
 
 
 // MPESA Configuration (use env vars in production)
@@ -19,6 +21,17 @@ const MPESA_CONFIG = {
 
 const mpesa = new Mpesa(MPESA_CONFIG);
 
+//configures the error
+export class ErrOrderNotFound extends Error {
+  constructor(){
+    super()
+    super.name = "ErrOrderNotFound"
+    super.message = "Order not found"
+  }
+}
+
+
+
 export class PaymentService {
   // Initiate STK Push: Trigger payment prompt on customer's phone
   async initiateSTKPush(orderId: number, phone: string, amount: number): Promise<{ success: boolean; message: string; data?: any }> {
@@ -29,35 +42,26 @@ export class PaymentService {
         include: { customer: true },
       });
       if (!order) {
-        throw new Error('Order not found');
+        throw new NotFoundError("order not found")
       }
-      if (order.status !== 'created') {
-        throw new Error('Order not in payable state');
+      if (order.status !== OrderStatus.created) {
+        throw new BadRequestError("order status is not created");
       }
 
       // Generate timestamp and password
       const timestamp = new Date().toISOString().replace(/[-T:\.Z]/g, '').slice(0, 14);
       const password = Buffer.from(`${MPESA_CONFIG.shortCode}${MPESA_CONFIG.passkey}${timestamp}`).toString('base64');
 
+
+      const formattedPhoneNo = phone.replace(/^0/, '254')
+      const accountRef = `Order_${orderId}_${Math.random().toString(36).substring(2,7)}`
       // STK Push request
-      const response = await mpesa.stkPush({
-        BusinessShortCode: MPESA_CONFIG.shortCode,
-        Password: password,
-        Timestamp: timestamp,
-        TransactionType: 'CustomerPayBillOnline',
-        Amount: amount,
-        PartyA: phone.replace(/^0/, '254'), // Format to 2547xxxxxxxx
-        PartyB: MPESA_CONFIG.shortCode,
-        PhoneNumber: phone.replace(/^0/, '254'),
-        CallBackURL: MPESA_CONFIG.callbackUrl,
-        AccountReference: `Order_${orderId}`,
-        TransactionDesc: 'Payment for order',
-      });
+      const response = await mpesa.lipaNaMpesaOnline(formattedPhoneNo,amount,MPESA_CONFIG.callbackUrl,accountRef,`Payment for order ${orderId}`, "CustomerPayBillOnline");
 
       // Update order status to pending
       await prisma.order.update({
         where: { id: orderId },
-        data: { status: 'pending' },
+        data: { status: OrderStatus.pending},
       });
 
       // Publish event for pending payment
@@ -66,16 +70,25 @@ export class PaymentService {
       return { success: true, message: 'STK Push initiated', data: response };
     } catch (error) {
       console.error('STK Push failed:', error);
-      return { success: false, message: 'STK Push failed', data: error };
+      if (error instanceof BadRequestError){
+        return {success: false, message: 'STK Push failed', data: error}
+      }
+
+      if (error instanceof InternalServerError){
+        return {success: false, message: 'STK Push failed', data: error}
+      }
+
+      return { success: false, message: 'STK Push failed', data: error}
     }
   }
 
   // Handle MPESA Webhook: Update order on payment confirmation
+  // in the future update the payload to support known types
   async handleMpesaWebhook(payload: any): Promise<{ success: boolean; message: string }> {
     try {
       // Validate payload (simplified; add signature verification in production)
       if (!payload || !payload.Body || !payload.Body.stkCallback) {
-        throw new Error('Invalid webhook payload');
+        throw new BadRequestError("payload empty")
       }
 
       const { MerchantRequestID, CheckoutRequestID, ResultCode, ResultDesc } = payload.Body.stkCallback;
@@ -90,30 +103,30 @@ export class PaymentService {
       const accountRef = metadata.find((item: any) => item.Name === 'AccountReference')?.Value;
       const orderId = parseInt(accountRef?.split('_')[1] || '0', 10);
       if (!orderId) {
-        throw new Error('Order ID not found in payload');
+        throw new BadRequestError("order id not defined");
       }
 
       const order = await prisma.order.findUnique({ where: { id: orderId } });
       if (!order) {
-        throw new Error('Order not found');
+        throw new NotFoundError("order not found")
       }
 
       if (ResultCode === 0) {
         // Success: Update order status to 'paid'
         await prisma.order.update({
           where: { id: orderId },
-          data: { status: 'paid' }, // Or 'completed' if payment completes the order
+          data: { status: OrderStatus.paid}, // Or 'completed' if payment completes the order
         });
 
         // Publish completion event to trigger workflow
-        await redisService.publish('payment:completed', JSON.stringify({ orderId }));
+        await redisService.publish('payment:completed', JSON.stringify({ orderId, amount, receipt, phone }));
 
         return { success: true, message: 'Payment processed successfully' };
       } else {
         // Failure: Update to 'payment_failed'
         await prisma.order.update({
           where: { id: orderId },
-          data: { status: 'payment_failed' },
+          data: { status: OrderStatus.failed },
         });
 
         await redisService.publish('payment:failed', JSON.stringify({ orderId, reason: ResultDesc }));

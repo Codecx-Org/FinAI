@@ -53,7 +53,8 @@ export namespace $Enums {
   created: 'created',
   pending: 'pending',
   paid: 'paid',
-  canceled: 'canceled'
+  canceled: 'canceled',
+  failed: 'failed'
 };
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]

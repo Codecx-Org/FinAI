@@ -1,137 +1,105 @@
-// PaymentService for MPESA integration using mpesa-node library.
-// Install dependencies: npm install mpesa-node body-parser
-// Note: Obtain MPESA credentials (Consumer Key, Secret, Passkey, Shortcode) from Safaricom Daraja portal.
-// Set up environment variables for security (e.g., via dotenv).
-// For production, ensure webhook endpoint is public (use ngrok for local testing).
-// This service initiates STK Push and handles webhooks to update order status.
+// src/api/routes/payment.ts
+// Payment routes for initiating MPESA STK Push payments.
+// Integrates with PaymentService for MPESA operations.
+// Features: Winston logging, user-friendly errors, async handling.
 
-import { PrismaClient } from '@prisma/client';
-import Mpesa from 'mpesa-node';
-import { redisService } from '../services/redis-service'; // From previous RedisService
+import express from 'express';
+import { PaymentService } from '../services/payment-service.js';
+import winston from 'winston';
 
-const prisma = new PrismaClient();
+const router = express.Router();
+const paymentService = new PaymentService();
 
-// MPESA Configuration (use env vars in production)
-const MPESA_CONFIG = {
-  consumerKey: 'YOUR_CONSUMER_KEY',
-  consumerSecret: 'YOUR_CONSUMER_SECRET',
-  passkey: 'YOUR_PASSKEY',
-  shortCode: 'YOUR_BUSINESS_SHORTCODE', // e.g., 174379
-  callbackUrl: 'https://your-domain.com/api/webhook/mpesa', // Public webhook URL
-};
+// Logger setup
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'logs/combined.log' }),
+  ],
+});
 
-const mpesa = new Mpesa(MPESA_CONFIG);
+// Initiate MPESA STK Push payment
+router.post('/payments/initiate', async (req: express.Request, res: express.Response) => {
+  try {
+    const { orderId, phone, amount } = req.body;
 
-export class PaymentService {
-  // Initiate STK Push: Trigger payment prompt on customer's phone
-  async initiateSTKPush(orderId: number, phone: string, amount: number): Promise<{ success: boolean; message: string; data?: any }> {
-    try {
-      // Fetch order to validate
-      const order = await prisma.order.findUnique({
-        where: { id: orderId },
-        include: { customer: true },
-      });
-      if (!order) {
-        throw new Error('Order not found');
-      }
-      if (order.status !== 'created') {
-        throw new Error('Order not in payable state');
-      }
-
-      // Generate timestamp and password
-      const timestamp = new Date().toISOString().replace(/[-T:\.Z]/g, '').slice(0, 14);
-      const password = Buffer.from(`${MPESA_CONFIG.shortCode}${MPESA_CONFIG.passkey}${timestamp}`).toString('base64');
-
-      // STK Push request
-      const response = await mpesa.stkPush({
-        BusinessShortCode: MPESA_CONFIG.shortCode,
-        Password: password,
-        Timestamp: timestamp,
-        TransactionType: 'CustomerPayBillOnline',
-        Amount: amount,
-        PartyA: phone.replace(/^0/, '254'), // Format to 2547xxxxxxxx
-        PartyB: MPESA_CONFIG.shortCode,
-        PhoneNumber: phone.replace(/^0/, '254'),
-        CallBackURL: MPESA_CONFIG.callbackUrl,
-        AccountReference: `Order_${orderId}`,
-        TransactionDesc: 'Payment for order',
-      });
-
-      // Update order status to pending
-      await prisma.order.update({
-        where: { id: orderId },
-        data: { status: 'payment_pending' },
-      });
-
-      // Publish event for pending payment (optional)
-      await redisService.publish('payment:initiated', JSON.stringify({ orderId, phone, amount }));
-
-      return { success: true, message: 'STK Push initiated', data: response };
-    } catch (error) {
-      console.error('STK Push failed:', error);
-      return { success: false, message: 'STK Push failed', data: error };
+    // Validate input
+    if (!orderId || !phone || !amount) {
+      logger.warn('Missing required fields for payment initiation', { body: req.body });
+      return res.status(400).json({ error: 'Order ID, phone number, and amount are required.' });
     }
-  }
 
-  // Handle MPESA Webhook: Update order on payment confirmation
-  async handleMpesaWebhook(payload: any): Promise<{ success: boolean; message: string }> {
-    try {
-      // Validate payload (simplified; add signature verification in production)
-      if (!payload || !payload.Body || !payload.Body.stkCallback) {
-        throw new Error('Invalid webhook payload');
-      }
-
-      const { MerchantRequestID, CheckoutRequestID, ResultCode, ResultDesc } = payload.Body.stkCallback;
-      const metadata = payload.Body.stkCallback.CallbackMetadata?.Item || [];
-
-      // Extract details (e.g., amount, receipt, phone)
-      const amount = metadata.find((item: any) => item.Name === 'Amount')?.Value;
-      const receipt = metadata.find((item: any) => item.Name === 'MpesaReceiptNumber')?.Value;
-      const phone = metadata.find((item: any) => item.Name === 'PhoneNumber')?.Value;
-
-      // Find order by AccountReference (from STK Push)
-      const accountRef = metadata.find((item: any) => item.Name === 'AccountReference')?.Value;
-      const orderId = parseInt(accountRef?.split('_')[1] || '0', 10);
-      if (!orderId) {
-        throw new Error('Order ID not found in payload');
-      }
-
-      const order = await prisma.order.findUnique({ where: { id: orderId } });
-      if (!order) {
-        throw new Error('Order not found');
-      }
-
-      if (ResultCode === 0) {
-        // Success: Update order status to 'paid'
-        await prisma.order.update({
-          where: { id: orderId },
-          data: { status: 'paid' }, // Or 'completed' if payment completes the order
-        });
-
-        // Publish completion event to trigger workflow
-        await redisService.publish('payment:completed', JSON.stringify({ orderId }));
-
-        return { success: true, message: 'Payment processed successfully' };
-      } else {
-        // Failure: Update to 'payment_failed'
-        await prisma.order.update({
-          where: { id: orderId },
-          data: { status: 'payment_failed' },
-        });
-
-        await redisService.publish('payment:failed', JSON.stringify({ orderId, reason: ResultDesc }));
-
-        return { success: false, message: `Payment failed: ${ResultDesc}` };
-      }
-    } catch (error) {
-      console.error('Webhook handling failed:', error);
-      return { success: false, message: 'Webhook processing failed' };
+    if (isNaN(orderId) || isNaN(amount) || amount <= 0) {
+      logger.warn('Invalid input for payment initiation', { orderId, amount });
+      return res.status(400).json({ error: 'Order ID and amount must be valid numbers, and amount must be positive.' });
     }
-  }
-}
 
-// Integration:
-// - In OrderService or route: Call paymentService.initiateSTKPush(orderId, customer.phone, order.totalAmount)
-// - Register webhook route in Express app: app.use('/api', webhookRoutes);
-// - For production, verify MPESA IP whitelist and use HTTPS.
-// - Test with Daraja sandbox: https://developer.safaricom.co.ke/
+    logger.info(`Initiating payment for order ${orderId}, phone ${phone}, amount ${amount}`);
+
+    // Call PaymentService to initiate STK Push
+    const result = await paymentService.initiateSTKPush(Number(orderId), phone, Number(amount));
+
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        message: result.message,
+        checkoutRequestID: result.data.checkoutRequestID,
+      });
+    } else {
+      res.status(400).json({ success: false, error: result.message });
+    }
+  } catch (error: any) {
+    logger.error(`Payment initiation failed: ${error.message}`, { stack: error.stack, body: req.body });
+    res.status(500).json({
+      error: process.env.NODE_ENV === 'production'
+        ? 'Failed to initiate payment. Please try again later.'
+        : error.message || 'Internal server error',
+    });
+  }
+});
+
+// Get payment status (optional, for checking order payment status)
+router.get('/payments/:orderId/status', async (req: express.Request, res: express.Response) => {
+  try {
+    const orderId = Number(req.params.orderId);
+    if (isNaN(orderId)) {
+      logger.warn('Invalid order ID for payment status', { orderId: req.params.orderId });
+      return res.status(400).json({ error: 'Invalid order ID.' });
+    }
+
+    logger.info(`Fetching payment status for order ${orderId}`);
+
+    // Fetch order status (since PaymentService updates order status)
+    const { PrismaClient } = await import('@prisma/client');
+    const prisma = new PrismaClient();
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: { id: true, status: true },
+    });
+
+    if (!order) {
+      logger.warn(`Order ${orderId} not found for payment status`);
+      return res.status(404).json({ error: 'Order not found.' });
+    }
+
+    res.json({
+      orderId,
+      status: order.status, // e.g., 'created', 'payment_pending', 'paid', 'payment_failed'
+    });
+  } catch (error: any) {
+    logger.error(`Payment status check failed for order ${req.params.orderId}: ${error.message}`, { stack: error.stack });
+    res.status(500).json({
+      error: process.env.NODE_ENV === 'production'
+        ? 'Failed to check payment status. Please try again later.'
+        : error.message || 'Internal server error',
+    });
+  }
+});
+
+export default router;
