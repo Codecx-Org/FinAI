@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client';
-import { redisService } from '../services/redis-service';
+import { redisService } from '../services/redis-service.js';
+import prisma from '../utils/prisma.js';
 import cron from 'node-cron';
 
-const prisma = new PrismaClient();
 
 export class ExpenseService {
   async createExpense(data: {
@@ -13,7 +12,7 @@ export class ExpenseService {
     frequency?: string;
     nextDueDate?: Date;
   }) {
-    const expense = await prisma.expense.create({
+    const expense = await prisma.expenses.create({
       data,
       select: { id: true, type: true, amount: true, description: true, isRecurring: true, frequency: true, nextDueDate: true, createdAt: true },
     });
@@ -24,15 +23,15 @@ export class ExpenseService {
   }
 
   async getExpense(id: number) {
-    return prisma.expense.findUnique({ where: { id } });
+    return prisma.expenses.findUnique({ where: { id } });
   }
 
   async getAllExpenses() {
-    return prisma.expense.findMany();
+    return prisma.expenses.findMany();
   }
 
   async updateExpense(id: number, data: { type?: string; amount?: number; description?: string; isRecurring?: boolean; frequency?: string; nextDueDate?: Date }) {
-    return prisma.expense.update({
+    return prisma.expenses.update({
       where: { id },
       data,
       select: { id: true, type: true, amount: true, description: true, isRecurring: true, frequency: true, nextDueDate: true, createdAt: true },
@@ -40,11 +39,11 @@ export class ExpenseService {
   }
 
   async deleteExpense(id: number) {
-    return prisma.expense.delete({ where: { id } });
+    return prisma.expenses.delete({ where: { id } });
   }
 
   async processRecurringExpenses() {
-    const recurring = await prisma.expense.findMany({
+    const recurring = await prisma.expenses.findMany({
       where: { isRecurring: true, nextDueDate: { lte: new Date() } },
     });
     for (const exp of recurring) {
@@ -52,14 +51,14 @@ export class ExpenseService {
       const newExpense = await this.createExpense({
         type: exp.type,
         amount: exp.amount,
-        description: exp.description,
+        description: exp.description || "",
         isRecurring: false,
       });
       // Update next due date
       if (exp.frequency === 'monthly') {
         const nextDate = new Date(exp.nextDueDate || new Date());
         nextDate.setMonth(nextDate.getMonth() + 1);
-        await prisma.expense.update({
+        await prisma.expenses.update({
           where: { id: exp.id },
           data: { nextDueDate: nextDate },
         });

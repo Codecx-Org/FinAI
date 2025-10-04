@@ -6,7 +6,7 @@
 import express, { type Request, type Response, type NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
+import prisma from './utils/prisma.js';
 import winston from 'winston';
 import cluster from 'cluster';
 import os from 'os';
@@ -25,15 +25,15 @@ import orderRoutes from './routes/orders-route.js';
 import salesRoutes from './routes/sales-route.js';
 import orderItemRoutes from './routes/order-items-route.js';
 import webhookRoutes from './routes/payment-route.js';
+import whatsAppRoutes from './routes/whatsapp-route.js'
 
 // Load environment variables
 dotenv.config();
 
 // Prisma client
-const prisma = new PrismaClient();
 
 // Logger setup
-const logger = winston.createLogger({
+export const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
     winston.format.timestamp(),
@@ -76,6 +76,7 @@ app.use('/api', productRoutes);
 app.use('/api', orderRoutes);
 app.use('/api', salesRoutes);
 app.use('/api', orderItemRoutes);
+app.use('/api', whatsAppRoutes)
 app.use('/api', webhookRoutes);
 
 // Health check endpoint

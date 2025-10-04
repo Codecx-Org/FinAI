@@ -1,4 +1,4 @@
-import prisma from "../utils/prisma";
+import prisma from "../utils/prisma.js";
 
 export class SalesService {
   async createSale(data: { orderId: number; productId: number; quantity: number; totalAmount: number }) {

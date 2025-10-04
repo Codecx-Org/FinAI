@@ -1,5 +1,5 @@
 import express from 'express';
-import { CustomerService } from '../services/customer-service';
+import { CustomerService } from '../services/customer-service.js';
 
 const router = express.Router();
 const customerService = new CustomerService();

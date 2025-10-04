@@ -132,6 +132,7 @@ exports.Prisma.ExpensesScalarFieldEnum = {
   id: 'id',
   type: 'type',
   description: 'description',
+  amount: 'amount',
   isRecurring: 'isRecurring',
   frequency: 'frequency',
   nextDueDate: 'nextDueDate',

@@ -11,6 +11,9 @@ const connection = new Redis('redis://localhost:6379', {
   maxRetriesPerRequest: 3,
   retryStrategy: (times: number) => Math.min(times * 1000, 30000),
 });
+const workerConnection = new Redis("redis://localhost:6379", {
+  maxRetriesPerRequest: null
+})
 
 // Queue for the workflow
 export const orderQueue = new Queue('order-completion-queue', { connection });
@@ -57,7 +60,7 @@ new Worker(
     }
   },
   {
-    connection: connection 
+    connection: workerConnection 
   }
 );
 
@@ -105,7 +108,7 @@ new Worker(
     }
   },
   {
-    connection: connection
+    connection: workerConnection
   }
 );
 
@@ -150,7 +153,7 @@ new Worker(
     }
   },
   {
-    connection: connection
+    connection: workerConnection
   }
 );
 
@@ -192,7 +195,7 @@ new Worker(
     }
   },
   {
-    connection: connection
+    connection: workerConnection
   }
 );
 

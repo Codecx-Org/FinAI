@@ -10,12 +10,10 @@ import { BadRequestError, InternalServerError, NotFoundError } from '../utils/ty
 import { OrderStatus } from '../generated/prisma/client.js';
 
 
-// MPESA Configuration (use env vars in production)
 const MPESA_CONFIG = {
-  consumerKey: 'YOUR_CONSUMER_KEY',
-  consumerSecret: 'YOUR_CONSUMER_SECRET',
-  passkey: 'YOUR_PASSKEY',
-  shortCode: 'YOUR_BUSINESS_SHORTCODE', // e.g., 174379
+  consumerKey: process.env.MPESA_CONSUMER_KEY!,
+  consumerSecret: process.env.MPESA_CONSUMER_SECRET!,
+  shortCode:process.env.MPESA_SHORTCODE, // e.g., 174379
   callbackUrl: 'https://your-domain.com/api/webhook/mpesa', // Public webhook URL
 };
 
@@ -50,7 +48,6 @@ export class PaymentService {
 
       // Generate timestamp and password
       const timestamp = new Date().toISOString().replace(/[-T:\.Z]/g, '').slice(0, 14);
-      const password = Buffer.from(`${MPESA_CONFIG.shortCode}${MPESA_CONFIG.passkey}${timestamp}`).toString('base64');
 
 
       const formattedPhoneNo = phone.replace(/^0/, '254')

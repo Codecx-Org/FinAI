@@ -1,4 +1,5 @@
-import prisma from '../utils/prisma';
+import type { Product } from '../generated/prisma/index.js';
+import prisma from '../utils/prisma.js';
 
 
 export class ProductService {
@@ -11,9 +12,19 @@ export class ProductService {
 
   async getProduct(id: number) {
     return prisma.product.findUnique({
-      where: { id },
+      where: {
+        id: id
+      },
       include: { orderItems: true, sales: true },
     });
+  }
+
+  async getProductFilter(filters: Partial<Product>){
+    return prisma.product.findMany({
+      where: {
+        ...filters
+      }
+    })
   }
 
   async getAllProducts() {

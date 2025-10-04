@@ -2604,16 +2604,19 @@ export namespace Prisma {
 
   export type ExpensesAvgAggregateOutputType = {
     id: number | null
+    amount: number | null
   }
 
   export type ExpensesSumAggregateOutputType = {
     id: number | null
+    amount: number | null
   }
 
   export type ExpensesMinAggregateOutputType = {
     id: number | null
     type: string | null
     description: string | null
+    amount: number | null
     isRecurring: boolean | null
     frequency: string | null
     nextDueDate: Date | null
@@ -2624,6 +2627,7 @@ export namespace Prisma {
     id: number | null
     type: string | null
     description: string | null
+    amount: number | null
     isRecurring: boolean | null
     frequency: string | null
     nextDueDate: Date | null
@@ -2634,6 +2638,7 @@ export namespace Prisma {
     id: number
     type: number
     description: number
+    amount: number
     isRecurring: number
     frequency: number
     nextDueDate: number
@@ -2644,16 +2649,19 @@ export namespace Prisma {
 
   export type ExpensesAvgAggregateInputType = {
     id?: true
+    amount?: true
   }
 
   export type ExpensesSumAggregateInputType = {
     id?: true
+    amount?: true
   }
 
   export type ExpensesMinAggregateInputType = {
     id?: true
     type?: true
     description?: true
+    amount?: true
     isRecurring?: true
     frequency?: true
     nextDueDate?: true
@@ -2664,6 +2672,7 @@ export namespace Prisma {
     id?: true
     type?: true
     description?: true
+    amount?: true
     isRecurring?: true
     frequency?: true
     nextDueDate?: true
@@ -2674,6 +2683,7 @@ export namespace Prisma {
     id?: true
     type?: true
     description?: true
+    amount?: true
     isRecurring?: true
     frequency?: true
     nextDueDate?: true
@@ -2771,6 +2781,7 @@ export namespace Prisma {
     id: number
     type: string
     description: string | null
+    amount: number
     isRecurring: boolean
     frequency: string | null
     nextDueDate: Date | null
@@ -2800,6 +2811,7 @@ export namespace Prisma {
     id?: boolean
     type?: boolean
     description?: boolean
+    amount?: boolean
     isRecurring?: boolean
     frequency?: boolean
     nextDueDate?: boolean
@@ -2812,6 +2824,7 @@ export namespace Prisma {
     id?: boolean
     type?: boolean
     description?: boolean
+    amount?: boolean
     isRecurring?: boolean
     frequency?: boolean
     nextDueDate?: boolean
@@ -2822,6 +2835,7 @@ export namespace Prisma {
     id?: boolean
     type?: boolean
     description?: boolean
+    amount?: boolean
     isRecurring?: boolean
     frequency?: boolean
     nextDueDate?: boolean
@@ -2832,13 +2846,14 @@ export namespace Prisma {
     id?: boolean
     type?: boolean
     description?: boolean
+    amount?: boolean
     isRecurring?: boolean
     frequency?: boolean
     nextDueDate?: boolean
     createdAt?: boolean
   }
 
-  export type ExpensesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "description" | "isRecurring" | "frequency" | "nextDueDate" | "createdAt", ExtArgs["result"]["expenses"]>
+  export type ExpensesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "description" | "amount" | "isRecurring" | "frequency" | "nextDueDate" | "createdAt", ExtArgs["result"]["expenses"]>
   export type ExpensesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     product?: boolean | Expenses$productArgs<ExtArgs>
     _count?: boolean | ExpensesCountOutputTypeDefaultArgs<ExtArgs>
@@ -2855,6 +2870,7 @@ export namespace Prisma {
       id: number
       type: string
       description: string | null
+      amount: number
       isRecurring: boolean
       frequency: string | null
       nextDueDate: Date | null
@@ -3286,6 +3302,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Expenses", 'Int'>
     readonly type: FieldRef<"Expenses", 'String'>
     readonly description: FieldRef<"Expenses", 'String'>
+    readonly amount: FieldRef<"Expenses", 'Int'>
     readonly isRecurring: FieldRef<"Expenses", 'Boolean'>
     readonly frequency: FieldRef<"Expenses", 'String'>
     readonly nextDueDate: FieldRef<"Expenses", 'DateTime'>
@@ -8326,6 +8343,7 @@ export namespace Prisma {
     id: 'id',
     type: 'type',
     description: 'description',
+    amount: 'amount',
     isRecurring: 'isRecurring',
     frequency: 'frequency',
     nextDueDate: 'nextDueDate',
@@ -8552,6 +8570,7 @@ export namespace Prisma {
     id?: IntFilter<"Expenses"> | number
     type?: StringFilter<"Expenses"> | string
     description?: StringNullableFilter<"Expenses"> | string | null
+    amount?: IntFilter<"Expenses"> | number
     isRecurring?: BoolFilter<"Expenses"> | boolean
     frequency?: StringNullableFilter<"Expenses"> | string | null
     nextDueDate?: DateTimeNullableFilter<"Expenses"> | Date | string | null
@@ -8563,6 +8582,7 @@ export namespace Prisma {
     id?: SortOrder
     type?: SortOrder
     description?: SortOrderInput | SortOrder
+    amount?: SortOrder
     isRecurring?: SortOrder
     frequency?: SortOrderInput | SortOrder
     nextDueDate?: SortOrderInput | SortOrder
@@ -8577,6 +8597,7 @@ export namespace Prisma {
     NOT?: ExpensesWhereInput | ExpensesWhereInput[]
     type?: StringFilter<"Expenses"> | string
     description?: StringNullableFilter<"Expenses"> | string | null
+    amount?: IntFilter<"Expenses"> | number
     isRecurring?: BoolFilter<"Expenses"> | boolean
     frequency?: StringNullableFilter<"Expenses"> | string | null
     nextDueDate?: DateTimeNullableFilter<"Expenses"> | Date | string | null
@@ -8588,6 +8609,7 @@ export namespace Prisma {
     id?: SortOrder
     type?: SortOrder
     description?: SortOrderInput | SortOrder
+    amount?: SortOrder
     isRecurring?: SortOrder
     frequency?: SortOrderInput | SortOrder
     nextDueDate?: SortOrderInput | SortOrder
@@ -8606,6 +8628,7 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"Expenses"> | number
     type?: StringWithAggregatesFilter<"Expenses"> | string
     description?: StringNullableWithAggregatesFilter<"Expenses"> | string | null
+    amount?: IntWithAggregatesFilter<"Expenses"> | number
     isRecurring?: BoolWithAggregatesFilter<"Expenses"> | boolean
     frequency?: StringNullableWithAggregatesFilter<"Expenses"> | string | null
     nextDueDate?: DateTimeNullableWithAggregatesFilter<"Expenses"> | Date | string | null
@@ -8918,6 +8941,7 @@ export namespace Prisma {
   export type ExpensesCreateInput = {
     type: string
     description?: string | null
+    amount: number
     isRecurring?: boolean
     frequency?: string | null
     nextDueDate?: Date | string | null
@@ -8929,6 +8953,7 @@ export namespace Prisma {
     id?: number
     type: string
     description?: string | null
+    amount: number
     isRecurring?: boolean
     frequency?: string | null
     nextDueDate?: Date | string | null
@@ -8939,6 +8964,7 @@ export namespace Prisma {
   export type ExpensesUpdateInput = {
     type?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -8950,6 +8976,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     type?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -8961,6 +8988,7 @@ export namespace Prisma {
     id?: number
     type: string
     description?: string | null
+    amount: number
     isRecurring?: boolean
     frequency?: string | null
     nextDueDate?: Date | string | null
@@ -8970,6 +8998,7 @@ export namespace Prisma {
   export type ExpensesUpdateManyMutationInput = {
     type?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -8980,6 +9009,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     type?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -9408,6 +9438,7 @@ export namespace Prisma {
     id?: SortOrder
     type?: SortOrder
     description?: SortOrder
+    amount?: SortOrder
     isRecurring?: SortOrder
     frequency?: SortOrder
     nextDueDate?: SortOrder
@@ -9416,12 +9447,14 @@ export namespace Prisma {
 
   export type ExpensesAvgOrderByAggregateInput = {
     id?: SortOrder
+    amount?: SortOrder
   }
 
   export type ExpensesMaxOrderByAggregateInput = {
     id?: SortOrder
     type?: SortOrder
     description?: SortOrder
+    amount?: SortOrder
     isRecurring?: SortOrder
     frequency?: SortOrder
     nextDueDate?: SortOrder
@@ -9432,6 +9465,7 @@ export namespace Prisma {
     id?: SortOrder
     type?: SortOrder
     description?: SortOrder
+    amount?: SortOrder
     isRecurring?: SortOrder
     frequency?: SortOrder
     nextDueDate?: SortOrder
@@ -9440,6 +9474,7 @@ export namespace Prisma {
 
   export type ExpensesSumOrderByAggregateInput = {
     id?: SortOrder
+    amount?: SortOrder
   }
 
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -10626,6 +10661,7 @@ export namespace Prisma {
   export type ExpensesCreateWithoutProductInput = {
     type: string
     description?: string | null
+    amount: number
     isRecurring?: boolean
     frequency?: string | null
     nextDueDate?: Date | string | null
@@ -10636,6 +10672,7 @@ export namespace Prisma {
     id?: number
     type: string
     description?: string | null
+    amount: number
     isRecurring?: boolean
     frequency?: string | null
     nextDueDate?: Date | string | null
@@ -10716,6 +10753,7 @@ export namespace Prisma {
     id?: IntFilter<"Expenses"> | number
     type?: StringFilter<"Expenses"> | string
     description?: StringNullableFilter<"Expenses"> | string | null
+    amount?: IntFilter<"Expenses"> | number
     isRecurring?: BoolFilter<"Expenses"> | boolean
     frequency?: StringNullableFilter<"Expenses"> | string | null
     nextDueDate?: DateTimeNullableFilter<"Expenses"> | Date | string | null
@@ -11091,6 +11129,7 @@ export namespace Prisma {
   export type ExpensesUpdateWithoutProductInput = {
     type?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11101,6 +11140,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     type?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11111,6 +11151,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     type?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

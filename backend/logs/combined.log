@@ -1,0 +1,168 @@
+{"level":"info","message":"Primary 1544662 forking 8 workers","timestamp":"2025-10-04T00:11:17.829Z"}
+{"level":"info","message":"Worker 1544696 started web server on port 3000","timestamp":"2025-10-04T00:11:19.455Z"}
+{"level":"info","message":"Worker 1544693 started web server on port 3000","timestamp":"2025-10-04T00:11:19.460Z"}
+{"level":"info","message":"Worker 1544689 started web server on port 3000","timestamp":"2025-10-04T00:11:19.587Z"}
+{"level":"info","message":"Worker 1544697 started web server on port 3000","timestamp":"2025-10-04T00:11:19.603Z"}
+{"level":"info","message":"Worker 1544690 started web server on port 3000","timestamp":"2025-10-04T00:11:19.683Z"}
+{"level":"info","message":"Worker 1544692 started web server on port 3000","timestamp":"2025-10-04T00:11:19.709Z"}
+{"level":"info","message":"Worker 1544699 started web server on port 3000","timestamp":"2025-10-04T00:11:19.722Z"}
+{"level":"info","message":"Worker 1544688 started web server on port 3000","timestamp":"2025-10-04T00:11:19.821Z"}
+{"level":"info","message":"Worker 1544662 shutting down gracefully","timestamp":"2025-10-04T00:11:58.917Z"}
+{"level":"info","message":"Worker 1544699 shutting down gracefully","timestamp":"2025-10-04T00:11:58.923Z"}
+{"level":"info","message":"Worker 1544690 shutting down gracefully","timestamp":"2025-10-04T00:11:58.926Z"}
+{"level":"info","message":"Worker 1544688 shutting down gracefully","timestamp":"2025-10-04T00:11:58.931Z"}
+{"level":"info","message":"Worker 1544689 shutting down gracefully","timestamp":"2025-10-04T00:11:58.938Z"}
+{"level":"info","message":"Worker 1544662 closed all connections","timestamp":"2025-10-04T00:11:58.939Z"}
+{"level":"info","message":"Worker 1544697 shutting down gracefully","timestamp":"2025-10-04T00:11:58.934Z"}
+{"level":"info","message":"Worker 1544696 shutting down gracefully","timestamp":"2025-10-04T00:11:58.939Z"}
+{"level":"info","message":"Worker 1544693 shutting down gracefully","timestamp":"2025-10-04T00:11:58.944Z"}
+{"level":"info","message":"Worker 1544692 shutting down gracefully","timestamp":"2025-10-04T00:11:58.947Z"}
+{"level":"info","message":"Worker 1544699 closed all connections","timestamp":"2025-10-04T00:11:58.953Z"}
+{"level":"info","message":"Worker 1544689 closed all connections","timestamp":"2025-10-04T00:11:58.965Z"}
+{"level":"info","message":"Worker 1544696 closed all connections","timestamp":"2025-10-04T00:11:58.988Z"}
+{"level":"info","message":"Worker 1544690 closed all connections","timestamp":"2025-10-04T00:11:59.012Z"}
+{"level":"info","message":"Worker 1544692 closed all connections","timestamp":"2025-10-04T00:11:59.018Z"}
+{"level":"info","message":"Worker 1544697 closed all connections","timestamp":"2025-10-04T00:11:59.023Z"}
+{"level":"info","message":"Worker 1544693 closed all connections","timestamp":"2025-10-04T00:11:59.039Z"}
+{"level":"info","message":"Worker 1544688 closed all connections","timestamp":"2025-10-04T00:11:59.056Z"}
+{"level":"info","message":"Primary 1556713 forking 8 workers","timestamp":"2025-10-04T00:25:53.356Z"}
+{"level":"info","message":"Worker 1556770 started web server on port 3000","timestamp":"2025-10-04T00:25:55.237Z"}
+{"level":"info","message":"Worker 1556764 started web server on port 3000","timestamp":"2025-10-04T00:25:55.476Z"}
+{"level":"info","message":"Worker 1556767 started web server on port 3000","timestamp":"2025-10-04T00:25:55.487Z"}
+{"level":"info","message":"Worker 1556768 started web server on port 3000","timestamp":"2025-10-04T00:25:55.487Z"}
+{"level":"info","message":"Worker 1556765 started web server on port 3000","timestamp":"2025-10-04T00:25:55.509Z"}
+{"level":"info","message":"Worker 1556762 started web server on port 3000","timestamp":"2025-10-04T00:25:55.528Z"}
+{"level":"info","message":"Worker 1556772 started web server on port 3000","timestamp":"2025-10-04T00:25:55.564Z"}
+{"level":"info","message":"Worker 1556761 started web server on port 3000","timestamp":"2025-10-04T00:25:55.567Z"}
+{"level":"info","message":"Request: GET /health","timestamp":"2025-10-04T00:27:35.656Z"}
+{"level":"info","message":"Worker 1556713 shutting down gracefully","timestamp":"2025-10-04T00:28:54.968Z"}
+{"level":"info","message":"Worker 1556772 shutting down gracefully","timestamp":"2025-10-04T00:28:54.967Z"}
+{"level":"info","message":"Worker 1556765 shutting down gracefully","timestamp":"2025-10-04T00:28:54.967Z"}
+{"level":"info","message":"Worker 1556767 shutting down gracefully","timestamp":"2025-10-04T00:28:54.978Z"}
+{"level":"info","message":"Worker 1556764 shutting down gracefully","timestamp":"2025-10-04T00:28:54.984Z"}
+{"level":"info","message":"Worker 1556768 shutting down gracefully","timestamp":"2025-10-04T00:28:54.984Z"}
+{"level":"info","message":"Worker 1556761 shutting down gracefully","timestamp":"2025-10-04T00:28:54.998Z"}
+{"level":"info","message":"Worker 1556770 shutting down gracefully","timestamp":"2025-10-04T00:28:55.002Z"}
+{"level":"info","message":"Worker 1556762 shutting down gracefully","timestamp":"2025-10-04T00:28:55.007Z"}
+{"level":"info","message":"Worker 1556772 closed all connections","timestamp":"2025-10-04T00:28:55.055Z"}
+{"level":"info","message":"Worker 1556767 closed all connections","timestamp":"2025-10-04T00:28:55.060Z"}
+{"level":"info","message":"Worker 1556713 closed all connections","timestamp":"2025-10-04T00:28:55.066Z"}
+{"level":"info","message":"Worker 1556762 closed all connections","timestamp":"2025-10-04T00:28:55.072Z"}
+{"level":"info","message":"Worker 1556764 closed all connections","timestamp":"2025-10-04T00:28:55.077Z"}
+{"level":"info","message":"Worker 1556768 closed all connections","timestamp":"2025-10-04T00:28:55.082Z"}
+{"level":"info","message":"Worker 1556765 closed all connections","timestamp":"2025-10-04T00:28:55.089Z"}
+{"level":"info","message":"Worker 1556770 closed all connections","timestamp":"2025-10-04T00:28:55.125Z"}
+{"level":"info","message":"Primary 1704721 forking 8 workers","timestamp":"2025-10-04T03:42:45.663Z"}
+{"level":"info","message":"Worker 1704809 started web server on port 3000","timestamp":"2025-10-04T03:42:47.263Z"}
+{"level":"info","message":"Worker 1704806 started web server on port 3000","timestamp":"2025-10-04T03:42:47.297Z"}
+{"level":"info","message":"Worker 1704803 started web server on port 3000","timestamp":"2025-10-04T03:42:47.445Z"}
+{"level":"info","message":"Worker 1704801 started web server on port 3000","timestamp":"2025-10-04T03:42:47.436Z"}
+{"level":"info","message":"Worker 1704804 started web server on port 3000","timestamp":"2025-10-04T03:42:47.454Z"}
+{"level":"info","message":"Worker 1704798 started web server on port 3000","timestamp":"2025-10-04T03:42:47.632Z"}
+{"level":"info","message":"Worker 1704799 started web server on port 3000","timestamp":"2025-10-04T03:42:47.647Z"}
+{"level":"info","message":"Worker 1704797 started web server on port 3000","timestamp":"2025-10-04T03:42:47.657Z"}
+{"body":{"buyingPrice":1400,"name":"Bram Meal","price":2000,"stockQuantity":500},"level":"info","message":"Request: POST /api/product","timestamp":"2025-10-04T03:55:37.054Z"}
+{"level":"info","message":"Worker 1704809 shutting down gracefully","timestamp":"2025-10-04T03:56:23.565Z"}
+{"level":"info","message":"Worker 1704721 shutting down gracefully","timestamp":"2025-10-04T03:56:23.571Z"}
+{"level":"info","message":"Worker 1704806 shutting down gracefully","timestamp":"2025-10-04T03:56:23.570Z"}
+{"level":"info","message":"Worker 1704797 shutting down gracefully","timestamp":"2025-10-04T03:56:23.575Z"}
+{"level":"info","message":"Worker 1704801 shutting down gracefully","timestamp":"2025-10-04T03:56:23.571Z"}
+{"level":"info","message":"Worker 1704799 shutting down gracefully","timestamp":"2025-10-04T03:56:23.581Z"}
+{"level":"info","message":"Worker 1704803 shutting down gracefully","timestamp":"2025-10-04T03:56:23.579Z"}
+{"level":"info","message":"Worker 1704798 shutting down gracefully","timestamp":"2025-10-04T03:56:23.584Z"}
+{"level":"info","message":"Worker 1704721 closed all connections","timestamp":"2025-10-04T03:56:23.599Z"}
+{"level":"info","message":"Worker 1704804 shutting down gracefully","timestamp":"2025-10-04T03:56:23.577Z"}
+{"level":"info","message":"Worker 1704797 closed all connections","timestamp":"2025-10-04T03:56:23.764Z"}
+{"level":"info","message":"Worker 1704809 closed all connections","timestamp":"2025-10-04T03:56:23.789Z"}
+{"level":"info","message":"Worker 1704806 closed all connections","timestamp":"2025-10-04T03:56:23.803Z"}
+{"level":"info","message":"Primary 1728637 forking 8 workers","timestamp":"2025-10-04T04:09:14.778Z"}
+{"level":"info","message":"Worker 1728704 started web server on port 3446","timestamp":"2025-10-04T04:09:16.256Z"}
+{"level":"info","message":"Worker 1728701 started web server on port 3446","timestamp":"2025-10-04T04:09:16.303Z"}
+{"level":"info","message":"Worker 1728697 started web server on port 3446","timestamp":"2025-10-04T04:09:16.296Z"}
+{"level":"info","message":"Worker 1728703 started web server on port 3446","timestamp":"2025-10-04T04:09:16.327Z"}
+{"level":"info","message":"Worker 1728708 started web server on port 3446","timestamp":"2025-10-04T04:09:16.370Z"}
+{"level":"info","message":"Worker 1728699 started web server on port 3446","timestamp":"2025-10-04T04:09:16.418Z"}
+{"level":"info","message":"Worker 1728706 started web server on port 3446","timestamp":"2025-10-04T04:09:16.456Z"}
+{"level":"info","message":"Worker 1728698 started web server on port 3446","timestamp":"2025-10-04T04:09:16.528Z"}
+{"body":{"buyingPrice":1400,"name":"Bram Meal","price":2000,"stockQuantity":500},"level":"info","message":"Request: POST /api/products","timestamp":"2025-10-04T04:09:48.336Z"}
+{"body":{"buyingPrice":4800,"name":"Dairy MEAL","price":5500,"stockQuantity":600},"level":"info","message":"Request: POST /api/products","timestamp":"2025-10-04T04:10:41.589Z"}
+{"body":{"buyingPrice":2200,"name":"Chicken Mash","price":3000,"stockQuantity":300},"level":"info","message":"Request: POST /api/products","timestamp":"2025-10-04T04:11:17.438Z"}
+{"body":{"buyingPrice":1600,"name":"Broilers Mash","price":2500,"stockQuantity":100},"level":"info","message":"Request: POST /api/products","timestamp":"2025-10-04T04:12:26.116Z"}
+{"body":{"buyingPrice":3800,"name":"Layers Mash","price":4000,"stockQuantity":100},"level":"info","message":"Request: POST /api/products","timestamp":"2025-10-04T04:12:58.109Z"}
+{"body":{"buyingPrice":2800,"name":"Broilers Mash","price":3000,"stockQuantity":100},"level":"info","message":"Request: POST /api/products","timestamp":"2025-10-04T04:15:21.478Z"}
+{"level":"info","message":"Worker 1728703 shutting down gracefully","timestamp":"2025-10-04T06:42:03.873Z"}
+{"level":"info","message":"Worker 1728699 shutting down gracefully","timestamp":"2025-10-04T06:42:03.880Z"}
+{"level":"info","message":"Worker 1728704 shutting down gracefully","timestamp":"2025-10-04T06:42:03.875Z"}
+{"level":"info","message":"Worker 1728698 shutting down gracefully","timestamp":"2025-10-04T06:42:03.873Z"}
+{"level":"info","message":"Worker 1728697 shutting down gracefully","timestamp":"2025-10-04T06:42:03.872Z"}
+{"level":"info","message":"Worker 1728637 shutting down gracefully","timestamp":"2025-10-04T06:42:03.872Z"}
+{"level":"info","message":"Worker 1728708 shutting down gracefully","timestamp":"2025-10-04T06:42:03.878Z"}
+{"level":"info","message":"Worker 1728701 shutting down gracefully","timestamp":"2025-10-04T06:42:03.875Z"}
+{"level":"info","message":"Worker 1728706 shutting down gracefully","timestamp":"2025-10-04T06:42:03.874Z"}
+{"level":"info","message":"Worker 1728637 closed all connections","timestamp":"2025-10-04T06:42:04.085Z"}
+{"level":"info","message":"Worker 1728701 closed all connections","timestamp":"2025-10-04T06:42:04.147Z"}
+{"level":"info","message":"Worker 1728706 closed all connections","timestamp":"2025-10-04T06:42:04.152Z"}
+{"level":"info","message":"Worker 1728699 closed all connections","timestamp":"2025-10-04T06:42:04.153Z"}
+{"level":"info","message":"Worker 1728704 closed all connections","timestamp":"2025-10-04T06:42:04.170Z"}
+{"level":"info","message":"Worker 1728703 closed all connections","timestamp":"2025-10-04T06:42:04.219Z"}
+{"level":"info","message":"Primary 1818196 forking 8 workers","timestamp":"2025-10-04T07:53:24.848Z"}
+{"level":"info","message":"Worker 1818252 started web server on port 3446","timestamp":"2025-10-04T07:53:26.378Z"}
+{"level":"info","message":"Worker 1818256 started web server on port 3446","timestamp":"2025-10-04T07:53:26.392Z"}
+{"level":"info","message":"Worker 1818253 started web server on port 3446","timestamp":"2025-10-04T07:53:26.384Z"}
+{"level":"info","message":"Worker 1818265 started web server on port 3446","timestamp":"2025-10-04T07:53:26.390Z"}
+{"level":"info","message":"Worker 1818262 started web server on port 3446","timestamp":"2025-10-04T07:53:26.421Z"}
+{"level":"info","message":"Worker 1818255 started web server on port 3446","timestamp":"2025-10-04T07:53:26.422Z"}
+{"level":"info","message":"Worker 1818260 started web server on port 3446","timestamp":"2025-10-04T07:53:26.433Z"}
+{"level":"info","message":"Worker 1818258 started web server on port 3446","timestamp":"2025-10-04T07:53:26.475Z"}
+{"level":"info","message":"Worker 1818262 shutting down gracefully","timestamp":"2025-10-04T07:53:42.861Z"}
+{"level":"info","message":"Worker 1818196 shutting down gracefully","timestamp":"2025-10-04T07:53:42.856Z"}
+{"level":"info","message":"Worker 1818260 shutting down gracefully","timestamp":"2025-10-04T07:53:42.867Z"}
+{"level":"info","message":"Worker 1818258 shutting down gracefully","timestamp":"2025-10-04T07:53:42.864Z"}
+{"level":"info","message":"Worker 1818265 shutting down gracefully","timestamp":"2025-10-04T07:53:42.853Z"}
+{"level":"info","message":"Worker 1818253 shutting down gracefully","timestamp":"2025-10-04T07:53:42.851Z"}
+{"level":"info","message":"Worker 1818256 shutting down gracefully","timestamp":"2025-10-04T07:53:42.868Z"}
+{"level":"info","message":"Worker 1818252 shutting down gracefully","timestamp":"2025-10-04T07:53:42.861Z"}
+{"level":"info","message":"Worker 1818255 shutting down gracefully","timestamp":"2025-10-04T07:53:42.860Z"}
+{"level":"info","message":"Worker 1818196 closed all connections","timestamp":"2025-10-04T07:53:42.990Z"}
+{"level":"info","message":"Worker 1818253 closed all connections","timestamp":"2025-10-04T07:53:43.061Z"}
+{"level":"info","message":"Worker 1818260 closed all connections","timestamp":"2025-10-04T07:53:43.073Z"}
+{"level":"info","message":"Worker 1818255 closed all connections","timestamp":"2025-10-04T07:53:43.079Z"}
+{"level":"info","message":"Worker 1818265 closed all connections","timestamp":"2025-10-04T07:53:43.085Z"}
+{"level":"info","message":"Worker 1818258 closed all connections","timestamp":"2025-10-04T07:53:43.086Z"}
+{"level":"info","message":"Worker 1818252 closed all connections","timestamp":"2025-10-04T07:53:43.097Z"}
+{"level":"info","message":"Worker 1818256 closed all connections","timestamp":"2025-10-04T07:53:43.099Z"}
+{"level":"info","message":"Worker 1818262 closed all connections","timestamp":"2025-10-04T07:53:43.121Z"}
+{"level":"info","message":"Primary 1823724 forking 8 workers","timestamp":"2025-10-04T07:58:14.425Z"}
+{"level":"info","message":"Worker 1823764 started web server on port 3446","timestamp":"2025-10-04T07:58:16.131Z"}
+{"level":"info","message":"Worker 1823774 started web server on port 3446","timestamp":"2025-10-04T07:58:16.131Z"}
+{"level":"info","message":"Worker 1823807 started web server on port 3446","timestamp":"2025-10-04T07:58:16.134Z"}
+{"level":"info","message":"Worker 1823763 started web server on port 3446","timestamp":"2025-10-04T07:58:16.136Z"}
+{"level":"info","message":"Worker 1823765 started web server on port 3446","timestamp":"2025-10-04T07:58:16.151Z"}
+{"level":"info","message":"Worker 1823768 started web server on port 3446","timestamp":"2025-10-04T07:58:16.132Z"}
+{"level":"info","message":"Worker 1823766 started web server on port 3446","timestamp":"2025-10-04T07:58:16.168Z"}
+{"level":"info","message":"Worker 1823770 started web server on port 3446","timestamp":"2025-10-04T07:58:16.172Z"}
+{"level":"info","message":"Request: GET /api/products","timestamp":"2025-10-04T08:04:43.776Z"}
+{"body":{"message":"john,maizemeal,50","name":"Test User","phone":"whatsapp:+254782984394","product":"john","quantity":1},"level":"info","message":"Request: POST /twilio-callback","timestamp":"2025-10-04T08:05:07.710Z"}
+{"body":{"message":"john,maizemeal,5444","name":"Test User","phone":"whatsapp:+254782984394","product":"john","quantity":1},"level":"info","message":"Request: POST /twilio-callback","timestamp":"2025-10-04T08:24:09.605Z"}
+{"level":"info","message":"Worker 1823765 shutting down gracefully","timestamp":"2025-10-04T08:42:56.589Z"}
+{"level":"info","message":"Worker 1823763 shutting down gracefully","timestamp":"2025-10-04T08:42:56.589Z"}
+{"level":"info","message":"Worker 1823770 shutting down gracefully","timestamp":"2025-10-04T08:42:56.588Z"}
+{"level":"info","message":"Worker 1823724 shutting down gracefully","timestamp":"2025-10-04T08:42:56.588Z"}
+{"level":"info","message":"Worker 1823774 shutting down gracefully","timestamp":"2025-10-04T08:42:56.589Z"}
+{"level":"info","message":"Worker 1823764 shutting down gracefully","timestamp":"2025-10-04T08:42:56.589Z"}
+{"level":"info","message":"Worker 1823766 shutting down gracefully","timestamp":"2025-10-04T08:42:56.589Z"}
+{"level":"info","message":"Worker 1823807 shutting down gracefully","timestamp":"2025-10-04T08:42:56.589Z"}
+{"level":"info","message":"Worker 1823768 shutting down gracefully","timestamp":"2025-10-04T08:42:56.589Z"}
+{"level":"info","message":"Worker 1823724 closed all connections","timestamp":"2025-10-04T08:42:56.682Z"}
+{"level":"info","message":"Primary 1866348 forking 8 workers","timestamp":"2025-10-04T08:43:01.520Z"}
+{"level":"info","message":"Worker 1866411 started web server on port 3446","timestamp":"2025-10-04T08:43:02.769Z"}
+{"level":"info","message":"Worker 1866401 started web server on port 3446","timestamp":"2025-10-04T08:43:02.838Z"}
+{"level":"info","message":"Worker 1866406 started web server on port 3446","timestamp":"2025-10-04T08:43:02.870Z"}
+{"level":"info","message":"Worker 1866410 started web server on port 3446","timestamp":"2025-10-04T08:43:02.875Z"}
+{"level":"info","message":"Worker 1866400 started web server on port 3446","timestamp":"2025-10-04T08:43:02.970Z"}
+{"level":"info","message":"Worker 1866402 started web server on port 3446","timestamp":"2025-10-04T08:43:02.998Z"}
+{"level":"info","message":"Worker 1866408 started web server on port 3446","timestamp":"2025-10-04T08:43:03.042Z"}
+{"level":"info","message":"Worker 1866404 started web server on port 3446","timestamp":"2025-10-04T08:43:03.112Z"}
+{"body":{"Name":"John","message":"john,Broiler Mash,123","phoneNumber":"+254782984394","product":"Broiler Mash","quantity":123},"level":"info","message":"Request: POST /twilio-callback","timestamp":"2025-10-04T08:43:56.362Z"}
+{"level":"info","message":"Request: GET /api/orders","timestamp":"2025-10-04T08:45:16.451Z"}
+{"level":"info","message":"Request: GET /api/customers","timestamp":"2025-10-04T08:45:30.319Z"}

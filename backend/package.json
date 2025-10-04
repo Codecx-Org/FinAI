@@ -11,6 +11,7 @@
     "node-cron": "^4.2.1",
     "prisma": "^6.16.3",
     "ts-node": "^10.9.2",
+    "twilio": "^5.10.2",
     "typescript": "^5.9.3"
   },
   "name": "test-case-1",

@@ -1,4 +1,4 @@
-import Redis from 'ioredis';
+import {Redis} from 'ioredis';
 
 // Configuration interface for Redis connection
 interface RedisConfig {
@@ -18,7 +18,7 @@ export class RedisService {
   constructor(config: RedisConfig = { url: 'redis://localhost:6379', retryAttempts: 3, retryDelay: 1000 }) {
     // Initialize main client for publishing
     this.client = new Redis(config.url, {
-      maxRetriesPerRequest: config.retryAttempts,
+      maxRetriesPerRequest: 3,
       retryStrategy: (times) => Math.min(times * config.retryDelay!, 30000),
     });
 

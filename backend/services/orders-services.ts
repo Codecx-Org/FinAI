@@ -1,16 +1,33 @@
 import { redisService } from './redis-service.js';
 import prisma from '../utils/prisma.js';
 import { NotFoundError } from '../utils/types/errors.js';
-import { OrderStatus } from '../generated/prisma/client.js';
+import { OrderStatus, type OrderItem } from '../generated/prisma/client.js';
+import { OrderItemService } from './orders-items-services.js';
 
 
+const orderItemsService = new OrderItemService()
 export class OrderService {
-  async createOrder(data: { customerId: number; totalAmount: number; status: OrderStatus }) {
+  async createOrder(orderData:{ customerId: number; totalAmount: number; status: OrderStatus, orderItems?: Omit<OrderItem, "id" | "orderId">[]}) {
     const order = await prisma.order.create({
-      data,
+      data: {
+        totalAmount:orderData.totalAmount,
+        customerId: orderData.customerId,
+        status: orderData.status 
+      },
       include: { orderItems: true, customer: true },
     });
-    // Publish order creation event if needed
+
+    if (orderData.orderItems){
+      orderData.orderItems?.forEach((item) => {
+        orderItemsService.createOrderItem({
+          orderId: order.id,
+          productId: item.productId,
+          quantity: item.quantity
+        })    
+      })
+    }
+
+        // Publish order creation event if needed
     await redisService.publish('order:created', JSON.stringify({ orderId: order.id }));
     return order;
   }
