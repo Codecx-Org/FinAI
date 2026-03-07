@@ -1,4 +1,5 @@
-import { FlowProducer, Queue, Worker, Job } from 'bullmq';
+import { FlowProducer, Queue, Worker } from 'bullmq';
+import type { Job } from 'bullmq';
 import { Redis } from 'ioredis';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -7,198 +8,202 @@ import { redisService } from '../services/redis-service.js';
 import prisma from '../utils/prisma.js';
 
 // Redis connection (shared with redisService)
-const connection = new Redis('redis://localhost:6379', {
+const connection = (process.env.NODE_ENV === 'test') ? {} as any : new Redis('redis://localhost:6379', {
   maxRetriesPerRequest: 3,
   retryStrategy: (times: number) => Math.min(times * 1000, 30000),
 });
-const workerConnection = new Redis("redis://localhost:6379", {
+const workerConnection = (process.env.NODE_ENV === 'test') ? {} as any : new Redis("redis://localhost:6379", {
   maxRetriesPerRequest: null
 })
 
 // Queue for the workflow
-export const orderQueue = new Queue('order-completion-queue', { connection });
+export const orderQueue = (process.env.NODE_ENV === 'test') ? { close: () => {} } as any : new Queue('order-completion-queue', { connection });
 
 
 // Directories for CSV files
-const SALES_DIR = path.join(__dirname, '../Model/Sales');
-const INVENTORY_TRENDS_DIR = path.join(__dirname, '../Models/Inventory');
-fs.ensureDirSync(SALES_DIR);
-fs.ensureDirSync(INVENTORY_TRENDS_DIR);
+const SALES_DIR = path.join(process.cwd(), 'logs/Model/Sales');
+const INVENTORY_TRENDS_DIR = path.join(process.cwd(), 'logs/Models/Inventory');
+if (process.env.NODE_ENV !== 'test') {
+  fs.ensureDirSync(SALES_DIR);
+  fs.ensureDirSync(INVENTORY_TRENDS_DIR);
+}
 
 // Job processors (workers)
-// Step 1: Store sales
-new Worker(
-  'order-completion-queue',
-  async (job: Job) => {
-    if (job.name === 'store-sale') {
-      const { orderId } = job.data;
-      console.log(`Processing store-sale for order ${orderId}`);
+if (process.env.NODE_ENV !== 'test') {
+  // Step 1: Store sales
+  new Worker(
+    'order-completion-queue',
+    async (job: Job) => {
+      if (job.name === 'store-sale') {
+        const { orderId } = job.data;
+        console.log(`Processing store-sale for order ${orderId}`);
 
-      const order = await prisma.order.findUnique({
-        where: { id: orderId },
-        include: { orderItems: { include: { product: true } } },
-      });
-
-      if (!order || !order.orderItems.length) {
-        throw new Error('Order or items not found');
-      }
-
-      const sales = [];
-      for (const item of order.orderItems) {
-        const sale = await prisma.sales.create({
-          data: {
-            orderId,
-            productId: item.productId,
-            quantity: item.quantity,
-            totalAmount: item.quantity * item.product.price,
-          },
-        });
-        sales.push(sale);
-      }
-
-      return { sales };
-    }
-  },
-  {
-    connection: workerConnection 
-  }
-);
-
-// Step 2: Append sales to CSV
-new Worker(
-  'order-completion-queue',
-  async (job: Job) => {
-    if (job.name === 'append-sales-csv') {
-      const { orderId } = job.data;
-      console.log(`Processing append-sales-csv for order ${orderId}`);
-
-      const order = await prisma.order.findUnique({
-        where: { id: orderId },
-        include: { orderItems: { include: { product: true } } },
-      });
-
-      if (!order || !order.orderItems.length) {
-        throw new Error('Order or items not found');
-      }
-
-      for (const item of order.orderItems) {
-        const product = item.product;
-        const csvPath = path.join(SALES_DIR, `${product.id}_${product.name.replace(/\s/g, '_')}.csv`);
-
-        const csvWriter = createObjectCsvWriter({
-          path: csvPath,
-          header: [
-            { id: 'date', title: 'Date' },
-            { id: 'quantity', title: 'Quantity' },
-            { id: 'total_amount', title: 'Total Amount' },
-          ],
-          append: fs.existsSync(csvPath),
+        const order = await prisma.order.findUnique({
+          where: { id: orderId },
+          include: { orderItems: { include: { product: true } } },
         });
 
-        const record = {
-          date: new Date().toISOString(),
-          quantity: item.quantity,
-          total_amount: item.quantity * product.price,
-        };
-
-        await csvWriter.writeRecords([record]);
-      }
-
-      return { message: 'Sales data appended to CSVs' };
-    }
-  },
-  {
-    connection: workerConnection
-  }
-);
-
-// Step 3: Update inventory
-new Worker(
-  'order-completion-queue',
-  async (job: Job) => {
-    if (job.name === 'update-inventory') {
-      const { orderId } = job.data;
-      console.log(`Processing update-inventory for order ${orderId}`);
-
-      const order = await prisma.order.findUnique({
-        where: { id: orderId },
-        include: { orderItems: true },
-      });
-
-      if (!order || !order.orderItems.length) {
-        throw new Error('Order or items not found');
-      }
-
-      const updates = [];
-      for (const item of order.orderItems) {
-        const product = await prisma.product.findUnique({ where: { id: item.productId } });
-        if (!product) continue;
-
-        const preQty = product.stockQuantity;
-        const newQty = preQty - item.quantity;
-
-        if (newQty < 0) {
-          throw new Error(`Insufficient stock for product ${product.id}`);
+        if (!order || !order.orderItems.length) {
+          throw new Error('Order or items not found');
         }
 
-        await prisma.product.update({
-          where: { id: product.id },
-          data: { stockQuantity: newQty },
+        const sales = [];
+        for (const item of order.orderItems) {
+          const sale = await prisma.sales.create({
+            data: {
+              orderId,
+              productId: item.productId,
+              quantity: item.quantity,
+              totalAmount: item.quantity * item.product.price,
+            },
+          });
+          sales.push(sale);
+        }
+
+        return { sales };
+      }
+    },
+    {
+      connection: workerConnection
+    }
+  );
+
+  // Step 2: Append sales to CSV
+  new Worker(
+    'order-completion-queue',
+    async (job: Job) => {
+      if (job.name === 'append-sales-csv') {
+        const { orderId } = job.data;
+        console.log(`Processing append-sales-csv for order ${orderId}`);
+
+        const order = await prisma.order.findUnique({
+          where: { id: orderId },
+          include: { orderItems: { include: { product: true } } },
         });
 
-        updates.push({ productId: product.id, name: product.name, preQty, newQty });
+        if (!order || !order.orderItems.length) {
+          throw new Error('Order or items not found');
+        }
+
+        for (const item of order.orderItems) {
+          const product = item.product;
+          const csvPath = path.join(SALES_DIR, `${product.id}_${product.name.replace(/\s/g, '_')}.csv`);
+
+          const csvWriter = createObjectCsvWriter({
+            path: csvPath,
+            header: [
+              { id: 'date', title: 'Date' },
+              { id: 'quantity', title: 'Quantity' },
+              { id: 'total_amount', title: 'Total Amount' },
+            ],
+            append: fs.existsSync(csvPath),
+          });
+
+          const record = {
+            date: new Date().toISOString(),
+            quantity: item.quantity,
+            total_amount: item.quantity * product.price,
+          };
+
+          await csvWriter.writeRecords([record]);
+        }
+
+        return { message: 'Sales data appended to CSVs' };
       }
-
-      return updates; // Pass to child job
+    },
+    {
+      connection: workerConnection
     }
-  },
-  {
-    connection: workerConnection
-  }
-);
+  );
 
-// Step 4: Append inventory trends to CSV
-new Worker(
-  'order-completion-queue',
-  async (job: Job) => {
-    if (job.name === 'append-inventory-trends-csv') {
-      const { updates } = job.data; // From parent job (update-inventory)
-      console.log(`Processing append-inventory-trends-csv`);
+  // Step 3: Update inventory
+  new Worker(
+    'order-completion-queue',
+    async (job: Job) => {
+      if (job.name === 'update-inventory') {
+        const { orderId } = job.data;
+        console.log(`Processing update-inventory for order ${orderId}`);
 
-      for (const update of updates) {
-        const csvPath = path.join(INVENTORY_TRENDS_DIR, `${update.productId}_${update.name.replace(/\s/g, '_')}.csv`);
-
-        const csvWriter = createObjectCsvWriter({
-          path: csvPath,
-          header: [
-            { id: 'date', title: 'Date' },
-            { id: 'product_id', title: 'Product ID' },
-            { id: 'product_name', title: 'Product Name' },
-            { id: 'pre_qty', title: 'Pre Quantity' },
-            { id: 'new_qty', title: 'New Quantity' },
-          ],
-          append: fs.existsSync(csvPath),
+        const order = await prisma.order.findUnique({
+          where: { id: orderId },
+          include: { orderItems: true },
         });
 
-        const record = {
-          date: new Date().toISOString(),
-          product_id: update.productId,
-          product_name: update.name,
-          pre_qty: update.preQty,
-          new_qty: update.newQty,
-        };
+        if (!order || !order.orderItems.length) {
+          throw new Error('Order or items not found');
+        }
 
-        await csvWriter.writeRecords([record]);
+        const updates = [];
+        for (const item of order.orderItems) {
+          const product = await prisma.product.findUnique({ where: { id: item.productId } });
+          if (!product) continue;
+
+          const preQty = product.stockQuantity;
+          const newQty = preQty - item.quantity;
+
+          if (newQty < 0) {
+            throw new Error(`Insufficient stock for product ${product.id}`);
+          }
+
+          await prisma.product.update({
+            where: { id: product.id },
+            data: { stockQuantity: newQty },
+          });
+
+          updates.push({ productId: product.id, name: product.name, preQty, newQty });
+        }
+
+        return updates; // Pass to child job
       }
-
-      return { message: 'Inventory trends appended to CSVs' };
+    },
+    {
+      connection: workerConnection
     }
-  },
-  {
-    connection: workerConnection
-  }
-);
+  );
 
+  // Step 4: Append inventory trends to CSV
+  new Worker(
+    'order-completion-queue',
+    async (job: Job) => {
+      if (job.name === 'append-inventory-trends-csv') {
+        const { updates } = job.data; // From parent job (update-inventory)
+        console.log(`Processing append-inventory-trends-csv`);
+
+        for (const update of updates) {
+          const csvPath = path.join(INVENTORY_TRENDS_DIR, `${update.productId}_${update.name.replace(/\s/g, '_')}.csv`);
+
+          const csvWriter = createObjectCsvWriter({
+            path: csvPath,
+            header: [
+              { id: 'date', title: 'Date' },
+              { id: 'product_id', title: 'Product ID' },
+              { id: 'product_name', title: 'Product Name' },
+              { id: 'pre_qty', title: 'Pre Quantity' },
+              { id: 'new_qty', title: 'New Quantity' },
+            ],
+            append: fs.existsSync(csvPath),
+          });
+
+          const record = {
+            date: new Date().toISOString(),
+            product_id: update.productId,
+            product_name: update.name,
+            pre_qty: update.preQty,
+            new_qty: update.newQty,
+          };
+
+          await csvWriter.writeRecords([record]);
+        }
+
+        return { message: 'Inventory trends appended to CSVs' };
+      }
+    },
+    {
+      connection: workerConnection
+    }
+  );
+
+}
 // Workflow: Add jobs to queue using FlowProducer
 export async function runOrderCompletionWorkflow(orderId: number) {
   const flowProducer = new FlowProducer({ connection });
@@ -239,4 +244,5 @@ export async function runOrderCompletionWorkflow(orderId: number) {
     throw error;
   }
 }
+
 

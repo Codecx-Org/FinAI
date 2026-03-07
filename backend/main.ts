@@ -3,7 +3,8 @@
 // Features: Clustering for scalability, Winston logging, BullMQ dashboard, graceful shutdown.
 // Dependencies: npm install express body-parser dotenv winston @bull-board/express @bull-board/api bullmq ioredis @prisma/client mpesa-node-library fs-extra csv-writer node-cron
 
-import express, { type Request, type Response, type NextFunction } from 'express';
+import express from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import prisma from './utils/prisma.js';
@@ -48,14 +49,24 @@ export const logger = winston.createLogger({
 
 // Error handler middleware: User-friendly messages
 const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-  logger.error(`Error at ${req.path}: ${err.message}`, { stack: err.stack });
-  const userMessage = process.env.NODE_ENV === 'production'
-    ? 'An unexpected error occurred. Please try again later.'
-    : err.message || 'Internal server error';
-  res.status(err.status || 500).json({
-    error: userMessage,
-    details: process.env.NODE_ENV !== 'production' ? err.stack : undefined,
+  const statusCode = err.statusCode || 500;
+  const isOperational = err.isOperational || false;
+
+  logger.error(`Error at ${req.path}: ${err.message}`, { 
+    stack: err.stack,
+    statusCode,
+    isOperational 
   });
+
+  const response = {
+    status: 'error',
+    message: (process.env.NODE_ENV === 'production' && !isOperational)
+      ? 'An unexpected error occurred. Please try again later.'
+      : err.message || 'Internal server error',
+    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
+  };
+
+  res.status(statusCode).json(response);
 };
 
 // Express app setup
@@ -65,7 +76,11 @@ app.use(bodyParser.raw({ type: 'application/json' })); // For MPESA webhook
 
 // Request logging middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
-  logger.info(`Request: ${req.method} ${req.path}`, { body: req.body });
+  logger.info(`Request: ${req.method} ${req.path}`, { 
+    query: req.query,
+    params: req.params,
+    body: req.method !== 'GET' ? req.body : undefined 
+  });
   next();
 });
 
@@ -115,7 +130,7 @@ process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
 
 // Cluster setup for non-blocking workers and web server
-if (cluster.isPrimary) {
+if (cluster.isPrimary && process.env.NODE_ENV !== 'test') {
   const numCPUs = os.cpus().length;
   logger.info(`Primary ${process.pid} forking ${numCPUs} workers`);
 
@@ -127,22 +142,22 @@ if (cluster.isPrimary) {
     logger.warn(`Worker ${worker.process.pid} died with code ${code}, signal ${signal}. Forking new worker.`);
     cluster.fork();
   });
-} else {
-  // Worker process: Start Express server and background tasks
+} else if (!cluster.isPrimary || process.env.NODE_ENV === 'test') {
+  // Worker process or test environment: Start Express server and background tasks
   const PORT = process.env.PORT || 3000;
   const server = app.listen(PORT, () => {
-    logger.info(`Worker ${process.pid} started web server on port ${PORT}`);
+    logger.info(`Process ${process.pid} started web server on port ${PORT}`);
   });
 
   // Handle server errors
   server.on('error', (error: any) => {
-    logger.error(`Worker ${process.pid} server error: ${error.message}`, { stack: error.stack });
+    logger.error(`Process ${process.pid} server error: ${error.message}`, { stack: error.stack });
   });
 
-  // Start Redis subscribers (non-blocking)
-  startPaymentSubscriber();
-
-  // BullMQ workers are non-blocking (started in order-completion-workflow.ts)
+  if (process.env.NODE_ENV !== 'test') {
+    // Start Redis subscribers (non-blocking)
+    startPaymentSubscriber();
+  }
 }
 
 // Export for testing

@@ -1,37 +1,31 @@
 import prisma from '../utils/prisma.js';
-import { InternalServerError, NotFoundError } from '../utils/types/errors.js';
-
+import { NotFoundError, InternalServerError } from '../utils/types/errors.js';
 
 export class CustomerService {
   async createCustomer(data: { name: string; email?: string; phone?: string }) {
     try {
-      const customer = prisma.customer.create({
+      return await prisma.customer.create({
         data,
         select: { id: true, name: true, email: true, phone: true, createAt: true },
       });
-      return customer
-    } catch(error){
-     throw new InternalServerError("Could not create customer") 
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        throw new Error('A customer with this email already exists');
+      }
+      throw new InternalServerError('Could not create customer');
     }
   }
 
   async getCustomer(id: number) {
-   try {
-     const customer = prisma.customer.findUnique({
-       where: { id },
-       include: { orders: true },
-     });
+    const customer = await prisma.customer.findUnique({
+      where: { id },
+      include: { orders: true },
+    });
 
-     if (!customer) {
-       throw new NotFoundError("Customer not found")
-     }
-     return customer 
-   }catch(error ){
-      if (error instanceof NotFoundError){
-        return error
-      }
-      return error
-   }
+    if (!customer) {
+      throw new NotFoundError('Customer not found');
+    }
+    return customer;
   }
 
   async getAllCustomers() {
@@ -41,16 +35,30 @@ export class CustomerService {
   }
 
   async updateCustomer(id: number, data: { name?: string; email?: string; phone?: string }) {
-    return prisma.customer.update({
-      where: { id },
-      data,
-      select: { id: true, name: true, email: true, phone: true, createAt: true },
-    });
+    try {
+      return await prisma.customer.update({
+        where: { id },
+        data,
+        select: { id: true, name: true, email: true, phone: true, createAt: true },
+      });
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        throw new NotFoundError('Customer not found');
+      }
+      throw new InternalServerError('Could not update customer');
+    }
   }
 
   async deleteCustomer(id: number) {
-    return prisma.customer.delete({
-      where: { id },
-    });
+    try {
+      return await prisma.customer.delete({
+        where: { id },
+      });
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        throw new NotFoundError('Customer not found');
+      }
+      throw new InternalServerError('Could not delete customer');
+    }
   }
 }

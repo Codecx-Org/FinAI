@@ -1,53 +1,33 @@
 import express from 'express';
 import { CustomerService } from '../services/customer-service.js';
+import { asyncHandler } from '../utils/async-handler.js';
 
 const router = express.Router();
 const customerService = new CustomerService();
 
-router.post('/customers', async (req, res) => {
-  try {
-    const customer = await customerService.createCustomer(req.body);
-    res.status(201).json(customer);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to create customer' });
-  }
-});
+router.post('/customers', asyncHandler(async (req, res) => {
+  const customer = await customerService.createCustomer(req.body);
+  res.status(201).json(customer);
+}));
 
-router.get('/customers/:id', async (req, res) => {
-  try {
-    const customer = await customerService.getCustomer(Number(req.params.id));
-    if (!customer) throw new Error('Customer not found');
-    res.json(customer);
-  } catch (error) {
-    res.status(404).json({ error: 'Customer not found' });
-  }
-});
+router.get('/customers/:id', asyncHandler(async (req, res) => {
+  const customer = await customerService.getCustomer(Number(req.params.id));
+  res.json(customer);
+}));
 
-router.get('/customers', async (req, res) => {
-  try {
-    const customers = await customerService.getAllCustomers();
-    res.json(customers);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch customers' });
-  }
-});
+router.get('/customers', asyncHandler(async (req, res) => {
+  const customers = await customerService.getAllCustomers();
+  res.json(customers);
+}));
 
-router.put('/customers/:id', async (req, res) => {
-  try {
-    const customer = await customerService.updateCustomer(Number(req.params.id), req.body);
-    res.json(customer);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update customer' });
-  }
-});
+router.put('/customers/:id', asyncHandler(async (req, res) => {
+  const customer = await customerService.updateCustomer(Number(req.params.id), req.body);
+  res.json(customer);
+}));
 
-router.delete('/customers/:id', async (req, res) => {
-  try {
-    await customerService.deleteCustomer(Number(req.params.id));
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to delete customer' });
-  }
-});
+router.delete('/customers/:id', asyncHandler(async (req, res) => {
+  await customerService.deleteCustomer(Number(req.params.id));
+  res.status(204).send();
+}));
 
 export default router;

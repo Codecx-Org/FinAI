@@ -1,7 +1,6 @@
 import { redisService } from '../services/redis-service.js';
 import prisma from '../utils/prisma.js';
-import cron from 'node-cron';
-
+import { NotFoundError, InternalServerError } from '../utils/types/errors.js';
 
 export class ExpenseService {
   async createExpense(data: {
@@ -12,34 +11,49 @@ export class ExpenseService {
     frequency?: string;
     nextDueDate?: Date;
   }) {
-    const expense = await prisma.expenses.create({
-      data,
-      select: { id: true, type: true, amount: true, description: true, isRecurring: true, frequency: true, nextDueDate: true, createdAt: true },
-    });
-    if (!data.isRecurring) {
-      await redisService.publish('expense:processed', JSON.stringify({ expenseId: expense.id }));
+    try {
+      const expense = await prisma.expenses.create({
+        data,
+        select: { id: true, type: true, amount: true, description: true, isRecurring: true, frequency: true, nextDueDate: true, createdAt: true },
+      });
+      if (!data.isRecurring) {
+        await redisService.publish('expense:processed', JSON.stringify({ expenseId: expense.id }));
+      }
+      return expense;
+    } catch (error) {
+      throw new InternalServerError('Failed to create expense');
     }
-    return expense;
   }
 
   async getExpense(id: number) {
-    return prisma.expenses.findUnique({ where: { id } });
+    const expense = await prisma.expenses.findUnique({ where: { id } });
+    if (!expense) throw new NotFoundError('Expense not found');
+    return expense;
   }
 
   async getAllExpenses() {
-    return prisma.expenses.findMany();
+    return await prisma.expenses.findMany();
   }
 
-  async updateExpense(id: number, data: { type?: string; amount?: number; description?: string; isRecurring?: boolean; frequency?: string; nextDueDate?: Date }) {
-    return prisma.expenses.update({
-      where: { id },
-      data,
-      select: { id: true, type: true, amount: true, description: true, isRecurring: true, frequency: true, nextDueDate: true, createdAt: true },
-    });
+  async updateExpense(id: number, data: any) {
+    try {
+      return await prisma.expenses.update({
+        where: { id },
+        data,
+      });
+    } catch (error: any) {
+      if (error.code === 'P2025') throw new NotFoundError('Expense not found');
+      throw new InternalServerError('Failed to update expense');
+    }
   }
 
   async deleteExpense(id: number) {
-    return prisma.expenses.delete({ where: { id } });
+    try {
+      await prisma.expenses.delete({ where: { id } });
+    } catch (error: any) {
+      if (error.code === 'P2025') throw new NotFoundError('Expense not found');
+      throw new InternalServerError('Failed to delete expense');
+    }
   }
 
   async processRecurringExpenses() {
@@ -47,14 +61,12 @@ export class ExpenseService {
       where: { isRecurring: true, nextDueDate: { lte: new Date() } },
     });
     for (const exp of recurring) {
-      // Log instance of recurring expense
       const newExpense = await this.createExpense({
         type: exp.type,
         amount: exp.amount,
         description: exp.description || "",
         isRecurring: false,
       });
-      // Update next due date
       if (exp.frequency === 'monthly') {
         const nextDate = new Date(exp.nextDueDate || new Date());
         nextDate.setMonth(nextDate.getMonth() + 1);
@@ -67,9 +79,3 @@ export class ExpenseService {
     }
   }
 }
-
-// Cron for recurring expenses (in main.ts or a dedicated cron file)
-const expenseService = new ExpenseService();
-cron.schedule('0 0 * * *', async () => {
-  await expenseService.processRecurringExpenses();
-});
