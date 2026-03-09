@@ -166,3 +166,48 @@
 {"body":{"Name":"John","message":"john,Broiler Mash,123","phoneNumber":"+254782984394","product":"Broiler Mash","quantity":123},"level":"info","message":"Request: POST /twilio-callback","timestamp":"2025-10-04T08:43:56.362Z"}
 {"level":"info","message":"Request: GET /api/orders","timestamp":"2025-10-04T08:45:16.451Z"}
 {"level":"info","message":"Request: GET /api/customers","timestamp":"2025-10-04T08:45:30.319Z"}
+{"level":"info","message":"Primary 278837 forking 8 workers","timestamp":"2026-03-09T22:28:34.356Z"}
+{"level":"info","message":"Process 278898 started web server on port 3000","timestamp":"2026-03-09T22:28:36.886Z"}
+{"level":"info","message":"Process 278977 started web server on port 3000","timestamp":"2026-03-09T22:28:37.132Z"}
+{"level":"info","message":"Process 278894 started web server on port 3000","timestamp":"2026-03-09T22:28:37.149Z"}
+{"level":"info","message":"Process 278895 started web server on port 3000","timestamp":"2026-03-09T22:28:37.155Z"}
+{"level":"info","message":"Process 278907 started web server on port 3000","timestamp":"2026-03-09T22:28:37.211Z"}
+{"level":"info","message":"Process 278892 started web server on port 3000","timestamp":"2026-03-09T22:28:37.348Z"}
+{"level":"info","message":"Process 278897 started web server on port 3000","timestamp":"2026-03-09T22:28:37.406Z"}
+{"level":"info","message":"Process 278909 started web server on port 3000","timestamp":"2026-03-09T22:28:37.423Z"}
+{"level":"warn","message":"Worker 278898 died with code 1, signal null. Forking new worker.","timestamp":"2026-03-09T22:28:42.960Z"}
+{"level":"warn","message":"Worker 278977 died with code 1, signal null. Forking new worker.","timestamp":"2026-03-09T22:28:43.227Z"}
+{"level":"warn","message":"Worker 278894 died with code 1, signal null. Forking new worker.","timestamp":"2026-03-09T22:28:43.242Z"}
+{"level":"warn","message":"Worker 278895 died with code 1, signal null. Forking new worker.","timestamp":"2026-03-09T22:28:43.246Z"}
+{"level":"warn","message":"Worker 278907 died with code 1, signal null. Forking new worker.","timestamp":"2026-03-09T22:28:43.308Z"}
+{"level":"warn","message":"Worker 278892 died with code 1, signal null. Forking new worker.","timestamp":"2026-03-09T22:28:43.437Z"}
+{"level":"warn","message":"Worker 278897 died with code 1, signal null. Forking new worker.","timestamp":"2026-03-09T22:28:43.538Z"}
+{"level":"warn","message":"Worker 278909 died with code 1, signal null. Forking new worker.","timestamp":"2026-03-09T22:28:43.580Z"}
+{"level":"info","message":"Worker 278837 shutting down gracefully","timestamp":"2026-03-09T22:28:44.907Z"}
+{"level":"info","message":"Primary 286519 forking 8 workers","timestamp":"2026-03-09T22:35:19.307Z"}
+{"level":"info","message":"Process 286552 started web server on port 3000","timestamp":"2026-03-09T22:35:21.496Z"}
+{"level":"info","message":"Process 286547 started web server on port 3000","timestamp":"2026-03-09T22:35:21.542Z"}
+{"level":"info","message":"Process 286549 started web server on port 3000","timestamp":"2026-03-09T22:35:21.576Z"}
+{"level":"info","message":"Process 286555 started web server on port 3000","timestamp":"2026-03-09T22:35:21.676Z"}
+{"level":"info","message":"Process 286557 started web server on port 3000","timestamp":"2026-03-09T22:35:21.678Z"}
+{"level":"info","message":"Process 286563 started web server on port 3000","timestamp":"2026-03-09T22:35:21.824Z"}
+{"level":"info","message":"Process 286551 started web server on port 3000","timestamp":"2026-03-09T22:35:21.861Z"}
+{"level":"info","message":"Process 286548 started web server on port 3000","timestamp":"2026-03-09T22:35:21.941Z"}
+{"level":"info","message":"Worker 286548 shutting down gracefully","timestamp":"2026-03-09T22:35:53.895Z"}
+{"level":"info","message":"Worker 286555 shutting down gracefully","timestamp":"2026-03-09T22:35:53.895Z"}
+{"level":"info","message":"Worker 286552 shutting down gracefully","timestamp":"2026-03-09T22:35:53.895Z"}
+{"level":"info","message":"Worker 286563 shutting down gracefully","timestamp":"2026-03-09T22:35:53.895Z"}
+{"level":"info","message":"Worker 286547 shutting down gracefully","timestamp":"2026-03-09T22:35:53.898Z"}
+{"level":"info","message":"Worker 286557 shutting down gracefully","timestamp":"2026-03-09T22:35:53.895Z"}
+{"level":"info","message":"Worker 286551 shutting down gracefully","timestamp":"2026-03-09T22:35:53.897Z"}
+{"level":"info","message":"Worker 286549 shutting down gracefully","timestamp":"2026-03-09T22:35:53.896Z"}
+{"level":"info","message":"Worker 286519 shutting down gracefully","timestamp":"2026-03-09T22:35:53.897Z"}
+{"level":"info","message":"Worker 286548 closed all connections","timestamp":"2026-03-09T22:35:53.905Z"}
+{"level":"info","message":"Worker 286563 closed all connections","timestamp":"2026-03-09T22:35:53.909Z"}
+{"level":"info","message":"Worker 286555 closed all connections","timestamp":"2026-03-09T22:35:53.911Z"}
+{"level":"info","message":"Worker 286519 closed all connections","timestamp":"2026-03-09T22:35:53.911Z"}
+{"level":"info","message":"Worker 286557 closed all connections","timestamp":"2026-03-09T22:35:53.915Z"}
+{"level":"info","message":"Worker 286552 closed all connections","timestamp":"2026-03-09T22:35:53.913Z"}
+{"level":"info","message":"Worker 286547 closed all connections","timestamp":"2026-03-09T22:35:53.917Z"}
+{"level":"info","message":"Worker 286549 closed all connections","timestamp":"2026-03-09T22:35:53.919Z"}
+{"level":"info","message":"Worker 286551 closed all connections","timestamp":"2026-03-09T22:35:53.922Z"}

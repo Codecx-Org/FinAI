@@ -1,7 +1,7 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { ChatOpenAI } from "@langchain/openai";
-import {createAgent, tool} from 'langchain'
+import {AIMessage, createAgent, HumanMessage, tool} from 'langchain'
 import {
   ChatPromptTemplate,
   MessagesPlaceholder,
@@ -95,15 +95,24 @@ export class ChatbotAgent {
   }
 
   async chat(input: string, chatHistory: any[] = []) {
+    const messages = [
+      ...chatHistory.map((entry) => {
+        entry.role === "assistant" ? new AIMessage(entry.content) : new HumanMessage(entry.content);
+      }),
+      new HumanMessage(input)
+    ]
     if (!this.executor) {
       throw new Error("Agent not initialized. Call initialize() first.");
     }
 
     const response = await this.executor.invoke({
-      input,
-      chatHistory,
+     messages 
     });
+    const lastMessage = response.messages[response.messages.length - 1];
+    if (!lastMessage) {
+      throw new Error("No response from agent.");
+    }
 
-    return response.output;
+    return lastMessage.content;
   }
 }
