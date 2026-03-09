@@ -185,7 +185,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/madrigal/Projects/Mini-Projects/FinAi-Assistant/Test-Case-1/backend/generated/prisma",
+      "value": "/home/madrigal/Projects/Mini-Projects/NumeralAI_Backend/FinAI/backend/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -194,12 +194,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "debian-openssl-1.1.x",
+        "value": "debian-openssl-3.0.x",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/madrigal/Projects/Mini-Projects/FinAi-Assistant/Test-Case-1/backend/prisma/schema.prisma",
+    "sourceFilePath": "/home/madrigal/Projects/Mini-Projects/NumeralAI_Backend/FinAI/backend/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -213,7 +213,6 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
