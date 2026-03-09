@@ -1,0 +1,31 @@
+erDiagram
+    CUSTOMER ||--o{ ORDER : "places"
+    ORDER ||--|{ ORDER_ITEM : "consists of"
+    ORDER ||--o{ SALES : "results in"
+    PRODUCT ||--o{ ORDER_ITEM : "included in"
+    PRODUCT ||--o{ SALES : "recorded in"
+    EXPENSES }o--o{ PRODUCT : "associated with"
+
+    CUSTOMER {
+        string name
+        string phone
+        string email
+    }
+    ORDER {
+        int id
+        float totalAmount
+        string status
+        timestamp createdAt
+    }
+    PRODUCT {
+        string name
+        int stockQuantity
+        float price
+        float buyingPrice
+    }
+    EXPENSES {
+        string type
+        int amount
+        boolean isRecurring
+        timestamp nextDueDate
+    }

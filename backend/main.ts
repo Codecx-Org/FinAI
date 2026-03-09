@@ -27,6 +27,7 @@ import salesRoutes from './routes/sales-route.js';
 import orderItemRoutes from './routes/order-items-route.js';
 import webhookRoutes from './routes/payment-route.js';
 import whatsAppRoutes from './routes/whatsapp-route.js'
+import chatbotRoutes from './routes/chatbot-route.js';
 
 // Load environment variables
 dotenv.config();
@@ -92,6 +93,7 @@ app.use('/api', orderRoutes);
 app.use('/api', salesRoutes);
 app.use('/api', orderItemRoutes);
 app.use('/api', whatsAppRoutes)
+app.use('/api', chatbotRoutes);
 app.use('/api', webhookRoutes);
 
 // Health check endpoint
