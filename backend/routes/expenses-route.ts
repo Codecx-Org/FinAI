@@ -16,7 +16,8 @@ router.get('/expenses/:id', asyncHandler(async (req, res) => {
 }));
 
 router.get('/expenses', asyncHandler(async (req, res) => {
-  const expenses = await expenseService.getAllExpenses();
+  const businessId = req.query.businessId ? Number(req.query.businessId) : undefined;
+  const expenses = await expenseService.getAllExpenses(businessId);
   res.json(expenses);
 }));
 

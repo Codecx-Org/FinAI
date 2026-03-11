@@ -16,7 +16,8 @@ router.get('/sales/:id', asyncHandler(async (req, res) => {
 }));
 
 router.get('/sales', asyncHandler(async (req, res) => {
-  const sales = await salesService.getAllSales();
+  const businessId = req.query.businessId ? Number(req.query.businessId) : undefined;
+  const sales = await salesService.getAllSales(businessId);
   res.json(sales);
 }));
 

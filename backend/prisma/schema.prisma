@@ -23,66 +23,102 @@ enum OrderStatus {
   failed
 }
 
+model Business {
+  id             Int        @id @default(autoincrement())
+  name           String
+  mpesaShortcode String?    @unique
+  ownerName      String
+  ownerEmail     String     @unique
+  metadata       Json?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  
+  customers      Customer[]
+  orders         Order[]
+  products       Product[]
+  expenses       Expenses[]
+  sales          Sales[]
+}
+
 model Customer {
-  id Int @id @default(autoincrement())
-  name String
-  email String? @unique
-  phone String?
-  createAt DateTime @default(now())
-  orders Order[]
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String?  @unique
+  phone      String?
+  createdAt  DateTime @default(now())
+  
+  businessId Int
+  business   Business @relation(fields: [businessId], references: [id])
+  
+  orders     Order[]
 }
 
 model Expenses {
-  id Int @id @default(autoincrement())
-  type String
+  id          Int       @id @default(autoincrement())
+  type        String
   description String?
-  amount Int
-  isRecurring Boolean @default(false)
-  frequency String?
+  amount      Int
+  isRecurring Boolean   @default(false)
+  frequency   String?
   nextDueDate DateTime?
-  createdAt DateTime @default(now())
-  product Product[]
+  createdAt   DateTime  @default(now())
+  
+  businessId  Int
+  business    Business  @relation(fields: [businessId], references: [id])
+  
+  product     Product[]
 }
 
-// prisma/schema.prisma
 model Order {
-  id          Int      @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   customerId  Int?
   totalAmount Float
   status      OrderStatus @default(created)
-  createdAt   DateTime @default(now())
+  createdAt   DateTime    @default(now())
+  
+  businessId  Int
+  business    Business    @relation(fields: [businessId], references: [id])
+  
   orderItems  OrderItem[]
-  customer Customer? @relation(fields: [customerId], references: [id])
-  sales Sales[]
+  customer    Customer?   @relation(fields: [customerId], references: [id])
+  sales       Sales[]
 }
 
 model Product {
-  id            Int      @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   name          String
   stockQuantity Int
   price         Float
-  buyingPrice Float
-  expenses Expenses[]
+  buyingPrice   Float
+  
+  businessId    Int
+  business      Business    @relation(fields: [businessId], references: [id])
+  
+  expenses      Expenses[]
   orderItems    OrderItem[]
-  sales Sales[]
+  sales         Sales[]
 }
 
 model Sales {
-  id Int @id @default(autoincrement())
-  orderId Int
-  productId Int
-  quantity Int
+  id          Int      @id @default(autoincrement())
+  orderId     Int
+  productId   Int
+  quantity    Int
   totalAmount Float
-  createdAt DateTime @default(now())
-  order Order @relation(fields: [orderId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  createdAt   DateTime @default(now())
+  
+  businessId  Int
+  business    Business @relation(fields: [businessId], references: [id])
+  
+  order       Order    @relation(fields: [orderId], references: [id])
+  product     Product  @relation(fields: [productId], references: [id])
 }
 
 model OrderItem {
-  id        Int    @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   orderId   Int
   productId Int
   quantity  Int
-  order     Order  @relation(fields: [orderId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id])
   product   Product @relation(fields: [productId], references: [id])
 }

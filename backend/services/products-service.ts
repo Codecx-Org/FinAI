@@ -2,7 +2,7 @@ import prisma from '../utils/prisma.js';
 import { NotFoundError, InternalServerError, BadRequestError } from '../utils/types/errors.js';
 
 export class ProductService {
-  async createProduct(data: { name: string; stockQuantity: number; price: number; buyingPrice: number }) {
+  async createProduct(data: { name: string; stockQuantity: number; price: number; buyingPrice: number; businessId: number }) {
     if (data.price < 0 || data.buyingPrice < 0) {
       throw new BadRequestError('Price and buying price must be non-negative');
     }
@@ -10,7 +10,7 @@ export class ProductService {
     try {
       return await prisma.product.create({
         data,
-        select: { id: true, name: true, stockQuantity: true, price: true, buyingPrice: true },
+        select: { id: true, name: true, stockQuantity: true, price: true, buyingPrice: true, businessId: true },
       });
     } catch (error: any) {
       throw new InternalServerError('Could not create product');
@@ -20,7 +20,7 @@ export class ProductService {
   async getProduct(id: number) {
     const product = await prisma.product.findUnique({
       where: { id },
-      include: { orderItems: true, sales: true },
+      include: { orderItems: true, sales: true, business: true },
     });
 
     if (!product) {
@@ -35,18 +35,19 @@ export class ProductService {
     });
   }
 
-  async getAllProducts() {
+  async getAllProducts(businessId?: number) {
     return await prisma.product.findMany({
-      select: { id: true, name: true, stockQuantity: true, price: true, buyingPrice: true },
+      where: businessId ? { businessId } : {},
+      select: { id: true, name: true, stockQuantity: true, price: true, buyingPrice: true, businessId: true },
     });
   }
 
-  async updateProduct(id: number, data: { name?: string; stockQuantity?: number; price?: number; buyingPrice?: number }) {
+  async updateProduct(id: number, data: { name?: string; stockQuantity?: number; price?: number; buyingPrice?: number; businessId?: number }) {
     try {
       return await prisma.product.update({
         where: { id },
         data,
-        select: { id: true, name: true, stockQuantity: true, price: true, buyingPrice: true },
+        select: { id: true, name: true, stockQuantity: true, price: true, buyingPrice: true, businessId: true },
       });
     } catch (error: any) {
       if (error.code === 'P2025') {

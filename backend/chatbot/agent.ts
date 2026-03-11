@@ -97,7 +97,6 @@ export class ChatbotAgent {
     const response = await this.executor.invoke({
      messages 
     });
-    console.log("Agent response:", response);
     const lastMessage = response.messages[response.messages.length - 1];
     if (!lastMessage) {
       throw new Error("No response from agent.");

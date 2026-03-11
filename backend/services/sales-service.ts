@@ -2,11 +2,11 @@ import prisma from "../utils/prisma.js";
 import { NotFoundError, InternalServerError } from '../utils/types/errors.js';
 
 export class SalesService {
-  async createSale(data: { orderId: number; productId: number; quantity: number; totalAmount: number }) {
+  async createSale(data: { orderId: number; productId: number; quantity: number; totalAmount: number; businessId: number }) {
     try {
       return await prisma.sales.create({
         data,
-        select: { id: true, orderId: true, productId: true, quantity: true, totalAmount: true, createdAt: true },
+        select: { id: true, orderId: true, productId: true, quantity: true, totalAmount: true, createdAt: true, businessId: true },
       });
     } catch (error) {
       throw new InternalServerError('Failed to create sale record');
@@ -16,15 +16,16 @@ export class SalesService {
   async getSale(id: number) {
     const sale = await prisma.sales.findUnique({
       where: { id },
-      include: { order: true, product: true },
+      include: { order: true, product: true, business: true },
     });
     if (!sale) throw new NotFoundError('Sale not found');
     return sale;
   }
 
-  async getAllSales() {
+  async getAllSales(businessId?: number) {
     return await prisma.sales.findMany({
-      include: { order: true, product: true },
+      where: businessId ? { businessId } : {},
+      include: { order: true, product: true, business: true },
     });
   }
 

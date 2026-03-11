@@ -120,12 +120,24 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.BusinessScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  mpesaShortcode: 'mpesaShortcode',
+  ownerName: 'ownerName',
+  ownerEmail: 'ownerEmail',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.CustomerScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
   phone: 'phone',
-  createAt: 'createAt'
+  createdAt: 'createdAt',
+  businessId: 'businessId'
 };
 
 exports.Prisma.ExpensesScalarFieldEnum = {
@@ -136,7 +148,8 @@ exports.Prisma.ExpensesScalarFieldEnum = {
   isRecurring: 'isRecurring',
   frequency: 'frequency',
   nextDueDate: 'nextDueDate',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  businessId: 'businessId'
 };
 
 exports.Prisma.OrderScalarFieldEnum = {
@@ -144,7 +157,8 @@ exports.Prisma.OrderScalarFieldEnum = {
   customerId: 'customerId',
   totalAmount: 'totalAmount',
   status: 'status',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  businessId: 'businessId'
 };
 
 exports.Prisma.ProductScalarFieldEnum = {
@@ -152,7 +166,8 @@ exports.Prisma.ProductScalarFieldEnum = {
   name: 'name',
   stockQuantity: 'stockQuantity',
   price: 'price',
-  buyingPrice: 'buyingPrice'
+  buyingPrice: 'buyingPrice',
+  businessId: 'businessId'
 };
 
 exports.Prisma.SalesScalarFieldEnum = {
@@ -161,7 +176,8 @@ exports.Prisma.SalesScalarFieldEnum = {
   productId: 'productId',
   quantity: 'quantity',
   totalAmount: 'totalAmount',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  businessId: 'businessId'
 };
 
 exports.Prisma.OrderItemScalarFieldEnum = {
@@ -176,9 +192,20 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 
 exports.Prisma.NullsOrder = {
@@ -195,6 +222,7 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
 };
 
 exports.Prisma.ModelName = {
+  Business: 'Business',
   Customer: 'Customer',
   Expenses: 'Expenses',
   Order: 'Order',

@@ -34,10 +34,13 @@ export class PaymentService {
   // Initiate STK Push: Trigger payment prompt on customer's phone
   async initiateSTKPush(orderId: number, phone: string, amount: number): Promise<{ success: boolean; message: string; data?: any }> {
     try {
-      // Fetch order to validate
+      // Fetch order to validate and include business
       const order = await prisma.order.findUnique({
         where: { id: orderId },
-        include: { customer: true },
+        include: { 
+          customer: true,
+          business: true 
+        },
       });
       if (!order) {
         throw new NotFoundError("order not found")
@@ -46,14 +49,29 @@ export class PaymentService {
         throw new BadRequestError("order status is not created");
       }
 
+      const mpesaShortCode = order.business?.mpesaShortcode || MPESA_CONFIG.shortCode;
+      
+      if (!mpesaShortCode) {
+        throw new BadRequestError("Business mpesa shortcode not configured");
+      }
+
       // Generate timestamp and password
       const timestamp = new Date().toISOString().replace(/[-T:\.Z]/g, '').slice(0, 14);
 
 
       const formattedPhoneNo = phone.replace(/^0/, '254')
       const accountRef = `Order_${orderId}_${Math.random().toString(36).substring(2,7)}`
+      
+      // Update config for this request if necessary, or pass it to the library
+      // Assuming mpesa-node might need a new instance or a way to override.
+      // If the library doesn't support overriding, we might need to recreate the instance.
+      const currentMpesa = new Mpesa({
+        ...MPESA_CONFIG,
+        shortCode: mpesaShortCode
+      });
+
       // STK Push request
-      const response = await mpesa.lipaNaMpesaOnline(formattedPhoneNo,amount,MPESA_CONFIG.callbackUrl,accountRef,`Payment for order ${orderId}`, "CustomerPayBillOnline");
+      const response = await currentMpesa.lipaNaMpesaOnline(formattedPhoneNo,amount,MPESA_CONFIG.callbackUrl,accountRef,`Payment for order ${orderId}`, "CustomerPayBillOnline");
 
       // Update order status to pending
       await prisma.order.update({

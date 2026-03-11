@@ -16,7 +16,8 @@ router.get('/orders/:id', asyncHandler(async (req, res) => {
 }));
 
 router.get('/orders', asyncHandler(async (req, res) => {
-  const orders = await orderService.getAllOrders();
+  const businessId = req.query.businessId ? Number(req.query.businessId) : undefined;
+  const orders = await orderService.getAllOrders(businessId);
   res.json(orders);
 }));
 

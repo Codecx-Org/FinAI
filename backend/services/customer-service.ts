@@ -2,11 +2,11 @@ import prisma from '../utils/prisma.js';
 import { NotFoundError, InternalServerError } from '../utils/types/errors.js';
 
 export class CustomerService {
-  async createCustomer(data: { name: string; email?: string; phone?: string }) {
+  async createCustomer(data: { name: string; email?: string; phone?: string; businessId: number }) {
     try {
       return await prisma.customer.create({
         data,
-        select: { id: true, name: true, email: true, phone: true, createAt: true },
+        select: { id: true, name: true, email: true, phone: true, createdAt: true, businessId: true },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
@@ -19,7 +19,7 @@ export class CustomerService {
   async getCustomer(id: number) {
     const customer = await prisma.customer.findUnique({
       where: { id },
-      include: { orders: true },
+      include: { orders: true, business: true },
     });
 
     if (!customer) {
@@ -28,18 +28,19 @@ export class CustomerService {
     return customer;
   }
 
-  async getAllCustomers() {
+  async getAllCustomers(businessId?: number) {
     return prisma.customer.findMany({
-      select: { id: true, name: true, email: true, phone: true, createAt: true },
+      where: businessId ? { businessId } : {},
+      select: { id: true, name: true, email: true, phone: true, createdAt: true, businessId: true },
     });
   }
 
-  async updateCustomer(id: number, data: { name?: string; email?: string; phone?: string }) {
+  async updateCustomer(id: number, data: { name?: string; email?: string; phone?: string; businessId?: number }) {
     try {
       return await prisma.customer.update({
         where: { id },
         data,
-        select: { id: true, name: true, email: true, phone: true, createAt: true },
+        select: { id: true, name: true, email: true, phone: true, createdAt: true, businessId: true },
       });
     } catch (error: any) {
       if (error.code === 'P2025') {

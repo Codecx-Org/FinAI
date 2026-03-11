@@ -10,11 +10,12 @@ export class ExpenseService {
     isRecurring?: boolean;
     frequency?: string;
     nextDueDate?: Date;
+    businessId: number;
   }) {
     try {
       const expense = await prisma.expenses.create({
         data,
-        select: { id: true, type: true, amount: true, description: true, isRecurring: true, frequency: true, nextDueDate: true, createdAt: true },
+        select: { id: true, type: true, amount: true, description: true, isRecurring: true, frequency: true, nextDueDate: true, createdAt: true, businessId: true },
       });
       if (!data.isRecurring) {
         await redisService.publish('expense:processed', JSON.stringify({ expenseId: expense.id }));
@@ -26,13 +27,19 @@ export class ExpenseService {
   }
 
   async getExpense(id: number) {
-    const expense = await prisma.expenses.findUnique({ where: { id } });
+    const expense = await prisma.expenses.findUnique({ 
+      where: { id },
+      include: { business: true }
+    });
     if (!expense) throw new NotFoundError('Expense not found');
     return expense;
   }
 
-  async getAllExpenses() {
-    return await prisma.expenses.findMany();
+  async getAllExpenses(businessId?: number) {
+    return await prisma.expenses.findMany({
+      where: businessId ? { businessId } : {},
+      include: { business: true }
+    });
   }
 
   async updateExpense(id: number, data: any) {
@@ -66,6 +73,7 @@ export class ExpenseService {
         amount: exp.amount,
         description: exp.description || "",
         isRecurring: false,
+        businessId: exp.businessId,
       });
       if (exp.frequency === 'monthly') {
         const nextDate = new Date(exp.nextDueDate || new Date());

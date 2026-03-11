@@ -16,7 +16,8 @@ router.get('/products/:id', asyncHandler(async (req, res) => {
 }));
 
 router.get('/products', asyncHandler(async (req, res) => {
-  const products = await productService.getAllProducts();
+  const businessId = req.query.businessId ? Number(req.query.businessId) : undefined;
+  const products = await productService.getAllProducts(businessId);
   res.json(products);
 }));
 

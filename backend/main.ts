@@ -20,6 +20,7 @@ import { startPaymentSubscriber } from './subscribers/payment-subscriber.js';
 
 // Routes
 import customerRoutes from './routes/customer-route.js';
+import businessRoutes from './routes/business-route.js';
 import expenseRoutes from './routes/expenses-route.js';
 import productRoutes from './routes/product-route.js';
 import orderRoutes from './routes/orders-route.js';
@@ -87,6 +88,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // API routes
 app.use('/api', customerRoutes);
+app.use('/api', businessRoutes);
 app.use('/api', expenseRoutes);
 app.use('/api', productRoutes);
 app.use('/api', orderRoutes);

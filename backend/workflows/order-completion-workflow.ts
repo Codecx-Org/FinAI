@@ -55,6 +55,7 @@ if (process.env.NODE_ENV !== 'test') {
               productId: item.productId,
               quantity: item.quantity,
               totalAmount: item.quantity * item.product.price,
+              businessId: order.businessId,
             },
           });
           sales.push(sale);

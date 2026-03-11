@@ -7,15 +7,22 @@ import { OrderItemService } from './orders-items-services.js';
 const orderItemsService = new OrderItemService();
 
 export class OrderService {
-  async createOrder(orderData: { customerId: number; totalAmount: number; status: OrderStatus, orderItems?: Omit<OrderItem, "id" | "orderId">[] }) {
+  async createOrder(orderData: { 
+    customerId: number; 
+    totalAmount: number; 
+    status: OrderStatus; 
+    businessId: number;
+    orderItems?: Omit<OrderItem, "id" | "orderId">[] 
+  }) {
     try {
       const order = await prisma.order.create({
         data: {
           totalAmount: orderData.totalAmount,
           customerId: orderData.customerId,
-          status: orderData.status
+          status: orderData.status,
+          businessId: orderData.businessId
         },
-        include: { orderItems: true, customer: true },
+        include: { orderItems: true, customer: true, business: true },
       });
 
       if (orderData.orderItems) {
@@ -39,7 +46,7 @@ export class OrderService {
   async getOrder(id: number) {
     const order = await prisma.order.findUnique({
       where: { id },
-      include: { orderItems: { include: { product: true } }, customer: true, sales: true },
+      include: { orderItems: { include: { product: true } }, customer: true, sales: true, business: true },
     });
 
     if (!order) {
@@ -49,13 +56,14 @@ export class OrderService {
     return order;
   }
 
-  async getAllOrders() {
+  async getAllOrders(businessId?: number) {
     return await prisma.order.findMany({
-      include: { customer: true },
+      where: businessId ? { businessId } : {},
+      include: { customer: true, business: true },
     });
   }
 
-  async updateOrder(id: number, data: { customerId?: number; totalAmount?: number; status?: OrderStatus }) {
+  async updateOrder(id: number, data: { customerId?: number; totalAmount?: number; status?: OrderStatus; businessId?: number }) {
     const order = await prisma.order.findUnique({ where: { id } });
     if (!order) throw new NotFoundError('Order not found');
 
@@ -63,7 +71,7 @@ export class OrderService {
       const updated = await prisma.order.update({
         where: { id },
         data,
-        include: { orderItems: true, customer: true },
+        include: { orderItems: true, customer: true, business: true },
       });
 
       // Event-driven state transitions
