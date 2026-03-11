@@ -25,9 +25,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node --loader ts-node/esm main.ts",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest --runInBand",
-    "chatbot": "node --loader ts-node/esm chatbot/cli.ts"
+    "start": "node --import tsx/esm main.ts",
+    "chatbot": "node --import tsx/esm chatbot/cli.ts"
   },
   "keywords": [],
   "author": "",

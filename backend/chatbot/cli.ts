@@ -25,8 +25,8 @@ async function main() {
       try {
         const response = await agent.chat(input, chatHistory);
         console.log(`Fin-AI: ${response}`);
-        chatHistory.push(["human", input]);
-        chatHistory.push(["ai", response]);
+        chatHistory.push({ role: "user", content: input });
+        chatHistory.push({ role: "assistant", content: response });
       } catch (error: any) {
         console.error(`Error: ${error.message}`);
       }

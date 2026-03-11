@@ -1,6 +1,6 @@
 import { redisService } from './redis-service.js';
 import prisma from '../utils/prisma.js';
-import { NotFoundError, InternalServerError, BadRequestError } from '../utils/types/errors.js';
+import { NotFoundError, InternalServerError, BadRequestError, AppError } from '../utils/types/errors.js';
 import { OrderStatus, type OrderItem } from '../generated/prisma/client.js';
 import { OrderItemService } from './orders-items-services.js';
 

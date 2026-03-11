@@ -2,10 +2,6 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { ChatOpenAI } from "@langchain/openai";
 import {AIMessage, createAgent, HumanMessage, tool} from 'langchain'
-import {
-  ChatPromptTemplate,
-  MessagesPlaceholder,
-} from "@langchain/core/prompts";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -39,15 +35,13 @@ export class ChatbotAgent {
     // Start the MCP server as a subprocess
     // Using ts-node to run the server file
     const transport = new StdioClientTransport({
-      command: "node",
+      command: "bun",
       args: [
-        "--loader",
-        "ts-node/esm",
+        "run",
         path.join(__dirname, "mcp-server.ts"),
       ],
       env: process.env as any,
-    });
-
+    });    
     await this.client.connect(transport);
 
     // List tools from the MCP server
@@ -69,23 +63,14 @@ export class ChatbotAgent {
     );
     // Initialize the LLM (OpenRouter)
     const llm = new ChatOpenAI({
-      modelName: process.env.CHAT_MODEL || "google/gemini-flash-1.5", // Default model
-      openAIApiKey: process.env.OPENROUTER_API_KEY,
+      model: process.env.CHAT_MODEL || "google/gemini-flash-1.5",
+      apiKey: process.env.OPENROUTER_API_KEY,
+      temperature: 0.5,
       configuration: {
         baseURL: "https://openrouter.ai/api/v1",
       },
-      temperature: 0.5,
     });
 
-    // Define the prompt
-    const prompt = ChatPromptTemplate.fromMessages([
-      ["system", "You are Fin-AI, a business operations assistant. You help manage products, customers, and orders using the provided tools. Be concise and professional."],
-      new MessagesPlaceholder("chat_history"),
-      ["human", "{input}"],
-      new MessagesPlaceholder("agent_scratchpad"),
-    ]);
-
-    
     this.executor = createAgent({
       model: llm,      
       tools: langchainTools,
@@ -97,9 +82,13 @@ export class ChatbotAgent {
   async chat(input: string, chatHistory: any[] = []) {
     const messages = [
       ...chatHistory.map((entry) => {
-        entry.role === "assistant" ? new AIMessage(entry.content) : new HumanMessage(entry.content);
+        return entry.role === "assistant" ? new AIMessage({
+          content: entry.content,
+        }) : new HumanMessage({
+          content: entry.content,
+        });
       }),
-      new HumanMessage(input)
+      new HumanMessage({content: input}),
     ]
     if (!this.executor) {
       throw new Error("Agent not initialized. Call initialize() first.");
@@ -108,6 +97,7 @@ export class ChatbotAgent {
     const response = await this.executor.invoke({
      messages 
     });
+    console.log("Agent response:", response);
     const lastMessage = response.messages[response.messages.length - 1];
     if (!lastMessage) {
       throw new Error("No response from agent.");
