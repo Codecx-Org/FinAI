@@ -85,8 +85,9 @@ model Order {
 }
 
 model Product {
-  id            Int    @id @default(autoincrement())
+  id            Int     @id @default(autoincrement())
   name          String
+  imageUrl      String?
   stockQuantity Int
   price         Float
   buyingPrice   Float

@@ -21,6 +21,11 @@ router.get('/products', asyncHandler(async (req, res) => {
   res.json(products);
 }));
 
+router.post('/products/:id/generate-image', asyncHandler(async (req, res) => {
+  const product = await productService.generateProductImage(Number(req.params.id), req.body);
+  res.json(product);
+}));
+
 router.put('/products/:id', asyncHandler(async (req, res) => {
   const product = await productService.updateProduct(Number(req.params.id), req.body);
   res.json(product);
