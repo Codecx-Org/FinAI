@@ -58,9 +58,16 @@ export class PaymentService {
       // Generate timestamp and password
       const timestamp = new Date().toISOString().replace(/[-T:\.Z]/g, '').slice(0, 14);
 
-
-      const formattedPhoneNo = phone.replace(/^0/, '254')
-      const accountRef = `Order_${orderId}_${Math.random().toString(36).substring(2,7)}`
+      // Ensure phone number is in 254 format (remove +, replace leading 0)
+      let formattedPhoneNo = phone.replace(/\s+/g, '');
+      if (formattedPhoneNo.startsWith('+')) {
+        formattedPhoneNo = formattedPhoneNo.substring(1);
+      }
+      if (formattedPhoneNo.startsWith('0')) {
+        formattedPhoneNo = '254' + formattedPhoneNo.substring(1);
+      }
+      
+      const accountRef = `Order_${orderId}`;
       
       // Update config for this request if necessary, or pass it to the library
       // Assuming mpesa-node might need a new instance or a way to override.
@@ -71,7 +78,18 @@ export class PaymentService {
       });
 
       // STK Push request
-      const response = await currentMpesa.lipaNaMpesaOnline(formattedPhoneNo,amount,MPESA_CONFIG.callbackUrl,accountRef,`Payment for order ${orderId}`, "CustomerPayBillOnline");
+      // Note: TransactionType depends on shortcode type (Paybill vs BuyGoods).
+      // Defaulting to CustomerPayBillOnline for Paybill. For BuyGoods use CustomerBuyGoodsOnline.
+      const transactionType = "CustomerPayBillOnline"; 
+      
+      const response = await currentMpesa.lipaNaMpesaOnline(
+        formattedPhoneNo,
+        amount,
+        MPESA_CONFIG.callbackUrl,
+        accountRef,
+        `Payment for order ${orderId}`,
+        transactionType
+      );
 
       // Update order status to pending
       await prisma.order.update({

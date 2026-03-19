@@ -5,6 +5,7 @@
 
 import express from 'express';
 import { PaymentService } from '../services/payment-service.js';
+import prisma from '../utils/prisma.js';
 import winston from 'winston';
 
 const router = express.Router();
@@ -76,8 +77,6 @@ router.get('/payments/:orderId/status', async (req: express.Request, res: expres
     logger.info(`Fetching payment status for order ${orderId}`);
 
     // Fetch order status (since PaymentService updates order status)
-    const { PrismaClient } = await import('@prisma/client');
-    const prisma = new PrismaClient();
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       select: { id: true, status: true },

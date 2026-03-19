@@ -6,6 +6,7 @@
 import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import prisma from './utils/prisma.js';
 import winston from 'winston';
@@ -29,6 +30,7 @@ import orderItemRoutes from './routes/order-items-route.js';
 import webhookRoutes from './routes/payment-route.js';
 import whatsAppRoutes from './routes/whatsapp-route.js'
 import chatbotRoutes from './routes/chatbot-route.js';
+import contentGenerationRoutes from './routes/content-generation-route.js';
 
 // Load environment variables
 dotenv.config();
@@ -73,6 +75,7 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
 
 // Express app setup
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.raw({ type: 'application/json' })); // For MPESA webhook
 
@@ -96,6 +99,7 @@ app.use('/api', salesRoutes);
 app.use('/api', orderItemRoutes);
 app.use('/api', whatsAppRoutes)
 app.use('/api', chatbotRoutes);
+app.use('/api', contentGenerationRoutes);
 app.use('/api', webhookRoutes);
 
 // Health check endpoint
