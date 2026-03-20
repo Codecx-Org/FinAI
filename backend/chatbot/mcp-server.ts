@@ -9,12 +9,14 @@ import { CustomerService } from "../services/customer-service.js";
 import { OrderService } from "../services/orders-services.js";
 import { SalesService } from "../services/sales-service.js";
 import { PaymentService } from "../services/payment-service.js";
+import { ExpenseService } from "../services/expense-service.js";
 
 const productService = new ProductService();
 const customerService = new CustomerService();
 const orderService = new OrderService();
 const salesService = new SalesService();
 const paymentService = new PaymentService();
+const expensesService = new ExpenseService();
 
 const server = new Server(
   {
@@ -41,7 +43,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         description: "List all products in the inventory",
         inputSchema: {
           type: "object",
-          properties: {},
+          properties: {
+            businessId: { type: "number" },
+          },
         },
       },
       {
@@ -65,8 +69,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             stockQuantity: { type: "number" },
             price: { type: "number" },
             buyingPrice: { type: "number" },
+            businessId: { type: "number" },
           },
-          required: ["name", "stockQuantity", "price", "buyingPrice"],
+          required: ["name", "stockQuantity", "price", "buyingPrice", "businessId"],
         },
       },
       // Customer Tools
@@ -75,7 +80,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         description: "List all customers",
         inputSchema: {
           type: "object",
-          properties: {},
+          properties: {
+            businessId: { type: "number" },
+          },
         },
       },
       {
@@ -87,8 +94,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             name: { type: "string" },
             email: { type: "string" },
             phone: { type: "string" },
+            businessId: { type: "number" },
           },
-          required: ["name"],
+          required: ["name", "businessId"],
         },
       },
       // Order Tools
@@ -97,7 +105,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         description: "List all orders",
         inputSchema: {
           type: "object",
-          properties: {},
+          properties: {
+            businessId: { type: "number" },
+          },
         },
       },
       {
@@ -119,6 +129,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             customerId: { type: "number" },
             totalAmount: { type: "number" },
+            businessId: { type: "number" },
             status: { type: "string", enum: ["created", "pending", "paid", "shipped", "delivered", "cancelled", "failed"] },
             orderItems: {
               type: "array",
@@ -132,7 +143,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               },
             },
           },
-          required: ["customerId", "totalAmount", "status"],
+          required: ["customerId", "totalAmount", "status", "businessId"],
         },
       },
       // Sales Tools
@@ -141,7 +152,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         description: "List all sales records",
         inputSchema: {
           type: "object",
-          properties: {},
+          properties: {
+            businessId: { type: "number" },
+          },
         },
       },
       {
@@ -154,8 +167,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             productId: { type: "number" },
             quantity: { type: "number" },
             totalAmount: { type: "number" },
+            businessId: { type: "number" },
           },
-          required: ["orderId", "productId", "quantity", "totalAmount"],
+          required: ["orderId", "productId", "quantity", "totalAmount", "businessId"],
         },
       },
       // Payment Tools
@@ -183,6 +197,45 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ["orderId"],
         },
       },
+      // Expense Tools
+      {
+        name: "list_expenses",
+        description: "List all expenses for a business",
+        inputSchema: {
+          type: "object",
+          properties: {
+            businessId: { type: "number" },
+          },
+        },
+      },
+      {
+        name: "get_expense",
+        description: "Get details of a specific expense by ID",
+        inputSchema: {
+          type: "object",
+          properties: {
+            id: { type: "number" },
+          },
+          required: ["id"],
+        },
+      },
+      {
+        name: "create_expense",
+        description: "Create a new expense record",
+        inputSchema: {
+          type: "object",
+          properties: {
+            type: { type: "string", description: "Type of expense (e.g. Rent, Salaries, Stock Purchase)" },
+            amount: { type: "number" },
+            businessId: { type: "number" },
+            description: { type: "string" },
+            isRecurring: { type: "boolean" },
+            frequency: { type: "string", enum: ["monthly", "quarterly"] },
+            nextDueDate: { type: "string", description: "ISO date string for the next due date if recurring" },
+          },
+          required: ["type", "amount", "businessId"],
+        },
+      },
     ],
   };
 });
@@ -196,23 +249,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     switch (name) {
       case "list_products":
-        return { content: [{ type: "text", text: JSON.stringify(await productService.getAllProducts()) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await productService.getAllProducts(args?.businessId ? Number(args.businessId) : undefined)) }] };
       case "get_product":
         return { content: [{ type: "text", text: JSON.stringify(await productService.getProduct(Number(args?.id))) }] };
       case "create_product":
         return { content: [{ type: "text", text: JSON.stringify(await productService.createProduct(args as any)) }] };
       case "list_customers":
-        return { content: [{ type: "text", text: JSON.stringify(await customerService.getAllCustomers()) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await customerService.getAllCustomers(args?.businessId ? Number(args.businessId) : undefined)) }] };
       case "create_customer":
         return { content: [{ type: "text", text: JSON.stringify(await customerService.createCustomer(args as any)) }] };
       case "list_orders":
-        return { content: [{ type: "text", text: JSON.stringify(await orderService.getAllOrders()) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await orderService.getAllOrders(args?.businessId ? Number(args.businessId) : undefined)) }] };
       case "get_order":
         return { content: [{ type: "text", text: JSON.stringify(await orderService.getOrder(Number(args?.id))) }] };
       case "create_order":
         return { content: [{ type: "text", text: JSON.stringify(await orderService.createOrder(args as any)) }] };
       case "list_sales":
-        return { content: [{ type: "text", text: JSON.stringify(await salesService.getAllSales()) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await salesService.getAllSales(args?.businessId ? Number(args.businessId) : undefined)) }] };
       case "create_sale":
         return { content: [{ type: "text", text: JSON.stringify(await salesService.createSale(args as any)) }] };
       case "initiate_payment":
@@ -220,6 +273,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "check_payment_status":
         const order = await orderService.getOrder(Number(args?.orderId));
         return { content: [{ type: "text", text: JSON.stringify({ orderId: order.id, status: order.status }) }] };
+      case "list_expenses":
+        return { content: [{ type: "text", text: JSON.stringify(await expensesService.getAllExpenses(args?.businessId ? Number(args.businessId) : undefined)) }] };
+      case "get_expense":
+        return { content: [{ type: "text", text: JSON.stringify(await expensesService.getExpense(Number(args?.id))) }] };
+      case "create_expense":
+        const expenseData = {
+          ...args,
+          nextDueDate: args?.nextDueDate ? new Date(String(args.nextDueDate)) : undefined,
+          businessId: Number(args?.businessId),
+          amount: Number(args?.amount),
+        };
+        return { content: [{ type: "text", text: JSON.stringify(await expensesService.createExpense(expenseData as any)) }] };
       default:
         throw new Error(`Unknown tool: ${name}`);
     }

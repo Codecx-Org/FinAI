@@ -1,5 +1,6 @@
 import prisma from '../utils/prisma.js';
 import { BadRequestError, NotFoundError } from '../utils/types/errors.js';
+import bcrypt from 'bcryptjs';
 
 export class BusinessService {
   async createBusiness(data: {
@@ -7,6 +8,7 @@ export class BusinessService {
     mpesaShortcode?: string;
     ownerName: string;
     ownerEmail: string;
+    password: string;
     metadata?: any;
   }) {
     const existing = await prisma.business.findUnique({
@@ -26,8 +28,13 @@ export class BusinessService {
       }
     }
 
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
     return prisma.business.create({
-      data,
+      data: {
+        ...data,
+        password: hashedPassword,
+      },
     });
   }
 
@@ -43,10 +50,15 @@ export class BusinessService {
     return business;
   }
 
+  async getBusinessByEmail(email: string) {
+    return prisma.business.findUnique({
+      where: { ownerEmail: email },
+    });
+  }
+
   async getAllBusinesses() {
     return prisma.business.findMany();
   }
-
   async updateBusiness(id: number, data: any) {
     const business = await prisma.business.findUnique({
       where: { id },

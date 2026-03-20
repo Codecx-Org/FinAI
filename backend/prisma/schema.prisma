@@ -29,6 +29,9 @@ model Business {
   mpesaShortcode String?    @unique
   ownerName      String
   ownerEmail     String     @unique
+  password       String     @default("owner@business")
+  businessType   String?
+  yearsInBusiness String?
   metadata       Json?
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
@@ -98,6 +101,8 @@ model Product {
   expenses      Expenses[]
   orderItems    OrderItem[]
   sales         Sales[]
+
+  createdAt   DateTime    @default(now())
 }
 
 model Sales {

@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Smartphone, Lock, User, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Lock, User, ArrowRight, Mail } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 
 interface LoginProps {
-  onLogin: (credentials: { phone: string; password: string }) => void;
+  onLogin: (credentials: { email: string; password: string }) => void;
   onSwitchToRegister: () => void;
 }
 
 export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
   const [formData, setFormData] = useState({
-    phone: '',
+    email: '',
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -22,10 +22,10 @@ export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.phone) {
-      newErrors.phone = 'Phone number is required';
-    } else if (!/^\+254\d{9}$/.test(formData.phone)) {
-      newErrors.phone = 'Please enter a valid Kenyan phone number (+254XXXXXXXXX)';
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
     }
 
     if (!formData.password) {
@@ -45,33 +45,13 @@ export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
 
     setIsLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Mock authentication - in real app this would call your auth API
-    onLogin(formData);
-    
-    setIsLoading(false);
-  };
-
-  const formatPhoneNumber = (value: string) => {
-    // Remove all non-digits
-    const digits = value.replace(/\D/g, '');
-    
-    // If it starts with 254, keep it
-    if (digits.startsWith('254')) {
-      return '+' + digits;
+    try {
+      await onLogin(formData);
+    } catch (error) {
+      setErrors({ submit: 'Login failed. Please check your credentials.' });
+    } finally {
+      setIsLoading(false);
     }
-    // If it starts with 7 or 1, prepend 254
-    else if (digits.startsWith('7') || digits.startsWith('1')) {
-      return '+254' + digits;
-    }
-    // If it starts with 0, replace with 254
-    else if (digits.startsWith('0')) {
-      return '+254' + digits.substring(1);
-    }
-    
-    return '+254' + digits;
   };
 
   return (
@@ -95,29 +75,32 @@ export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Phone Number */}
+              {errors.submit && (
+                <p className="text-sm text-red-600 bg-red-50 p-2 rounded">{errors.submit}</p>
+              )}
+              
+              {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="email">Email Address</Label>
                 <div className="relative">
-                  <Smartphone className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                  <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                   <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="+254712345678"
-                    value={formData.phone}
+                    id="email"
+                    type="email"
+                    placeholder="owner@business.com"
+                    value={formData.email}
                     onChange={(e) => {
-                      const formatted = formatPhoneNumber(e.target.value);
-                      setFormData(prev => ({ ...prev, phone: formatted }));
-                      if (errors.phone) {
-                        setErrors(prev => ({ ...prev, phone: '' }));
+                      setFormData(prev => ({ ...prev, email: e.target.value }));
+                      if (errors.email) {
+                        setErrors(prev => ({ ...prev, email: '' }));
                       }
                     }}
                     className="pl-10"
                     disabled={isLoading}
                   />
                 </div>
-                {errors.phone && (
-                  <p className="text-xs text-red-600">{errors.phone}</p>
+                {errors.email && (
+                  <p className="text-xs text-red-600">{errors.email}</p>
                 )}
               </div>
 
@@ -196,7 +179,7 @@ export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
           <CardContent className="p-4">
             <h4 className="font-medium text-blue-900 mb-2">Demo Credentials</h4>
             <div className="space-y-1 text-sm text-blue-800">
-              <p>Phone: +254712345678</p>
+              <p>Email: owner@demo.com</p>
               <p>Password: demo123</p>
             </div>
           </CardContent>

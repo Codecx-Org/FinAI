@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Smartphone, Lock, User, Building, ArrowRight, Calendar } from 'lucide-react';
+import { Eye, EyeOff, Lock, User, Building, ArrowRight, Mail } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -8,25 +8,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 
 interface RegisterProps {
   onRegister: (userData: {
-    firstName: string;
-    lastName: string;
-    phone: string;
+    ownerName: string;
+    ownerEmail: string;
     password: string;
-    businessName: string;
-    businessType: string;
-    yearsInBusiness: string;
+    name: string;
+    businessType?: string;
+    yearsInBusiness?: string;
   }) => void;
   onSwitchToLogin: () => void;
 }
 
 export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    phone: '',
+    ownerName: '',
+    ownerEmail: '',
     password: '',
     confirmPassword: '',
-    businessName: '',
+    name: '',
     businessType: '',
     yearsInBusiness: ''
   });
@@ -38,18 +36,14 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
+    if (!formData.ownerName.trim()) {
+      newErrors.ownerName = 'Owner name is required';
     }
 
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    }
-
-    if (!formData.phone) {
-      newErrors.phone = 'Phone number is required';
-    } else if (!/^\+254\d{9}$/.test(formData.phone)) {
-      newErrors.phone = 'Please enter a valid Kenyan phone number (+254XXXXXXXXX)';
+    if (!formData.ownerEmail) {
+      newErrors.ownerEmail = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.ownerEmail)) {
+      newErrors.ownerEmail = 'Please enter a valid email address';
     }
 
     if (!formData.password) {
@@ -62,16 +56,8 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
-    if (!formData.businessName.trim()) {
-      newErrors.businessName = 'Business name is required';
-    }
-
-    if (!formData.businessType) {
-      newErrors.businessType = 'Business type is required';
-    }
-
-    if (!formData.yearsInBusiness) {
-      newErrors.yearsInBusiness = 'Years in business is required';
+    if (!formData.name.trim()) {
+      newErrors.name = 'Business name is required';
     }
 
     setErrors(newErrors);
@@ -85,34 +71,14 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
 
     setIsLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Mock registration - in real app this would call your auth API
-    const { confirmPassword, ...registrationData } = formData;
-    onRegister(registrationData);
-    
-    setIsLoading(false);
-  };
-
-  const formatPhoneNumber = (value: string) => {
-    // Remove all non-digits
-    const digits = value.replace(/\D/g, '');
-    
-    // If it starts with 254, keep it
-    if (digits.startsWith('254')) {
-      return '+' + digits;
+    try {
+      const { confirmPassword, ...registrationData } = formData;
+      await onRegister(registrationData);
+    } catch (error) {
+      setErrors({ submit: 'Registration failed. Please try again.' });
+    } finally {
+      setIsLoading(false);
     }
-    // If it starts with 7 or 1, prepend 254
-    else if (digits.startsWith('7') || digits.startsWith('1')) {
-      return '+254' + digits;
-    }
-    // If it starts with 0, replace with 254
-    else if (digits.startsWith('0')) {
-      return '+254' + digits.substring(1);
-    }
-    
-    return '+254' + digits;
   };
 
   const clearFieldError = (field: string) => {
@@ -142,66 +108,50 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {errors.submit && (
+                <p className="text-sm text-red-600 bg-red-50 p-2 rounded">{errors.submit}</p>
+              )}
+              
               {/* Personal Information */}
               <div className="space-y-3">
                 <h4 className="font-medium text-sm">Personal Information</h4>
                 
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input
-                      id="firstName"
-                      placeholder="John"
-                      value={formData.firstName}
-                      onChange={(e) => {
-                        setFormData(prev => ({ ...prev, firstName: e.target.value }));
-                        clearFieldError('firstName');
-                      }}
-                      disabled={isLoading}
-                    />
-                    {errors.firstName && (
-                      <p className="text-xs text-red-600">{errors.firstName}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input
-                      id="lastName"
-                      placeholder="Doe"
-                      value={formData.lastName}
-                      onChange={(e) => {
-                        setFormData(prev => ({ ...prev, lastName: e.target.value }));
-                        clearFieldError('lastName');
-                      }}
-                      disabled={isLoading}
-                    />
-                    {errors.lastName && (
-                      <p className="text-xs text-red-600">{errors.lastName}</p>
-                    )}
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ownerName">Owner Full Name</Label>
+                  <Input
+                    id="ownerName"
+                    placeholder="John Doe"
+                    value={formData.ownerName}
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, ownerName: e.target.value }));
+                      clearFieldError('ownerName');
+                    }}
+                    disabled={isLoading}
+                  />
+                  {errors.ownerName && (
+                    <p className="text-xs text-red-600">{errors.ownerName}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
+                  <Label htmlFor="ownerEmail">Email Address</Label>
                   <div className="relative">
-                    <Smartphone className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                    <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                     <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="+254712345678"
-                      value={formData.phone}
+                      id="ownerEmail"
+                      type="email"
+                      placeholder="owner@business.com"
+                      value={formData.ownerEmail}
                       onChange={(e) => {
-                        const formatted = formatPhoneNumber(e.target.value);
-                        setFormData(prev => ({ ...prev, phone: formatted }));
-                        clearFieldError('phone');
+                        setFormData(prev => ({ ...prev, ownerEmail: e.target.value }));
+                        clearFieldError('ownerEmail');
                       }}
                       className="pl-10"
                       disabled={isLoading}
                     />
                   </div>
-                  {errors.phone && (
-                    <p className="text-xs text-red-600">{errors.phone}</p>
+                  {errors.ownerEmail && (
+                    <p className="text-xs text-red-600">{errors.ownerEmail}</p>
                   )}
                 </div>
               </div>
@@ -284,23 +234,23 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
                 <h4 className="font-medium text-sm">Business Information</h4>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="businessName">Business Name</Label>
+                  <Label htmlFor="name">Business Name</Label>
                   <div className="relative">
                     <Building className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                     <Input
-                      id="businessName"
+                      id="name"
                       placeholder="Your business name"
-                      value={formData.businessName}
+                      value={formData.name}
                       onChange={(e) => {
-                        setFormData(prev => ({ ...prev, businessName: e.target.value }));
-                        clearFieldError('businessName');
+                        setFormData(prev => ({ ...prev, name: e.target.value }));
+                        clearFieldError('name');
                       }}
                       className="pl-10"
                       disabled={isLoading}
                     />
                   </div>
-                  {errors.businessName && (
-                    <p className="text-xs text-red-600">{errors.businessName}</p>
+                  {errors.name && (
+                    <p className="text-xs text-red-600">{errors.name}</p>
                   )}
                 </div>
 
@@ -310,7 +260,6 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
                     value={formData.businessType} 
                     onValueChange={(value) => {
                       setFormData(prev => ({ ...prev, businessType: value }));
-                      clearFieldError('businessType');
                     }}
                     disabled={isLoading}
                   >
@@ -330,9 +279,6 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
                       <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
-                  {errors.businessType && (
-                    <p className="text-xs text-red-600">{errors.businessType}</p>
-                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -341,7 +287,6 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
                     value={formData.yearsInBusiness} 
                     onValueChange={(value) => {
                       setFormData(prev => ({ ...prev, yearsInBusiness: value }));
-                      clearFieldError('yearsInBusiness');
                     }}
                     disabled={isLoading}
                   >
@@ -356,9 +301,6 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
                       <SelectItem value="10+">More than 10 years</SelectItem>
                     </SelectContent>
                   </Select>
-                  {errors.yearsInBusiness && (
-                    <p className="text-xs text-red-600">{errors.yearsInBusiness}</p>
-                  )}
                 </div>
               </div>
 

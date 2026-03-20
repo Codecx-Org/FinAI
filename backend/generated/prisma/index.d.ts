@@ -1670,6 +1670,9 @@ export namespace Prisma {
     mpesaShortcode: string | null
     ownerName: string | null
     ownerEmail: string | null
+    password: string | null
+    businessType: string | null
+    yearsInBusiness: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1680,6 +1683,9 @@ export namespace Prisma {
     mpesaShortcode: string | null
     ownerName: string | null
     ownerEmail: string | null
+    password: string | null
+    businessType: string | null
+    yearsInBusiness: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1690,6 +1696,9 @@ export namespace Prisma {
     mpesaShortcode: number
     ownerName: number
     ownerEmail: number
+    password: number
+    businessType: number
+    yearsInBusiness: number
     metadata: number
     createdAt: number
     updatedAt: number
@@ -1711,6 +1720,9 @@ export namespace Prisma {
     mpesaShortcode?: true
     ownerName?: true
     ownerEmail?: true
+    password?: true
+    businessType?: true
+    yearsInBusiness?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1721,6 +1733,9 @@ export namespace Prisma {
     mpesaShortcode?: true
     ownerName?: true
     ownerEmail?: true
+    password?: true
+    businessType?: true
+    yearsInBusiness?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1731,6 +1746,9 @@ export namespace Prisma {
     mpesaShortcode?: true
     ownerName?: true
     ownerEmail?: true
+    password?: true
+    businessType?: true
+    yearsInBusiness?: true
     metadata?: true
     createdAt?: true
     updatedAt?: true
@@ -1829,6 +1847,9 @@ export namespace Prisma {
     mpesaShortcode: string | null
     ownerName: string
     ownerEmail: string
+    password: string
+    businessType: string | null
+    yearsInBusiness: string | null
     metadata: JsonValue | null
     createdAt: Date
     updatedAt: Date
@@ -1859,6 +1880,9 @@ export namespace Prisma {
     mpesaShortcode?: boolean
     ownerName?: boolean
     ownerEmail?: boolean
+    password?: boolean
+    businessType?: boolean
+    yearsInBusiness?: boolean
     metadata?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -1876,6 +1900,9 @@ export namespace Prisma {
     mpesaShortcode?: boolean
     ownerName?: boolean
     ownerEmail?: boolean
+    password?: boolean
+    businessType?: boolean
+    yearsInBusiness?: boolean
     metadata?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -1887,6 +1914,9 @@ export namespace Prisma {
     mpesaShortcode?: boolean
     ownerName?: boolean
     ownerEmail?: boolean
+    password?: boolean
+    businessType?: boolean
+    yearsInBusiness?: boolean
     metadata?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -1898,12 +1928,15 @@ export namespace Prisma {
     mpesaShortcode?: boolean
     ownerName?: boolean
     ownerEmail?: boolean
+    password?: boolean
+    businessType?: boolean
+    yearsInBusiness?: boolean
     metadata?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type BusinessOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "mpesaShortcode" | "ownerName" | "ownerEmail" | "metadata" | "createdAt" | "updatedAt", ExtArgs["result"]["business"]>
+  export type BusinessOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "mpesaShortcode" | "ownerName" | "ownerEmail" | "password" | "businessType" | "yearsInBusiness" | "metadata" | "createdAt" | "updatedAt", ExtArgs["result"]["business"]>
   export type BusinessInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customers?: boolean | Business$customersArgs<ExtArgs>
     orders?: boolean | Business$ordersArgs<ExtArgs>
@@ -1930,6 +1963,9 @@ export namespace Prisma {
       mpesaShortcode: string | null
       ownerName: string
       ownerEmail: string
+      password: string
+      businessType: string | null
+      yearsInBusiness: string | null
       metadata: Prisma.JsonValue | null
       createdAt: Date
       updatedAt: Date
@@ -2366,6 +2402,9 @@ export namespace Prisma {
     readonly mpesaShortcode: FieldRef<"Business", 'String'>
     readonly ownerName: FieldRef<"Business", 'String'>
     readonly ownerEmail: FieldRef<"Business", 'String'>
+    readonly password: FieldRef<"Business", 'String'>
+    readonly businessType: FieldRef<"Business", 'String'>
+    readonly yearsInBusiness: FieldRef<"Business", 'String'>
     readonly metadata: FieldRef<"Business", 'Json'>
     readonly createdAt: FieldRef<"Business", 'DateTime'>
     readonly updatedAt: FieldRef<"Business", 'DateTime'>
@@ -6454,6 +6493,7 @@ export namespace Prisma {
     price: number | null
     buyingPrice: number | null
     businessId: number | null
+    createdAt: Date | null
   }
 
   export type ProductMaxAggregateOutputType = {
@@ -6464,6 +6504,7 @@ export namespace Prisma {
     price: number | null
     buyingPrice: number | null
     businessId: number | null
+    createdAt: Date | null
   }
 
   export type ProductCountAggregateOutputType = {
@@ -6474,6 +6515,7 @@ export namespace Prisma {
     price: number
     buyingPrice: number
     businessId: number
+    createdAt: number
     _all: number
   }
 
@@ -6502,6 +6544,7 @@ export namespace Prisma {
     price?: true
     buyingPrice?: true
     businessId?: true
+    createdAt?: true
   }
 
   export type ProductMaxAggregateInputType = {
@@ -6512,6 +6555,7 @@ export namespace Prisma {
     price?: true
     buyingPrice?: true
     businessId?: true
+    createdAt?: true
   }
 
   export type ProductCountAggregateInputType = {
@@ -6522,6 +6566,7 @@ export namespace Prisma {
     price?: true
     buyingPrice?: true
     businessId?: true
+    createdAt?: true
     _all?: true
   }
 
@@ -6619,6 +6664,7 @@ export namespace Prisma {
     price: number
     buyingPrice: number
     businessId: number
+    createdAt: Date
     _count: ProductCountAggregateOutputType | null
     _avg: ProductAvgAggregateOutputType | null
     _sum: ProductSumAggregateOutputType | null
@@ -6648,6 +6694,7 @@ export namespace Prisma {
     price?: boolean
     buyingPrice?: boolean
     businessId?: boolean
+    createdAt?: boolean
     business?: boolean | BusinessDefaultArgs<ExtArgs>
     expenses?: boolean | Product$expensesArgs<ExtArgs>
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
@@ -6663,6 +6710,7 @@ export namespace Prisma {
     price?: boolean
     buyingPrice?: boolean
     businessId?: boolean
+    createdAt?: boolean
     business?: boolean | BusinessDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
@@ -6674,6 +6722,7 @@ export namespace Prisma {
     price?: boolean
     buyingPrice?: boolean
     businessId?: boolean
+    createdAt?: boolean
     business?: boolean | BusinessDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
@@ -6685,9 +6734,10 @@ export namespace Prisma {
     price?: boolean
     buyingPrice?: boolean
     businessId?: boolean
+    createdAt?: boolean
   }
 
-  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "imageUrl" | "stockQuantity" | "price" | "buyingPrice" | "businessId", ExtArgs["result"]["product"]>
+  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "imageUrl" | "stockQuantity" | "price" | "buyingPrice" | "businessId" | "createdAt", ExtArgs["result"]["product"]>
   export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     business?: boolean | BusinessDefaultArgs<ExtArgs>
     expenses?: boolean | Product$expensesArgs<ExtArgs>
@@ -6718,6 +6768,7 @@ export namespace Prisma {
       price: number
       buyingPrice: number
       businessId: number
+      createdAt: Date
     }, ExtArgs["result"]["product"]>
     composites: {}
   }
@@ -7152,6 +7203,7 @@ export namespace Prisma {
     readonly price: FieldRef<"Product", 'Float'>
     readonly buyingPrice: FieldRef<"Product", 'Float'>
     readonly businessId: FieldRef<"Product", 'Int'>
+    readonly createdAt: FieldRef<"Product", 'DateTime'>
   }
     
 
@@ -9911,6 +9963,9 @@ export namespace Prisma {
     mpesaShortcode: 'mpesaShortcode',
     ownerName: 'ownerName',
     ownerEmail: 'ownerEmail',
+    password: 'password',
+    businessType: 'businessType',
+    yearsInBusiness: 'yearsInBusiness',
     metadata: 'metadata',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -9965,7 +10020,8 @@ export namespace Prisma {
     stockQuantity: 'stockQuantity',
     price: 'price',
     buyingPrice: 'buyingPrice',
-    businessId: 'businessId'
+    businessId: 'businessId',
+    createdAt: 'createdAt'
   };
 
   export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
@@ -10143,6 +10199,9 @@ export namespace Prisma {
     mpesaShortcode?: StringNullableFilter<"Business"> | string | null
     ownerName?: StringFilter<"Business"> | string
     ownerEmail?: StringFilter<"Business"> | string
+    password?: StringFilter<"Business"> | string
+    businessType?: StringNullableFilter<"Business"> | string | null
+    yearsInBusiness?: StringNullableFilter<"Business"> | string | null
     metadata?: JsonNullableFilter<"Business">
     createdAt?: DateTimeFilter<"Business"> | Date | string
     updatedAt?: DateTimeFilter<"Business"> | Date | string
@@ -10159,6 +10218,9 @@ export namespace Prisma {
     mpesaShortcode?: SortOrderInput | SortOrder
     ownerName?: SortOrder
     ownerEmail?: SortOrder
+    password?: SortOrder
+    businessType?: SortOrderInput | SortOrder
+    yearsInBusiness?: SortOrderInput | SortOrder
     metadata?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10178,6 +10240,9 @@ export namespace Prisma {
     NOT?: BusinessWhereInput | BusinessWhereInput[]
     name?: StringFilter<"Business"> | string
     ownerName?: StringFilter<"Business"> | string
+    password?: StringFilter<"Business"> | string
+    businessType?: StringNullableFilter<"Business"> | string | null
+    yearsInBusiness?: StringNullableFilter<"Business"> | string | null
     metadata?: JsonNullableFilter<"Business">
     createdAt?: DateTimeFilter<"Business"> | Date | string
     updatedAt?: DateTimeFilter<"Business"> | Date | string
@@ -10194,6 +10259,9 @@ export namespace Prisma {
     mpesaShortcode?: SortOrderInput | SortOrder
     ownerName?: SortOrder
     ownerEmail?: SortOrder
+    password?: SortOrder
+    businessType?: SortOrderInput | SortOrder
+    yearsInBusiness?: SortOrderInput | SortOrder
     metadata?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10213,6 +10281,9 @@ export namespace Prisma {
     mpesaShortcode?: StringNullableWithAggregatesFilter<"Business"> | string | null
     ownerName?: StringWithAggregatesFilter<"Business"> | string
     ownerEmail?: StringWithAggregatesFilter<"Business"> | string
+    password?: StringWithAggregatesFilter<"Business"> | string
+    businessType?: StringNullableWithAggregatesFilter<"Business"> | string | null
+    yearsInBusiness?: StringNullableWithAggregatesFilter<"Business"> | string | null
     metadata?: JsonNullableWithAggregatesFilter<"Business">
     createdAt?: DateTimeWithAggregatesFilter<"Business"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Business"> | Date | string
@@ -10445,6 +10516,7 @@ export namespace Prisma {
     price?: FloatFilter<"Product"> | number
     buyingPrice?: FloatFilter<"Product"> | number
     businessId?: IntFilter<"Product"> | number
+    createdAt?: DateTimeFilter<"Product"> | Date | string
     business?: XOR<BusinessScalarRelationFilter, BusinessWhereInput>
     expenses?: ExpensesListRelationFilter
     orderItems?: OrderItemListRelationFilter
@@ -10459,6 +10531,7 @@ export namespace Prisma {
     price?: SortOrder
     buyingPrice?: SortOrder
     businessId?: SortOrder
+    createdAt?: SortOrder
     business?: BusinessOrderByWithRelationInput
     expenses?: ExpensesOrderByRelationAggregateInput
     orderItems?: OrderItemOrderByRelationAggregateInput
@@ -10476,6 +10549,7 @@ export namespace Prisma {
     price?: FloatFilter<"Product"> | number
     buyingPrice?: FloatFilter<"Product"> | number
     businessId?: IntFilter<"Product"> | number
+    createdAt?: DateTimeFilter<"Product"> | Date | string
     business?: XOR<BusinessScalarRelationFilter, BusinessWhereInput>
     expenses?: ExpensesListRelationFilter
     orderItems?: OrderItemListRelationFilter
@@ -10490,6 +10564,7 @@ export namespace Prisma {
     price?: SortOrder
     buyingPrice?: SortOrder
     businessId?: SortOrder
+    createdAt?: SortOrder
     _count?: ProductCountOrderByAggregateInput
     _avg?: ProductAvgOrderByAggregateInput
     _max?: ProductMaxOrderByAggregateInput
@@ -10508,6 +10583,7 @@ export namespace Prisma {
     price?: FloatWithAggregatesFilter<"Product"> | number
     buyingPrice?: FloatWithAggregatesFilter<"Product"> | number
     businessId?: IntWithAggregatesFilter<"Product"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
   }
 
   export type SalesWhereInput = {
@@ -10643,6 +10719,9 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    password?: string
+    businessType?: string | null
+    yearsInBusiness?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10659,6 +10738,9 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    password?: string
+    businessType?: string | null
+    yearsInBusiness?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10674,6 +10756,9 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10690,6 +10775,9 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10706,6 +10794,9 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    password?: string
+    businessType?: string | null
+    yearsInBusiness?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10716,6 +10807,9 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10727,6 +10821,9 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10951,6 +11048,7 @@ export namespace Prisma {
     stockQuantity: number
     price: number
     buyingPrice: number
+    createdAt?: Date | string
     business: BusinessCreateNestedOneWithoutProductsInput
     expenses?: ExpensesCreateNestedManyWithoutProductInput
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
@@ -10965,6 +11063,7 @@ export namespace Prisma {
     price: number
     buyingPrice: number
     businessId: number
+    createdAt?: Date | string
     expenses?: ExpensesUncheckedCreateNestedManyWithoutProductInput
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
     sales?: SalesUncheckedCreateNestedManyWithoutProductInput
@@ -10976,6 +11075,7 @@ export namespace Prisma {
     stockQuantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     buyingPrice?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     business?: BusinessUpdateOneRequiredWithoutProductsNestedInput
     expenses?: ExpensesUpdateManyWithoutProductNestedInput
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
@@ -10990,6 +11090,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     buyingPrice?: FloatFieldUpdateOperationsInput | number
     businessId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expenses?: ExpensesUncheckedUpdateManyWithoutProductNestedInput
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
     sales?: SalesUncheckedUpdateManyWithoutProductNestedInput
@@ -11003,6 +11104,7 @@ export namespace Prisma {
     price: number
     buyingPrice: number
     businessId: number
+    createdAt?: Date | string
   }
 
   export type ProductUpdateManyMutationInput = {
@@ -11011,6 +11113,7 @@ export namespace Prisma {
     stockQuantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     buyingPrice?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProductUncheckedUpdateManyInput = {
@@ -11021,6 +11124,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     buyingPrice?: FloatFieldUpdateOperationsInput | number
     businessId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SalesCreateInput = {
@@ -11267,6 +11371,9 @@ export namespace Prisma {
     mpesaShortcode?: SortOrder
     ownerName?: SortOrder
     ownerEmail?: SortOrder
+    password?: SortOrder
+    businessType?: SortOrder
+    yearsInBusiness?: SortOrder
     metadata?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11282,6 +11389,9 @@ export namespace Prisma {
     mpesaShortcode?: SortOrder
     ownerName?: SortOrder
     ownerEmail?: SortOrder
+    password?: SortOrder
+    businessType?: SortOrder
+    yearsInBusiness?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11292,6 +11402,9 @@ export namespace Prisma {
     mpesaShortcode?: SortOrder
     ownerName?: SortOrder
     ownerEmail?: SortOrder
+    password?: SortOrder
+    businessType?: SortOrder
+    yearsInBusiness?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11655,6 +11768,7 @@ export namespace Prisma {
     price?: SortOrder
     buyingPrice?: SortOrder
     businessId?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type ProductAvgOrderByAggregateInput = {
@@ -11673,6 +11787,7 @@ export namespace Prisma {
     price?: SortOrder
     buyingPrice?: SortOrder
     businessId?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type ProductMinOrderByAggregateInput = {
@@ -11683,6 +11798,7 @@ export namespace Prisma {
     price?: SortOrder
     buyingPrice?: SortOrder
     businessId?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type ProductSumOrderByAggregateInput = {
@@ -12791,6 +12907,7 @@ export namespace Prisma {
     stockQuantity: number
     price: number
     buyingPrice: number
+    createdAt?: Date | string
     expenses?: ExpensesCreateNestedManyWithoutProductInput
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
     sales?: SalesCreateNestedManyWithoutProductInput
@@ -12803,6 +12920,7 @@ export namespace Prisma {
     stockQuantity: number
     price: number
     buyingPrice: number
+    createdAt?: Date | string
     expenses?: ExpensesUncheckedCreateNestedManyWithoutProductInput
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
     sales?: SalesUncheckedCreateNestedManyWithoutProductInput
@@ -12961,6 +13079,7 @@ export namespace Prisma {
     price?: FloatFilter<"Product"> | number
     buyingPrice?: FloatFilter<"Product"> | number
     businessId?: IntFilter<"Product"> | number
+    createdAt?: DateTimeFilter<"Product"> | Date | string
   }
 
   export type ExpensesUpsertWithWhereUniqueWithoutBusinessInput = {
@@ -13028,6 +13147,9 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    password?: string
+    businessType?: string | null
+    yearsInBusiness?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13043,6 +13165,9 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    password?: string
+    businessType?: string | null
+    yearsInBusiness?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13102,6 +13227,9 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13117,6 +13245,9 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13147,6 +13278,9 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    password?: string
+    businessType?: string | null
+    yearsInBusiness?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13162,6 +13296,9 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    password?: string
+    businessType?: string | null
+    yearsInBusiness?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13182,6 +13319,7 @@ export namespace Prisma {
     stockQuantity: number
     price: number
     buyingPrice: number
+    createdAt?: Date | string
     business: BusinessCreateNestedOneWithoutProductsInput
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
     sales?: SalesCreateNestedManyWithoutProductInput
@@ -13195,6 +13333,7 @@ export namespace Prisma {
     price: number
     buyingPrice: number
     businessId: number
+    createdAt?: Date | string
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
     sales?: SalesUncheckedCreateNestedManyWithoutProductInput
   }
@@ -13220,6 +13359,9 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13235,6 +13377,9 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13265,6 +13410,9 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    password?: string
+    businessType?: string | null
+    yearsInBusiness?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13280,6 +13428,9 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    password?: string
+    businessType?: string | null
+    yearsInBusiness?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13380,6 +13531,9 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13395,6 +13549,9 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13479,6 +13636,9 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    password?: string
+    businessType?: string | null
+    yearsInBusiness?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13494,6 +13654,9 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    password?: string
+    businessType?: string | null
+    yearsInBusiness?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13600,6 +13763,9 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13615,6 +13781,9 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13677,6 +13846,9 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    password?: string
+    businessType?: string | null
+    yearsInBusiness?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13692,6 +13864,9 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    password?: string
+    businessType?: string | null
+    yearsInBusiness?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13736,6 +13911,7 @@ export namespace Prisma {
     stockQuantity: number
     price: number
     buyingPrice: number
+    createdAt?: Date | string
     business: BusinessCreateNestedOneWithoutProductsInput
     expenses?: ExpensesCreateNestedManyWithoutProductInput
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
@@ -13749,6 +13925,7 @@ export namespace Prisma {
     price: number
     buyingPrice: number
     businessId: number
+    createdAt?: Date | string
     expenses?: ExpensesUncheckedCreateNestedManyWithoutProductInput
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
   }
@@ -13774,6 +13951,9 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13789,6 +13969,9 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13845,6 +14028,7 @@ export namespace Prisma {
     stockQuantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     buyingPrice?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     business?: BusinessUpdateOneRequiredWithoutProductsNestedInput
     expenses?: ExpensesUpdateManyWithoutProductNestedInput
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
@@ -13858,6 +14042,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     buyingPrice?: FloatFieldUpdateOperationsInput | number
     businessId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expenses?: ExpensesUncheckedUpdateManyWithoutProductNestedInput
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -13892,6 +14077,7 @@ export namespace Prisma {
     stockQuantity: number
     price: number
     buyingPrice: number
+    createdAt?: Date | string
     business: BusinessCreateNestedOneWithoutProductsInput
     expenses?: ExpensesCreateNestedManyWithoutProductInput
     sales?: SalesCreateNestedManyWithoutProductInput
@@ -13905,6 +14091,7 @@ export namespace Prisma {
     price: number
     buyingPrice: number
     businessId: number
+    createdAt?: Date | string
     expenses?: ExpensesUncheckedCreateNestedManyWithoutProductInput
     sales?: SalesUncheckedCreateNestedManyWithoutProductInput
   }
@@ -13961,6 +14148,7 @@ export namespace Prisma {
     stockQuantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     buyingPrice?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     business?: BusinessUpdateOneRequiredWithoutProductsNestedInput
     expenses?: ExpensesUpdateManyWithoutProductNestedInput
     sales?: SalesUpdateManyWithoutProductNestedInput
@@ -13974,6 +14162,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     buyingPrice?: FloatFieldUpdateOperationsInput | number
     businessId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expenses?: ExpensesUncheckedUpdateManyWithoutProductNestedInput
     sales?: SalesUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -14001,6 +14190,7 @@ export namespace Prisma {
     stockQuantity: number
     price: number
     buyingPrice: number
+    createdAt?: Date | string
   }
 
   export type ExpensesCreateManyBusinessInput = {
@@ -14081,6 +14271,7 @@ export namespace Prisma {
     stockQuantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     buyingPrice?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expenses?: ExpensesUpdateManyWithoutProductNestedInput
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
     sales?: SalesUpdateManyWithoutProductNestedInput
@@ -14093,6 +14284,7 @@ export namespace Prisma {
     stockQuantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     buyingPrice?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expenses?: ExpensesUncheckedUpdateManyWithoutProductNestedInput
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
     sales?: SalesUncheckedUpdateManyWithoutProductNestedInput
@@ -14105,6 +14297,7 @@ export namespace Prisma {
     stockQuantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     buyingPrice?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ExpensesUpdateWithoutBusinessInput = {
@@ -14208,6 +14401,7 @@ export namespace Prisma {
     stockQuantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     buyingPrice?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     business?: BusinessUpdateOneRequiredWithoutProductsNestedInput
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
     sales?: SalesUpdateManyWithoutProductNestedInput
@@ -14221,6 +14415,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     buyingPrice?: FloatFieldUpdateOperationsInput | number
     businessId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
     sales?: SalesUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -14233,6 +14428,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     buyingPrice?: FloatFieldUpdateOperationsInput | number
     businessId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderItemCreateManyOrderInput = {

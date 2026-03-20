@@ -20,6 +20,7 @@ import { redisService } from './services/redis-service.js';
 import { startPaymentSubscriber } from './subscribers/payment-subscriber.js';
 
 // Routes
+import authRoutes from './routes/auth-route.js';
 import customerRoutes from './routes/customer-route.js';
 import businessRoutes from './routes/business-route.js';
 import expenseRoutes from './routes/expenses-route.js';
@@ -31,6 +32,7 @@ import webhookRoutes from './routes/payment-route.js';
 import whatsAppRoutes from './routes/whatsapp-route.js'
 import chatbotRoutes from './routes/chatbot-route.js';
 import contentGenerationRoutes from './routes/content-generation-route.js';
+import { authenticate } from './utils/auth-middleware.js';
 
 // Load environment variables
 dotenv.config();
@@ -90,6 +92,11 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // API routes
+app.use('/api', authRoutes);
+
+// Protected routes
+app.use('/api', authenticate);
+
 app.use('/api', customerRoutes);
 app.use('/api', businessRoutes);
 app.use('/api', expenseRoutes);

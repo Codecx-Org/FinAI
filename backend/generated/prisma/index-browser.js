@@ -126,6 +126,9 @@ exports.Prisma.BusinessScalarFieldEnum = {
   mpesaShortcode: 'mpesaShortcode',
   ownerName: 'ownerName',
   ownerEmail: 'ownerEmail',
+  password: 'password',
+  businessType: 'businessType',
+  yearsInBusiness: 'yearsInBusiness',
   metadata: 'metadata',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -168,7 +171,8 @@ exports.Prisma.ProductScalarFieldEnum = {
   stockQuantity: 'stockQuantity',
   price: 'price',
   buyingPrice: 'buyingPrice',
-  businessId: 'businessId'
+  businessId: 'businessId',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SalesScalarFieldEnum = {

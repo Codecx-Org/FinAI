@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bot, Sparkles } from 'lucide-react';
 import { Dashboard } from './components/Dashboard';
 import { SalesTracker } from './components/SalesTracker';
@@ -7,84 +7,82 @@ import { InventoryManager } from './components/InventoryManager';
 import { BusinessInsights } from './components/BusinessInsights';
 import { UserProfile } from './components/UserProfile';
 import { SocialMediaGenerator } from './components/SocialMediaGenerator';
-import { BusinessOnboarding } from './components/BusinessOnboarding';
+import { Login } from './components/Login';
+import { Register } from './components/Register';
 import { BottomNavigation } from './components/BottomNavigation';
 import { Toaster } from 'sonner';
+import { api } from './lib/axios';
+import { toast } from 'sonner';
 
 export type Tab = 'home' | 'sales' | 'inventory' | 'insights' | 'profile';
 
 interface UserData {
-  id?: number;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  businessName: string;
-  businessType: string;
-  yearsInBusiness: string;
-  businessId?: number;
+  id: number;
+  name: string;
+  ownerName: string;
+  ownerEmail: string;
 }
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [showAI, setShowAI] = useState(false);
   const [showSocialMedia, setShowSocialMedia] = useState(false);
-  const [isOnboarded, setIsOnboarded] = useState(() => {
-    // Load onboarding status from localStorage
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('numeraai_onboarded');
-      return saved === 'true';
-    }
-    return false;
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return !!localStorage.getItem('numeraai_token');
   });
+
   const [userData, setUserData] = useState<UserData | null>(() => {
-    // Load user data from localStorage
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('numeraai_userdata');
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (e) {
-          console.error('Error loading user data:', e);
-        }
+    const saved = localStorage.getItem('numeraai_userdata');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return null;
       }
     }
     return null;
   });
 
-  const handleOnboardingComplete = (data: UserData) => {
-    setUserData(data);
-    setIsOnboarded(true);
-    setActiveTab('profile'); // Start with profile page after onboarding
-    
-    // Persist to localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('numeraai_onboarded', 'true');
-      localStorage.setItem('numeraai_userdata', JSON.stringify(data));
+  const handleLogin = async (credentials: any) => {
+    try {
+      const response = await api.post('/auth/login', credentials);
+      const { token, business } = response.data;
+      
+      localStorage.setItem('numeraai_token', token);
+      localStorage.setItem('numeraai_userdata', JSON.stringify(business));
+      
+      setUserData(business);
+      setIsAuthenticated(true);
+      toast.success('Login successful!');
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Login failed');
+      throw error;
     }
   };
 
-  // Development helper - reset onboarding (you can remove this in production)
-  const resetOnboarding = () => {
-    setIsOnboarded(false);
-    setUserData(null);
-    setActiveTab('home');
-    setShowAI(false);
-    setShowSocialMedia(false);
-    
-    // Clear localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('numeraai_onboarded');
-      localStorage.removeItem('numeraai_userdata');
-      localStorage.removeItem('numeraai_goals'); // Clear goals too
+  const handleRegister = async (data: any) => {
+    try {
+      await api.post('/auth/register', data);
+      toast.success('Registration successful! Please login.');
+      setAuthMode('login');
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Registration failed');
+      throw error;
     }
   };
 
   const handleLogout = () => {
-    resetOnboarding();
+    localStorage.removeItem('numeraai_token');
+    localStorage.removeItem('numeraai_userdata');
+    setIsAuthenticated(false);
+    setUserData(null);
+    setActiveTab('home');
   };
 
   const renderContent = () => {
-    const businessId = userData?.businessId;
+    const businessId = userData?.id;
     
     if (showSocialMedia) {
       return <SocialMediaGenerator onBack={() => setShowSocialMedia(false)} />;
@@ -96,7 +94,7 @@ export default function App() {
     
     switch (activeTab) {
       case 'home':
-        return <Dashboard userData={userData || undefined} businessId={businessId} />;
+        return <Dashboard userData={userData ? { ...userData, firstName: userData.ownerName.split(' ')[0], lastName: userData.ownerName.split(' ')[1] || '', businessName: userData.name, businessType: '', yearsInBusiness: '' } : undefined} businessId={businessId} />;
       case 'sales':
         return <SalesTracker businessId={businessId} />;
       case 'inventory':
@@ -104,15 +102,23 @@ export default function App() {
       case 'insights':
         return <BusinessInsights businessId={businessId} />;
       case 'profile':
-        return <UserProfile initialUserData={userData || undefined} onLogout={handleLogout} businessId={businessId} />;
+        return <UserProfile initialUserData={userData ? { firstName: userData.ownerName.split(' ')[0], lastName: userData.ownerName.split(' ')[1] || '', phone: '', businessName: userData.name, businessType: '', yearsInBusiness: '' } : undefined} onLogout={handleLogout} businessId={businessId} />;
       default:
         return <Dashboard />;
     }
   };
 
-  // Show onboarding if not completed
-  if (!isOnboarded) {
-    return <BusinessOnboarding onComplete={handleOnboardingComplete} />;
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Toaster position="top-center" />
+        {authMode === 'login' ? (
+          <Login onLogin={handleLogin} onSwitchToRegister={() => setAuthMode('register')} />
+        ) : (
+          <Register onRegister={handleRegister} onSwitchToLogin={() => setAuthMode('login')} />
+        )}
+      </div>
+    );
   }
 
   return (
@@ -125,13 +131,6 @@ export default function App() {
           <p className="text-xs text-muted-foreground">
             Intelligent Business Management
           </p>
-          {/* Development helper - triple tap to reset */}
-          <div 
-            className="absolute top-0 right-0 w-8 h-8 opacity-0"
-            onClick={(e) => {
-              if (e.detail === 3) resetOnboarding();
-            }}
-          />
         </div>
       </header>
 
