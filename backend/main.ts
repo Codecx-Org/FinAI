@@ -29,7 +29,6 @@ import orderRoutes from './routes/orders-route.js';
 import salesRoutes from './routes/sales-route.js';
 import orderItemRoutes from './routes/order-items-route.js';
 import webhookRoutes from './routes/payment-route.js';
-import whatsAppRoutes from './routes/whatsapp-route.js'
 import chatbotRoutes from './routes/chatbot-route.js';
 import contentGenerationRoutes from './routes/content-generation-route.js';
 import { authenticate } from './utils/auth-middleware.js';
@@ -104,7 +103,6 @@ app.use('/api', productRoutes);
 app.use('/api', orderRoutes);
 app.use('/api', salesRoutes);
 app.use('/api', orderItemRoutes);
-app.use('/api', whatsAppRoutes)
 app.use('/api', chatbotRoutes);
 app.use('/api', contentGenerationRoutes);
 app.use('/api', webhookRoutes);
