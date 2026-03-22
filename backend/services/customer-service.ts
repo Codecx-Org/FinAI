@@ -16,9 +16,9 @@ export class CustomerService {
     }
   }
 
-  async getCustomer(id: number) {
+  async getCustomer(id: number, businessId: number) {
     const customer = await prisma.customer.findUnique({
-      where: { id },
+      where: { id, businessId },
       include: { orders: true, business: true },
     });
 
@@ -35,10 +35,10 @@ export class CustomerService {
     });
   }
 
-  async updateCustomer(id: number, data: { name?: string; email?: string; phone?: string; businessId?: number }) {
+  async updateCustomer(id: number,  businessId: number,data: { name?: string; email?: string; phone?: string}) {
     try {
       return await prisma.customer.update({
-        where: { id },
+        where: { id, businessId },
         data,
         select: { id: true, name: true, email: true, phone: true, createdAt: true, businessId: true },
       });
@@ -50,10 +50,10 @@ export class CustomerService {
     }
   }
 
-  async deleteCustomer(id: number) {
+  async deleteCustomer(id: number, businessId: number) {
     try {
       return await prisma.customer.delete({
-        where: { id },
+        where: { id, businessId },
       });
     } catch (error: any) {
       if (error.code === 'P2025') {
