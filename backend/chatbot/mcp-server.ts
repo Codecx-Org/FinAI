@@ -10,6 +10,7 @@ import { OrderService } from "../services/orders-services.js";
 import { SalesService } from "../services/sales-service.js";
 import { PaymentService } from "../services/payment-service.js";
 import { ExpenseService } from "../services/expense-service.js";
+import axios from "axios";
 
 const productService = new ProductService();
 const customerService = new CustomerService();
@@ -17,6 +18,8 @@ const orderService = new OrderService();
 const salesService = new SalesService();
 const paymentService = new PaymentService();
 const expensesService = new ExpenseService();
+
+const WHATSAPP_SERVICE_URL = process.env.WHATSAPP_INTERNAL_URL || "http://localhost:3001";
 
 const server = new Server(
   {
@@ -236,6 +239,58 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ["type", "amount", "businessId"],
         },
       },
+      // WhatsApp Tools
+      {
+        name: "whatsapp_send_text",
+        description: "Send a text message to a WhatsApp number",
+        inputSchema: {
+          type: "object",
+          properties: {
+            to: { type: "string", description: "Recipient phone number (e.g. 0712345678)" },
+            text: { type: "string" },
+          },
+          required: ["to", "text"],
+        },
+      },
+      {
+        name: "whatsapp_send_media",
+        description: "Send an image/media message to a WhatsApp number",
+        inputSchema: {
+          type: "object",
+          properties: {
+            to: { type: "string", description: "Recipient phone number (e.g. 0712345678)" },
+            imageUrl: { type: "string", description: "URL or local path to the image" },
+            caption: { type: "string" },
+          },
+          required: ["to", "imageUrl"],
+        },
+      },
+      {
+        name: "whatsapp_broadcast_advert",
+        description: "Broadcast an advertisement (text + optional image) to all or specific customers",
+        inputSchema: {
+          type: "object",
+          properties: {
+            businessId: { type: "number" },
+            text: { type: "string" },
+            imageUrl: { type: "string" },
+            customerIds: { type: "array", items: { type: "number" }, description: "Optional list of customer IDs. If omitted, sends to all customers." },
+          },
+          required: ["businessId", "text"],
+        },
+      },
+      // Summary Tool
+      {
+        name: "get_business_summary",
+        description: "Get a comprehensive financial and operational summary of the business",
+        inputSchema: {
+          type: "object",
+          properties: {
+            businessId: { type: "number" },
+          },
+          required: ["businessId"],
+        },
+      },
     ],
   };
 });
@@ -285,6 +340,65 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           amount: Number(args?.amount),
         };
         return { content: [{ type: "text", text: JSON.stringify(await expensesService.createExpense(expenseData as any)) }] };
+      
+      case "whatsapp_send_text":
+        const textRes = await axios.post(`${WHATSAPP_SERVICE_URL}/send-text`, args);
+        return { content: [{ type: "text", text: JSON.stringify(textRes.data) }] };
+      
+      case "whatsapp_send_media":
+        const mediaRes = await axios.post(`${WHATSAPP_SERVICE_URL}/send-media`, args);
+        return { content: [{ type: "text", text: JSON.stringify(mediaRes.data) }] };
+
+      case "whatsapp_broadcast_advert":
+        const { businessId, text, imageUrl, customerIds } = args as any;
+        const customers = await customerService.getAllCustomers(Number(businessId));
+        const targets = customerIds 
+            ? customers.filter(c => customerIds.includes(c.id))
+            : customers;
+        
+        const results = [];
+        for (const target of targets) {
+            if (target.phone) {
+                try {
+                    if (imageUrl) {
+                        await axios.post(`${WHATSAPP_SERVICE_URL}/send-media`, { to: target.phone, imageUrl, caption: text });
+                    } else {
+                        await axios.post(`${WHATSAPP_SERVICE_URL}/send-text`, { to: target.phone, text });
+                    }
+                    results.push({ id: target.id, success: true });
+                } catch (err: any) {
+                    results.push({ id: target.id, success: false, error: err.message });
+                }
+                // Rate limiting delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+        }
+        return { content: [{ type: "text", text: JSON.stringify({ broadcastCount: results.length, details: results }) }] };
+
+      case "get_business_summary":
+        const bId = Number(args?.businessId);
+        const [products, allOrders, allSales, allExpenses] = await Promise.all([
+          productService.getAllProducts(bId),
+          orderService.getAllOrders(bId),
+          salesService.getAllSales(bId),
+          expensesService.getAllExpenses(bId),
+        ]);
+
+        const totalRevenue = allSales.reduce((acc, sale) => acc + sale.totalAmount, 0);
+        const totalExpenses = allExpenses.reduce((acc, exp) => acc + exp.amount, 0);
+        const lowStock = products.filter(p => p.stockQuantity < 5);
+        const pendingOrders = allOrders.filter(o => o.status === 'pending' || o.status === 'created');
+
+        return { content: [{ type: "text", text: JSON.stringify({
+          revenue: totalRevenue,
+          expenses: totalExpenses,
+          profit: totalRevenue - totalExpenses,
+          productCount: products.length,
+          lowStockCount: lowStock.length,
+          pendingOrdersCount: pendingOrders.length,
+          summary: `Business has KES ${totalRevenue} in revenue and KES ${totalExpenses} in expenses. ${lowStock.length} items are low on stock.`
+        }) }] };
+
       default:
         throw new Error(`Unknown tool: ${name}`);
     }

@@ -172,6 +172,32 @@ performing any of these operations.
 
 ---
 
+### 📱 WHATSAPP TOOLS
+
+**whatsapp_send_text**
+- Use when: User wants to send a direct message to a customer or contact.
+- Example: "Send a WhatsApp to 0712345678 saying their order is ready."
+
+**whatsapp_send_media**
+- Use when: User wants to share a product image or any media with a customer.
+- Example: "Send the image of Maize Flour to John."
+
+**whatsapp_broadcast_advert**
+- Use when: User wants to send a promotion or advertisement to multiple customers.
+- Important: This tool has a built-in delay to prevent spam flagging.
+- Example: "Send a flash sale advert for 10% off to all customers."
+
+---
+
+### 📊 SUMMARY TOOLS
+
+**get_business_summary**
+- Use when: User asks for a general update, health check, or snapshot of their business.
+- Example: "How is the business doing?", "Give me a summary", "Status report."
+- After calling: Present the revenue, expenses, profit, and highlight low stock or pending orders.
+
+---
+
 ## OPERATIONAL WORKFLOWS
 
 For common multi-step operations, follow these standard workflows:

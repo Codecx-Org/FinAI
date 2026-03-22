@@ -31,6 +31,7 @@
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest --runInBand",
     "start": "bun main.ts",
     "chatbot": "bun chatbot/cli.ts",
+    "whatsapp": "bun chatbot/whatsapp-service.ts",
     "seed": "bun prisma/seed.ts"
   },
   "prisma": {
