@@ -11,12 +11,14 @@ import { SalesService } from "../services/sales-service.js";
 import { PaymentService } from "../services/payment-service.js";
 import { BusinessService } from "../services/business-service.js";
 
+import { ExpenseService } from "../services/expense-service.js";
 const productService = new ProductService();
 const customerService = new CustomerService();
 const orderService = new OrderService();
 const salesService = new SalesService();
 const paymentService = new PaymentService();
 const businessService = new BusinessService();
+const expenseService = new ExpenseService();
 
 const server = new Server(
   {
@@ -203,6 +205,45 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ["orderId"],
         },
       },
+      // Expense Tools
+      {
+        name: "list_expenses",
+        description: "List all expenses for a business",
+        inputSchema: {
+          type: "object",
+          properties: {
+            businessId: { type: "number" },
+          },
+        },
+      },
+      {
+        name: "get_expense",
+        description: "Get details of a specific expense by ID",
+        inputSchema: {
+          type: "object",
+          properties: {
+            id: { type: "number" },
+          },
+          required: ["id"],
+        },
+      },
+      {
+        name: "create_expense",
+        description: "Create a new expense record",
+        inputSchema: {
+          type: "object",
+          properties: {
+            type: { type: "string", description: "Type of expense (e.g. Rent, Salaries, Stock Purchase)" },
+            amount: { type: "number" },
+            businessId: { type: "number" },
+            description: { type: "string" },
+            isRecurring: { type: "boolean" },
+            frequency: { type: "string", enum: ["monthly", "quarterly"] },
+            nextDueDate: { type: "string", description: "ISO date string for the next due date if recurring" },
+          },
+          required: ["type", "amount", "businessId"],
+        },
+      },
     ],
   };
 });
@@ -377,7 +418,44 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }) 
           }] 
         };
+      // Expense Tools
+      case "list_expenses":
+      return {
+         content: [{
+         type: "text",
+         text: JSON.stringify(
+        await expenseService.getAllExpenses(safeBusinessId)
+        )
+       }]
+      };
 
+      case "get_expense":
+       return {
+       content: [{
+       type: "text",
+       text: JSON.stringify(
+        await expenseService.getExpense(Number(args?.id))
+       )
+      }]
+     };
+
+     case "create_expense":
+      return {
+           content: [{
+          type: "text",
+           text: JSON.stringify(
+            await expenseService.createExpense({
+          type: args.type,
+          amount: Number(args.amount),
+          description: args.description || "",
+          isRecurring: Boolean(args.isRecurring),
+          frequency: args.frequency || null,
+          nextDueDate: args.nextDueDate || null, // ← Keep as string, don't convert to Date
+          businessId: safeBusinessId
+        })
+      )
+    }]
+  };
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
