@@ -38,10 +38,10 @@ export class ProductService {
     });
   }
 
-  async getProduct(id: number) {
+  async getProduct(id: number,businessId: number) {
     const product = await prisma.product.findUnique({
-      where: { id },
-      include: { orderItems: true, sales: true, business: true },
+      where: { id ,businessId},
+      include: { orderItems: true, sales: true },
     });
 
     if (!product) {
@@ -50,9 +50,9 @@ export class ProductService {
     return product;
   }
 
-  async getProductFilter(filters: any) {
+  async getProductFilter(filters: any,businessId: number) {
     return await prisma.product.findMany({
-      where: filters,
+      where: { ...filters, businessId },
     });
   }
 
@@ -63,7 +63,12 @@ export class ProductService {
     });
   }
 
-  async updateProduct(id: number, data: { name?: string; stockQuantity?: number; price?: number; buyingPrice?: number; businessId?: number; imageUrl?: string }) {
+  async updateProduct(id: number, businessId: number, data: { name?: string; stockQuantity?: number; price?: number; buyingPrice?: number; imageUrl?: string }) {
+    // Verify ownership first
+    const product = await prisma.product.findUnique({ where: { id }, select: { businessId: true } });
+    if (!product || product.businessId !== businessId) {
+      throw new NotFoundError('Product not found or not accessible');
+    }
     try {
       return await prisma.product.update({
         where: { id },
@@ -78,8 +83,12 @@ export class ProductService {
     }
   }
 
-  async deleteProduct(id: number) {
-    try {
+  async deleteProduct(id: number, businessId: number) {
+    const product = await prisma.product.findUnique({ where: { id }, select: { businessId: true } });
+    if (!product || product.businessId !== businessId) {
+      throw new NotFoundError('Product not found or not accessible');
+    }
+     try {
       return await prisma.product.delete({
         where: { id },
       });
