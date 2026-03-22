@@ -13,9 +13,9 @@ export class SalesService {
     }
   }
 
-  async getSale(id: number) {
+  async getSale(id: number,businessId: number) {
     const sale = await prisma.sales.findUnique({
-      where: { id },
+      where: { id,businessId },
       include: { order: true, product: true, business: true },
     });
     if (!sale) throw new NotFoundError('Sale not found');
@@ -29,10 +29,10 @@ export class SalesService {
     });
   }
 
-  async updateSale(id: number, data: any) {
+  async updateSale(id: number, businessId: number, data: any) {
     try {
       return await prisma.sales.update({
-        where: { id },
+        where: { id, businessId },
         data,
       });
     } catch (error: any) {
@@ -41,9 +41,9 @@ export class SalesService {
     }
   }
 
-  async deleteSale(id: number) {
+  async deleteSale(id: number, businessId: number) {
     try {
-      await prisma.sales.delete({ where: { id } });
+      await prisma.sales.delete({ where: { id, businessId } });
     } catch (error: any) {
       if (error.code === 'P2025') throw new NotFoundError('Sale not found');
       throw new InternalServerError('Failed to delete sale');

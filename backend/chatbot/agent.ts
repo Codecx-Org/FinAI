@@ -18,7 +18,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export class ChatbotAgent {
   private executor: ReturnType<typeof createAgent> | null = null;
   private client: Client;
-
+  private businessId: number | null = null;
   constructor() {
     this.client = new Client(
       {
@@ -30,8 +30,18 @@ export class ChatbotAgent {
       }
     );
   }
-
+  async setBusinessContext(businessId: number) {
+    if (!businessId || isNaN(businessId)) {
+      throw new Error("Invalid business ID");
+    }
+    this.businessId = Number(businessId);
+    console.log(`Business context set to ID: ${this.businessId}`);
+  }
   async initialize() {
+    if (!this.businessId) {
+      throw new Error("Business context not set. Call setBusinessContext() before initialize()");
+    }
+    
     // Start the MCP server as a subprocess
     // Using ts-node to run the server file
     const transport = new StdioClientTransport({
@@ -48,19 +58,34 @@ export class ChatbotAgent {
     const { tools: mcpTools } = await this.client.listTools();
 
     // Wrap MCP tools for LangChain
-    const langchainTools = mcpTools.map(
-      (t) => tool( async (args: any) => {
-        const response = await this.client.callTool({
-          name: t.name,
-          arguments: args,
-        }) as any;
+    const langchainTools = mcpTools.map((t) =>
+  tool(
+    async (args: any) => {
+      if (!this.businessId) {
+        throw new Error("Business context not set. Please log in first.");
+      }
 
-        if (response.isError) {
-          throw new Error(response.content[0].text as any);
-        }
-        return response.content.map((c: any) => c.text).join("\n");   
-      }, { name: t.name, description: t.description || "", schema: t.inputSchema })
-    );
+      console.log(`[DEBUG] Calling tool: ${t.name} | businessId: ${this.businessId}`);
+
+      
+      const response = await this.client.callTool({
+        name: t.name,
+        arguments: {...args,
+    businessId: this.businessId,
+  }
+      
+      }) as any;
+
+      console.log(`[DEBUG] Tool ${t.name} response received`);
+
+      if (response.isError) {
+        throw new Error(response.content?.[0]?.text || "Tool failed");
+      }
+      return response.content.map((c: any) => c.text).join("\n");
+    },
+    { name: t.name, description: t.description || "", schema: t.inputSchema }
+  )
+);
     // Initialize the LLM (OpenRouter)
     const llm = new ChatOpenAI({
       model: process.env.CHAT_MODEL || "google/gemini-flash-1.5",
