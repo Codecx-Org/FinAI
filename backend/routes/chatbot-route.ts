@@ -1,137 +1,184 @@
-import { Router, type Request, type Response } from 'express';
+// routes/chatbot-route.ts
+import { Router, type Response } from 'express';
 import { ChatbotAgent } from '../chatbot/agent.js';
 import { asyncHandler } from '../utils/async-handler.js';
-import prisma from '../utils/prisma.js';
-
+import { authenticate} from '../utils/auth-middleware';
+import type { AuthenticatedRequest } from '../utils/auth-middleware.js';
 const router = Router();
-const agent = new ChatbotAgent();
 
-// Initialize the agent once
-let isInitialized = false;
-const initializeAgent = async () => {
-  if (!isInitialized) {
+// Cache agent instances per business
+const agentCache = new Map<number, ChatbotAgent>();
+
+/**
+ * Get or create a chatbot agent for a specific business
+ */
+const getAgentForBusiness = async (businessId: number): Promise<ChatbotAgent> => {
+  if (!agentCache.has(businessId)) {
+    console.log(`[CHATBOT] Creating new agent for business ${businessId}`);
+    const agent = new ChatbotAgent();
+    
+    await agent.setBusinessContext(businessId);
     await agent.initialize();
-    isInitialized = true;
+    
+    agentCache.set(businessId, agent);
+    console.log(`[CHATBOT] Agent created and cached for business ${businessId}`);
+  } else {
+    console.log(`[CHATBOT] Using cached agent for business ${businessId}`);
   }
+  
+  return agentCache.get(businessId)!;
 };
 
 /**
  * @route POST /api/chatbot/chat
  * @desc Send a message to the AI assistant
- * @access Public (or add auth middleware if needed)
  */
-router.post('/chatbot/chat', asyncHandler(async (req: Request, res: Response) => {
-  const { message, history } = req.body;
+router.post('/chatbot/chat', authenticate, asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  const { message, history = [] } = req.body;
+  const businessId = req.user?.id;
 
-  if (!message) {
-    return res.status(400).json({ error: 'Message is required' });
+  // Validate request
+  if (!message || typeof message !== 'string' || message.trim().length === 0) {
+    return res.status(400).json({ 
+      success: false,
+      error: 'Message is required',
+      details: 'Please provide a non-empty message string'
+    });
   }
 
-  await initializeAgent();
+  if (!businessId) {
+    return res.status(401).json({ 
+      success: false,
+      error: 'Unauthorized: Missing business context',
+      details: 'Authentication failed or business ID not found'
+    });
+  }
+
+  if (!Array.isArray(history)) {
+    return res.status(400).json({
+      success: false,
+      error: 'Invalid history format',
+      details: 'History must be an array of messages'
+    });
+  }
 
   try {
-    const response = await agent.chat(message, history || []);
-    res.json({ 
+    const agent = await getAgentForBusiness(businessId);
+    const response = await agent.chat(message, history);
+    
+    return res.json({
+      success: true,
       response,
+      businessId,
       history: [
-        ...(history || []),
+        ...history,
         { role: 'user', content: message },
         { role: 'assistant', content: response }
       ]
     });
+    
   } catch (error: any) {
-    console.error('Chatbot error:', error);
-    res.status(500).json({ error: 'Failed to process chat message', details: error.message });
+    console.error(`[CHATBOT] Error for business ${businessId}:`, error);
+    
+    if (error.message === 'Business context not set. Please log in first.') {
+      return res.status(401).json({ 
+        success: false,
+        error: 'Business context not initialized',
+        details: 'Please re-authenticate and try again'
+      });
+    }
+    
+    if (error.message.includes('tool') || error.message.includes('MCP') || error.message.includes('server')) {
+      return res.status(503).json({
+        success: false,
+        error: 'Chatbot service temporarily unavailable',
+        details: 'Unable to access business data. Please try again later.'
+      });
+    }
+    
+    return res.status(500).json({ 
+      success: false,
+      error: 'Failed to process chat message',
+      details: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+    });
   }
 }));
 
 /**
- * @route GET /api/chatbot/insights
- * @desc Get AI-generated business insights based on KPIs
+ * @route POST /api/chatbot/clear-cache
+ * @desc Clear the agent cache for the authenticated business
  */
-router.get('/chatbot/insights', asyncHandler(async (req: Request, res: Response) => {
-  const businessId = req.query.businessId ? Number(req.query.businessId) : undefined;
+router.post('/chatbot/clear-cache', authenticate, asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  const businessId = req.user?.id;
+  
+  if (businessId && agentCache.has(businessId)) {
+    agentCache.delete(businessId);
+    console.log(`[CHATBOT] Cleared cache for business ${businessId}`);
+    return res.json({ 
+      success: true, 
+      message: 'Chatbot cache cleared successfully',
+      businessId
+    });
+  }
+  
+  return res.json({ 
+    success: true, 
+    message: 'No cache found for this business',
+    businessId
+  });
+}));
+
+/**
+ * @route GET /api/chatbot/health
+ * @desc Check if chatbot is operational
+ */
+router.get('/chatbot/health', authenticate, asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  const businessId = req.user?.id;
   
   if (!businessId) {
-    return res.status(400).json({ error: 'businessId is required' });
+    return res.status(401).json({ 
+      success: false,
+      error: 'Unauthorized' 
+    });
   }
-
-  // Aggregate KPIs
-  const [
-    orderCount,
-    customerCount,
-    totalSales,
-    totalExpenses,
-    recentSales,
-    lowStockProducts
-  ] = await Promise.all([
-    prisma.order.count({ where: { businessId } }),
-    prisma.customer.count({ where: { businessId } }),
-    prisma.sales.aggregate({
-      where: { businessId },
-      _sum: { totalAmount: true }
-    }),
-    prisma.expenses.aggregate({
-      where: { businessId },
-      _sum: { amount: true }
-    }),
-    prisma.sales.findMany({
-      where: { businessId },
-      orderBy: { createdAt: 'desc' },
-      take: 5,
-      include: { product: true }
-    }),
-    prisma.product.findMany({
-      where: { businessId, stockQuantity: { lte: 10 } },
-      take: 5
-    })
-  ]);
-
-  const kpis = {
-    orders: orderCount,
-    customers: customerCount,
-    sales: totalSales._sum.totalAmount || 0,
-    expenses: totalExpenses._sum.amount || 0,
-    recentSales: recentSales.map(s => `${s.product.name} (Qty: ${s.quantity})`),
-    lowStock: lowStockProducts.map(p => p.name)
-  };
-
-  await initializeAgent();
-
-  const prompt = `
-    Generate a concise business insight report for a business owner based on the following KPIs:
-    - Total Orders: ${kpis.orders}
-    - Total Customers: ${kpis.customers}
-    - Total Sales Revenue: KES ${kpis.sales}
-    - Total Expenses: KES ${kpis.expenses}
-    - Recent Sales: ${kpis.recentSales.join(', ') || 'None'}
-    - Low Stock Items: ${kpis.lowStock.join(', ') || 'None'}
-
-    Provide 3 actionable "Growth Tips" and 1 "Aggregated Business Insight".
-    Format the response as a JSON object with:
-    {
-      "tips": [{"title": "...", "tip": "...", "impact": "High/Medium/Low"}],
-      "insight": "...",
-      "summary": {
-        "revenue": ${kpis.sales},
-        "expenses": ${kpis.expenses},
-        "profit": ${kpis.sales - kpis.expenses}
-      }
-    }
-    Respond ONLY with the JSON object.
-  `;
-
+  
   try {
-    const responseText = await agent.chat(prompt, []);
-    // Try to parse JSON from response, AI might wrap it in code blocks
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    const insights = jsonMatch ? JSON.parse(jsonMatch[0]) : { error: 'Failed to parse AI response', raw: responseText };
+    await getAgentForBusiness(businessId);
     
-    res.json(insights);
+    return res.json({
+      success: true,
+      status: 'healthy',
+      businessId,
+      cached: agentCache.has(businessId),
+      message: 'Chatbot is ready'
+    });
   } catch (error: any) {
-    console.error('Insight generation error:', error);
-    res.status(500).json({ error: 'Failed to generate insights', details: error.message });
+    return res.status(503).json({
+      success: false,
+      status: 'unhealthy',
+      businessId,
+      error: error.message,
+      message: 'Chatbot service is unavailable'
+    });
   }
+}));
+
+/**
+ * @route GET /api/chatbot/me
+ * @desc Get current business info from token
+ */
+router.get('/chatbot/me', authenticate, asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  const businessId = req.user?.id;
+  const email = req.user?.email;
+  
+  return res.json({
+    success: true,
+    business: {
+      id: businessId,
+      email: email
+    },
+    message: 'Authenticated successfully'
+  });
 }));
 
 export default router;
