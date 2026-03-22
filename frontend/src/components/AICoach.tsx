@@ -7,6 +7,7 @@ import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { useChat, type ChatMessage } from '../hooks/api/useChat';
 import ReactMarkdown from 'react-markdown';
+import { speechService } from './speech';
 
 interface Message {
   id: string;
@@ -75,7 +76,34 @@ export function AICoach() {
   const [language, setLanguage] = useState<'en' | 'sw'>('en');
 
   const { mutateAsync: sendMessage, isPending: isTyping } = useChat();
+  const [isListening, setIsListening] = useState(false);
+  //voice handler
+  const handleVoiceInput = () => {
+  if (!speechService.isSupported()) {
+    alert('Speech recognition not supported in this browser');
+    return;
+  }
 
+  speechService.start({
+    language,
+    onStart: () => setIsListening(true),
+
+    onResult: (text) => {
+      setInputMessage(text);
+
+    },
+
+    onError: (err) => {
+      console.error(err);
+      setIsListening(false);
+    },
+
+    onEnd: () => setIsListening(false),
+  });
+};
+
+
+  
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('en-KE', { 
       hour: '2-digit', 
@@ -108,10 +136,13 @@ export function AICoach() {
         message: currentInput,
         history
       });
+      // Handle both response formats (with or without success flag)
+      const responseText = data.success ? data.response : data.response;
+      
 
       const botResponse: Message = {
         id: Date.now().toString(),
-        content: data.response,
+        content: responseText,
         isBot: true,
         timestamp: new Date(),
         language
@@ -269,6 +300,15 @@ export function AICoach() {
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                   className="flex-1"
                 />
+                {/* 🎤 Voice Button */}
+                <Button
+                  onClick={handleVoiceInput}
+                  //onClick={startRecording}
+                  size="sm"
+                  variant={isListening ? 'default' : 'outline'}
+                >
+                  {isListening ? '🎙️' : '🎤'}
+                </Button>
                 <Button onClick={handleSendMessage} size="sm">
                   <Send className="w-4 h-4" />
                 </Button>
