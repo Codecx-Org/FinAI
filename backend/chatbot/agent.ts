@@ -104,8 +104,9 @@ export class ChatbotAgent {
     console.log("Chatbot Agent initialized with MCP tools.");
   }
 
-  async chat(input: string, chatHistory: any[] = []) {
+  async chat(input: string, chatHistory: any[] = [], businessId?: number) {
     const messages = [
+      ...(businessId ? [new HumanMessage({ content: `System Note: The user is currently managing Business ID: ${businessId}. Always provide this businessId when calling tools that require it. Do not ask the user for the businessId unless you cannot find it in this context.` })] : []),
       ...chatHistory.map((entry) => {
         return entry.role === "assistant" ? new AIMessage({
           content: entry.content,

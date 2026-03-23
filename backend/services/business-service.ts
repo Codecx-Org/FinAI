@@ -8,8 +8,11 @@ export class BusinessService {
     mpesaShortcode?: string;
     ownerName: string;
     ownerEmail: string;
+    whatsappNumber?: string;
     password: string;
     metadata?: any;
+    businessType?: string;
+    yearsInBusiness?: string;
   }) {
     const existing = await prisma.business.findUnique({
       where: { ownerEmail: data.ownerEmail },
@@ -17,6 +20,15 @@ export class BusinessService {
 
     if (existing) {
       throw new BadRequestError('Business with this owner email already exists');
+    }
+
+    if (data.whatsappNumber) {
+      const existingWhatsapp = await prisma.business.findUnique({
+        where: { whatsappNumber: data.whatsappNumber },
+      });
+      if (existingWhatsapp) {
+        throw new BadRequestError('Business with this WhatsApp number already exists');
+      }
     }
 
     if (data.mpesaShortcode) {
@@ -53,6 +65,12 @@ export class BusinessService {
   async getBusinessByEmail(email: string) {
     return prisma.business.findUnique({
       where: { ownerEmail: email },
+    });
+  }
+
+  async getBusinessByWhatsapp(whatsappNumber: string) {
+    return prisma.business.findUnique({
+      where: { whatsappNumber },
     });
   }
 

@@ -29,6 +29,8 @@ model Business {
   mpesaShortcode String?    @unique
   ownerName      String
   ownerEmail     String     @unique
+  whatsappNumber String?    @unique 
+  ownerPhone     String?
   password       String     @default("owner@business")
   businessType   String?
   yearsInBusiness String?

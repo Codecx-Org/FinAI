@@ -7,6 +7,7 @@
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
+  binary targets=["native","windows","debian-open ssl-3.0x"]
 }
 
 datasource db {
@@ -29,6 +30,8 @@ model Business {
   mpesaShortcode  String?  @unique
   ownerName       String
   ownerEmail      String   @unique
+  whatsappNumber  String?  @unique
+  ownerPhone      String?
   password        String   @default("owner@business")
   businessType    String?
   yearsInBusiness String?

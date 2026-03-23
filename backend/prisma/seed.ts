@@ -5,6 +5,7 @@
 
 import { PrismaClient } from '../generated/prisma';
 import { faker } from '@faker-js/faker';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -32,6 +33,8 @@ async function main() {
   const productsByBusiness = new Map<number, any[]>();
   const customersByBusiness = new Map<number, any[]>();
 
+  const hashedPassword = await bcrypt.hash('owner.business', 10);
+
   // ── 1. BUSINESSES (exactly 55) ─────────────────────────────────────
   console.log('Creating 55 businesses...');
   for (let i = 0; i < NUM_BUSINESSES; i++) {
@@ -41,6 +44,11 @@ async function main() {
         mpesaShortcode: faker.string.numeric(6),
         ownerName: faker.person.fullName(),
         ownerEmail: faker.internet.email({ provider: 'gmail.com' }),
+        whatsappNumber: `07${faker.string.numeric(8)}`,
+        ownerPhone: `07${faker.string.numeric(8)}`,
+        password: hashedPassword,
+        businessType: faker.helpers.arrayElement(['Retail Store', 'Restaurant', 'Services', 'Manufacturing', 'Agriculture', 'Technology']),
+        yearsInBusiness: faker.helpers.arrayElement(['0-1', '1-2', '2-5', '5-10', '10+']),
         metadata: {
           county: faker.location.state({ abbreviated: true }),
           registrationDate: faker.date.past({ years: 4 }).toISOString(),
