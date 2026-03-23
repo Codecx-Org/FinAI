@@ -126,6 +126,8 @@ exports.Prisma.BusinessScalarFieldEnum = {
   mpesaShortcode: 'mpesaShortcode',
   ownerName: 'ownerName',
   ownerEmail: 'ownerEmail',
+  whatsappNumber: 'whatsappNumber',
+  ownerPhone: 'ownerPhone',
   password: 'password',
   businessType: 'businessType',
   yearsInBusiness: 'yearsInBusiness',

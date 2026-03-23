@@ -157,7 +157,7 @@ if (cluster.isPrimary && process.env.NODE_ENV !== 'test') {
   });
 } else if (!cluster.isPrimary || process.env.NODE_ENV === 'test') {
   // Worker process or test environment: Start Express server and background tasks
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT || 3001;
   const server = app.listen(PORT, () => {
     logger.info(`Process ${process.pid} started web server on port ${PORT}`);
   });

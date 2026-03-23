@@ -1670,6 +1670,8 @@ export namespace Prisma {
     mpesaShortcode: string | null
     ownerName: string | null
     ownerEmail: string | null
+    whatsappNumber: string | null
+    ownerPhone: string | null
     password: string | null
     businessType: string | null
     yearsInBusiness: string | null
@@ -1683,6 +1685,8 @@ export namespace Prisma {
     mpesaShortcode: string | null
     ownerName: string | null
     ownerEmail: string | null
+    whatsappNumber: string | null
+    ownerPhone: string | null
     password: string | null
     businessType: string | null
     yearsInBusiness: string | null
@@ -1696,6 +1700,8 @@ export namespace Prisma {
     mpesaShortcode: number
     ownerName: number
     ownerEmail: number
+    whatsappNumber: number
+    ownerPhone: number
     password: number
     businessType: number
     yearsInBusiness: number
@@ -1720,6 +1726,8 @@ export namespace Prisma {
     mpesaShortcode?: true
     ownerName?: true
     ownerEmail?: true
+    whatsappNumber?: true
+    ownerPhone?: true
     password?: true
     businessType?: true
     yearsInBusiness?: true
@@ -1733,6 +1741,8 @@ export namespace Prisma {
     mpesaShortcode?: true
     ownerName?: true
     ownerEmail?: true
+    whatsappNumber?: true
+    ownerPhone?: true
     password?: true
     businessType?: true
     yearsInBusiness?: true
@@ -1746,6 +1756,8 @@ export namespace Prisma {
     mpesaShortcode?: true
     ownerName?: true
     ownerEmail?: true
+    whatsappNumber?: true
+    ownerPhone?: true
     password?: true
     businessType?: true
     yearsInBusiness?: true
@@ -1847,6 +1859,8 @@ export namespace Prisma {
     mpesaShortcode: string | null
     ownerName: string
     ownerEmail: string
+    whatsappNumber: string | null
+    ownerPhone: string | null
     password: string
     businessType: string | null
     yearsInBusiness: string | null
@@ -1880,6 +1894,8 @@ export namespace Prisma {
     mpesaShortcode?: boolean
     ownerName?: boolean
     ownerEmail?: boolean
+    whatsappNumber?: boolean
+    ownerPhone?: boolean
     password?: boolean
     businessType?: boolean
     yearsInBusiness?: boolean
@@ -1900,6 +1916,8 @@ export namespace Prisma {
     mpesaShortcode?: boolean
     ownerName?: boolean
     ownerEmail?: boolean
+    whatsappNumber?: boolean
+    ownerPhone?: boolean
     password?: boolean
     businessType?: boolean
     yearsInBusiness?: boolean
@@ -1914,6 +1932,8 @@ export namespace Prisma {
     mpesaShortcode?: boolean
     ownerName?: boolean
     ownerEmail?: boolean
+    whatsappNumber?: boolean
+    ownerPhone?: boolean
     password?: boolean
     businessType?: boolean
     yearsInBusiness?: boolean
@@ -1928,6 +1948,8 @@ export namespace Prisma {
     mpesaShortcode?: boolean
     ownerName?: boolean
     ownerEmail?: boolean
+    whatsappNumber?: boolean
+    ownerPhone?: boolean
     password?: boolean
     businessType?: boolean
     yearsInBusiness?: boolean
@@ -1936,7 +1958,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type BusinessOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "mpesaShortcode" | "ownerName" | "ownerEmail" | "password" | "businessType" | "yearsInBusiness" | "metadata" | "createdAt" | "updatedAt", ExtArgs["result"]["business"]>
+  export type BusinessOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "mpesaShortcode" | "ownerName" | "ownerEmail" | "whatsappNumber" | "ownerPhone" | "password" | "businessType" | "yearsInBusiness" | "metadata" | "createdAt" | "updatedAt", ExtArgs["result"]["business"]>
   export type BusinessInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customers?: boolean | Business$customersArgs<ExtArgs>
     orders?: boolean | Business$ordersArgs<ExtArgs>
@@ -1963,6 +1985,8 @@ export namespace Prisma {
       mpesaShortcode: string | null
       ownerName: string
       ownerEmail: string
+      whatsappNumber: string | null
+      ownerPhone: string | null
       password: string
       businessType: string | null
       yearsInBusiness: string | null
@@ -2402,6 +2426,8 @@ export namespace Prisma {
     readonly mpesaShortcode: FieldRef<"Business", 'String'>
     readonly ownerName: FieldRef<"Business", 'String'>
     readonly ownerEmail: FieldRef<"Business", 'String'>
+    readonly whatsappNumber: FieldRef<"Business", 'String'>
+    readonly ownerPhone: FieldRef<"Business", 'String'>
     readonly password: FieldRef<"Business", 'String'>
     readonly businessType: FieldRef<"Business", 'String'>
     readonly yearsInBusiness: FieldRef<"Business", 'String'>
@@ -9963,6 +9989,8 @@ export namespace Prisma {
     mpesaShortcode: 'mpesaShortcode',
     ownerName: 'ownerName',
     ownerEmail: 'ownerEmail',
+    whatsappNumber: 'whatsappNumber',
+    ownerPhone: 'ownerPhone',
     password: 'password',
     businessType: 'businessType',
     yearsInBusiness: 'yearsInBusiness',
@@ -10199,6 +10227,8 @@ export namespace Prisma {
     mpesaShortcode?: StringNullableFilter<"Business"> | string | null
     ownerName?: StringFilter<"Business"> | string
     ownerEmail?: StringFilter<"Business"> | string
+    whatsappNumber?: StringNullableFilter<"Business"> | string | null
+    ownerPhone?: StringNullableFilter<"Business"> | string | null
     password?: StringFilter<"Business"> | string
     businessType?: StringNullableFilter<"Business"> | string | null
     yearsInBusiness?: StringNullableFilter<"Business"> | string | null
@@ -10218,6 +10248,8 @@ export namespace Prisma {
     mpesaShortcode?: SortOrderInput | SortOrder
     ownerName?: SortOrder
     ownerEmail?: SortOrder
+    whatsappNumber?: SortOrderInput | SortOrder
+    ownerPhone?: SortOrderInput | SortOrder
     password?: SortOrder
     businessType?: SortOrderInput | SortOrder
     yearsInBusiness?: SortOrderInput | SortOrder
@@ -10235,11 +10267,13 @@ export namespace Prisma {
     id?: number
     mpesaShortcode?: string
     ownerEmail?: string
+    whatsappNumber?: string
     AND?: BusinessWhereInput | BusinessWhereInput[]
     OR?: BusinessWhereInput[]
     NOT?: BusinessWhereInput | BusinessWhereInput[]
     name?: StringFilter<"Business"> | string
     ownerName?: StringFilter<"Business"> | string
+    ownerPhone?: StringNullableFilter<"Business"> | string | null
     password?: StringFilter<"Business"> | string
     businessType?: StringNullableFilter<"Business"> | string | null
     yearsInBusiness?: StringNullableFilter<"Business"> | string | null
@@ -10251,7 +10285,7 @@ export namespace Prisma {
     products?: ProductListRelationFilter
     expenses?: ExpensesListRelationFilter
     sales?: SalesListRelationFilter
-  }, "id" | "mpesaShortcode" | "ownerEmail">
+  }, "id" | "mpesaShortcode" | "ownerEmail" | "whatsappNumber">
 
   export type BusinessOrderByWithAggregationInput = {
     id?: SortOrder
@@ -10259,6 +10293,8 @@ export namespace Prisma {
     mpesaShortcode?: SortOrderInput | SortOrder
     ownerName?: SortOrder
     ownerEmail?: SortOrder
+    whatsappNumber?: SortOrderInput | SortOrder
+    ownerPhone?: SortOrderInput | SortOrder
     password?: SortOrder
     businessType?: SortOrderInput | SortOrder
     yearsInBusiness?: SortOrderInput | SortOrder
@@ -10281,6 +10317,8 @@ export namespace Prisma {
     mpesaShortcode?: StringNullableWithAggregatesFilter<"Business"> | string | null
     ownerName?: StringWithAggregatesFilter<"Business"> | string
     ownerEmail?: StringWithAggregatesFilter<"Business"> | string
+    whatsappNumber?: StringNullableWithAggregatesFilter<"Business"> | string | null
+    ownerPhone?: StringNullableWithAggregatesFilter<"Business"> | string | null
     password?: StringWithAggregatesFilter<"Business"> | string
     businessType?: StringNullableWithAggregatesFilter<"Business"> | string | null
     yearsInBusiness?: StringNullableWithAggregatesFilter<"Business"> | string | null
@@ -10719,6 +10757,8 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    whatsappNumber?: string | null
+    ownerPhone?: string | null
     password?: string
     businessType?: string | null
     yearsInBusiness?: string | null
@@ -10738,6 +10778,8 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    whatsappNumber?: string | null
+    ownerPhone?: string | null
     password?: string
     businessType?: string | null
     yearsInBusiness?: string | null
@@ -10756,6 +10798,8 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    whatsappNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerPhone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     businessType?: NullableStringFieldUpdateOperationsInput | string | null
     yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10775,6 +10819,8 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    whatsappNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerPhone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     businessType?: NullableStringFieldUpdateOperationsInput | string | null
     yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10794,6 +10840,8 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    whatsappNumber?: string | null
+    ownerPhone?: string | null
     password?: string
     businessType?: string | null
     yearsInBusiness?: string | null
@@ -10807,6 +10855,8 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    whatsappNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerPhone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     businessType?: NullableStringFieldUpdateOperationsInput | string | null
     yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10821,6 +10871,8 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    whatsappNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerPhone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     businessType?: NullableStringFieldUpdateOperationsInput | string | null
     yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11371,6 +11423,8 @@ export namespace Prisma {
     mpesaShortcode?: SortOrder
     ownerName?: SortOrder
     ownerEmail?: SortOrder
+    whatsappNumber?: SortOrder
+    ownerPhone?: SortOrder
     password?: SortOrder
     businessType?: SortOrder
     yearsInBusiness?: SortOrder
@@ -11389,6 +11443,8 @@ export namespace Prisma {
     mpesaShortcode?: SortOrder
     ownerName?: SortOrder
     ownerEmail?: SortOrder
+    whatsappNumber?: SortOrder
+    ownerPhone?: SortOrder
     password?: SortOrder
     businessType?: SortOrder
     yearsInBusiness?: SortOrder
@@ -11402,6 +11458,8 @@ export namespace Prisma {
     mpesaShortcode?: SortOrder
     ownerName?: SortOrder
     ownerEmail?: SortOrder
+    whatsappNumber?: SortOrder
+    ownerPhone?: SortOrder
     password?: SortOrder
     businessType?: SortOrder
     yearsInBusiness?: SortOrder
@@ -13147,6 +13205,8 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    whatsappNumber?: string | null
+    ownerPhone?: string | null
     password?: string
     businessType?: string | null
     yearsInBusiness?: string | null
@@ -13165,6 +13225,8 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    whatsappNumber?: string | null
+    ownerPhone?: string | null
     password?: string
     businessType?: string | null
     yearsInBusiness?: string | null
@@ -13227,6 +13289,8 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    whatsappNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerPhone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     businessType?: NullableStringFieldUpdateOperationsInput | string | null
     yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13245,6 +13309,8 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    whatsappNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerPhone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     businessType?: NullableStringFieldUpdateOperationsInput | string | null
     yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13278,6 +13344,8 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    whatsappNumber?: string | null
+    ownerPhone?: string | null
     password?: string
     businessType?: string | null
     yearsInBusiness?: string | null
@@ -13296,6 +13364,8 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    whatsappNumber?: string | null
+    ownerPhone?: string | null
     password?: string
     businessType?: string | null
     yearsInBusiness?: string | null
@@ -13359,6 +13429,8 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    whatsappNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerPhone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     businessType?: NullableStringFieldUpdateOperationsInput | string | null
     yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13377,6 +13449,8 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    whatsappNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerPhone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     businessType?: NullableStringFieldUpdateOperationsInput | string | null
     yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13410,6 +13484,8 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    whatsappNumber?: string | null
+    ownerPhone?: string | null
     password?: string
     businessType?: string | null
     yearsInBusiness?: string | null
@@ -13428,6 +13504,8 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    whatsappNumber?: string | null
+    ownerPhone?: string | null
     password?: string
     businessType?: string | null
     yearsInBusiness?: string | null
@@ -13531,6 +13609,8 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    whatsappNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerPhone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     businessType?: NullableStringFieldUpdateOperationsInput | string | null
     yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13549,6 +13629,8 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    whatsappNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerPhone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     businessType?: NullableStringFieldUpdateOperationsInput | string | null
     yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13636,6 +13718,8 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    whatsappNumber?: string | null
+    ownerPhone?: string | null
     password?: string
     businessType?: string | null
     yearsInBusiness?: string | null
@@ -13654,6 +13738,8 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    whatsappNumber?: string | null
+    ownerPhone?: string | null
     password?: string
     businessType?: string | null
     yearsInBusiness?: string | null
@@ -13763,6 +13849,8 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    whatsappNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerPhone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     businessType?: NullableStringFieldUpdateOperationsInput | string | null
     yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13781,6 +13869,8 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    whatsappNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerPhone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     businessType?: NullableStringFieldUpdateOperationsInput | string | null
     yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13846,6 +13936,8 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    whatsappNumber?: string | null
+    ownerPhone?: string | null
     password?: string
     businessType?: string | null
     yearsInBusiness?: string | null
@@ -13864,6 +13956,8 @@ export namespace Prisma {
     mpesaShortcode?: string | null
     ownerName: string
     ownerEmail: string
+    whatsappNumber?: string | null
+    ownerPhone?: string | null
     password?: string
     businessType?: string | null
     yearsInBusiness?: string | null
@@ -13951,6 +14045,8 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    whatsappNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerPhone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     businessType?: NullableStringFieldUpdateOperationsInput | string | null
     yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13969,6 +14065,8 @@ export namespace Prisma {
     mpesaShortcode?: NullableStringFieldUpdateOperationsInput | string | null
     ownerName?: StringFieldUpdateOperationsInput | string
     ownerEmail?: StringFieldUpdateOperationsInput | string
+    whatsappNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerPhone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     businessType?: NullableStringFieldUpdateOperationsInput | string | null
     yearsInBusiness?: NullableStringFieldUpdateOperationsInput | string | null
