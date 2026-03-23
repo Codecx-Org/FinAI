@@ -1,24 +1,22 @@
 // prisma/seed.ts
-// ✅ Strictly 50–80 records per table (exactly in the ranges below)
-// Business: 55 | Product: 65 | Customer: 70 | Expenses: 60 | Order: 58 | OrderItem: 58 | Sales: 58
-// All relations respected, realistic Kenyan-style data, proper ordering, totalAmount calculated
+// ✅ Strictly matches schema.prisma shapes and constraints
+// ✅ Each business has at least 5 Products, 5 Expenses, 5 Customers, and 5 Orders/Sales.
+// ✅ Unique constraints handled for emails, phone numbers, and shortcodes.
 
-import { PrismaClient } from '../generated/prisma';
+import { PrismaClient, OrderStatus } from '../generated/prisma';
 import { faker } from '@faker-js/faker';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-const NUM_BUSINESSES = 55;
-const NUM_PRODUCTS = 65;
-const NUM_CUSTOMERS = 70;
-const NUM_EXPENSES = 60;
-const NUM_ORDERS = 58;
+const NUM_BUSINESSES = 15;
+const MIN_PER_BUSINESS = 5;
+const MAX_PER_BUSINESS = 8;
 
 async function main() {
-  console.log('🌱 Starting strict seed (50–80 records per table)...');
+  console.log('🌱 Starting enriched seed (Schema-Strict)...');
 
-  // === CLEANUP (reverse dependency order) ===
+  // === CLEANUP (Reverse dependency order) ===
   await prisma.orderItem.deleteMany({});
   await prisma.sales.deleteMany({});
   await prisma.order.deleteMany({});
@@ -29,199 +27,178 @@ async function main() {
 
   console.log('✅ Database cleaned. Creating data...');
 
-  const businesses: any[] = [];
-  const productsByBusiness = new Map<number, any[]>();
-  const customersByBusiness = new Map<number, any[]>();
-
   const hashedPassword = await bcrypt.hash('owner.business', 10);
+  
+  // Sets to track uniqueness across the entire seed run
+  const usedEmails = new Set<string>();
+  const usedWhatsapp = new Set<string>();
+  const usedShortcodes = new Set<string>();
 
-  // ── 1. BUSINESSES (exactly 55) ─────────────────────────────────────
-  console.log('Creating 55 businesses...');
+  const getUniqueEmail = (base: string) => {
+    let email = base.toLowerCase();
+    let counter = 1;
+    while (usedEmails.has(email)) {
+      email = `${counter}_${base}`.toLowerCase();
+      counter++;
+    }
+    usedEmails.add(email);
+    return email;
+  };
+
+  const getUniqueWhatsapp = () => {
+    let num = `07${faker.string.numeric(8)}`;
+    while (usedWhatsapp.has(num)) {
+      num = `07${faker.string.numeric(8)}`;
+    }
+    usedWhatsapp.add(num);
+    return num;
+  };
+
+  const getUniqueShortcode = () => {
+    let code = faker.string.numeric(6);
+    while (usedShortcodes.has(code)) {
+      code = faker.string.numeric(6);
+    }
+    usedShortcodes.add(code);
+    return code;
+  };
+
+  const expenseTypes = [
+    'Rent', 'Electricity', 'Water', 'Internet', 'Transport', 'Marketing',
+    'Salaries', 'Stock Purchase', 'Repairs', 'Licenses', 'Security', 'Packaging',
+  ];
+
   for (let i = 0; i < NUM_BUSINESSES; i++) {
+    // 1. Create Business
     const business = await prisma.business.create({
       data: {
-        name: `${faker.company.name()} ${faker.location.city()} Branch`,
-        mpesaShortcode: faker.string.numeric(6),
+        name: `${faker.company.name()} ${faker.location.city()}`,
+        mpesaShortcode: getUniqueShortcode(),
         ownerName: faker.person.fullName(),
-        ownerEmail: faker.internet.email({ provider: 'gmail.com' }),
-        whatsappNumber: `07${faker.string.numeric(8)}`,
+        ownerEmail: getUniqueEmail(faker.internet.email()),
+        whatsappNumber: getUniqueWhatsapp(),
         ownerPhone: `07${faker.string.numeric(8)}`,
         password: hashedPassword,
         businessType: faker.helpers.arrayElement(['Retail Store', 'Restaurant', 'Services', 'Manufacturing', 'Agriculture', 'Technology']),
         yearsInBusiness: faker.helpers.arrayElement(['0-1', '1-2', '2-5', '5-10', '10+']),
         metadata: {
           county: faker.location.state({ abbreviated: true }),
-          registrationDate: faker.date.past({ years: 4 }).toISOString(),
+          industry: faker.commerce.department(),
         },
-        createdAt: faker.date.past({ years: 3 }),
+        createdAt: faker.date.past({ years: 2 }),
       },
     });
-    businesses.push(business);
-    productsByBusiness.set(business.id, []);
-    customersByBusiness.set(business.id, []);
+
+    console.log(`  Processing Business [ID: ${business.id}]: ${business.name}...`);
+
+    // 2. Create Products
+    const products = [];
+    const numProducts = faker.number.int({ min: MIN_PER_BUSINESS, max: MAX_PER_BUSINESS });
+    const isStruggling = faker.datatype.boolean({ probability: 0.2 });
+
+    for (let p = 0; p < numProducts; p++) {
+      const buyingPrice = faker.number.float({ min: 100, max: 5000, fractionDigits: 2 });
+      const margin = isStruggling ? faker.number.float({ min: 0.8, max: 1.1, fractionDigits: 2 }) : faker.number.float({ min: 1.3, max: 2.0, fractionDigits: 2 });
+      const price = Number((buyingPrice * margin).toFixed(2));
+
+      const product = await prisma.product.create({
+        data: {
+          name: faker.commerce.productName(),
+          imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+          stockQuantity: faker.number.int({ min: 10, max: 500 }),
+          price,
+          buyingPrice,
+          businessId: business.id,
+          createdAt: faker.date.between({ from: business.createdAt, to: new Date() }),
+        },
+      });
+      products.push(product);
+    }
+
+    // 3. Create Customers
+    const customers = [];
+    const numCustomers = faker.number.int({ min: MIN_PER_BUSINESS, max: MAX_PER_BUSINESS });
+    for (let c = 0; c < numCustomers; c++) {
+      const customer = await prisma.customer.create({
+        data: {
+          name: faker.person.fullName(),
+          email: getUniqueEmail(faker.internet.email()),
+          phone: `07${faker.string.numeric(8)}`,
+          businessId: business.id,
+          createdAt: faker.date.between({ from: business.createdAt, to: new Date() }),
+        },
+      });
+      customers.push(customer);
+    }
+
+    // 4. Create Expenses
+    const numExpenses = faker.number.int({ min: MIN_PER_BUSINESS, max: MAX_PER_BUSINESS });
+    for (let e = 0; e < numExpenses; e++) {
+      const isHighExpense = isStruggling && e === 0;
+      const amount = isHighExpense ? faker.number.int({ min: 100000, max: 300000 }) : faker.number.int({ min: 2000, max: 50000 });
+      const expenseType = faker.helpers.arrayElement(expenseTypes);
+
+      await prisma.expenses.create({
+        data: {
+          type: expenseType,
+          description: faker.lorem.sentence(),
+          amount,
+          isRecurring: faker.datatype.boolean(),
+          frequency: faker.helpers.arrayElement(['monthly', 'quarterly', 'yearly']),
+          businessId: business.id,
+          createdAt: faker.date.between({ from: business.createdAt, to: new Date() }),
+          // Optional: Link to a product if it's a Stock Purchase
+          ...(expenseType === 'Stock Purchase' && {
+            product: {
+              connect: { id: faker.helpers.arrayElement(products).id }
+            }
+          })
+        },
+      });
+    }
+
+    // 5. Create Orders & Sales
+    const numOrders = faker.number.int({ min: MIN_PER_BUSINESS, max: MAX_PER_BUSINESS });
+    for (let o = 0; o < numOrders; o++) {
+      const customer = faker.helpers.arrayElement(customers);
+      const product = faker.helpers.arrayElement(products);
+      const quantity = faker.number.int({ min: 1, max: 5 });
+      const totalAmount = Number((product.price * quantity).toFixed(2));
+      const orderDate = faker.date.between({ from: business.createdAt, to: new Date() });
+
+      const order = await prisma.order.create({
+        data: {
+          customerId: customer.id,
+          totalAmount,
+          status: 'paid' as OrderStatus,
+          businessId: business.id,
+          createdAt: orderDate,
+        },
+      });
+
+      await prisma.orderItem.create({
+        data: {
+          orderId: order.id,
+          productId: product.id,
+          quantity,
+        },
+      });
+
+      await prisma.sales.create({
+        data: {
+          orderId: order.id,
+          productId: product.id,
+          quantity,
+          totalAmount,
+          businessId: business.id,
+          createdAt: orderDate,
+        },
+      });
+    }
   }
 
-  // ── 2. PRODUCTS (exactly 65) ───────────────────────────────────────
-  console.log('Creating 65 products...');
-  const allProducts: any[] = [];
-
-  // First give every business at least 1 product
-  for (const business of businesses) {
-    const price = faker.number.float({ min: 150, max: 12500, fractionDigits: 2 });
-    const product = await prisma.product.create({
-      data: {
-        name: faker.commerce.productName(),
-        imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-        stockQuantity: faker.number.int({ min: 5, max: 380 }),
-        price,
-        buyingPrice: faker.number.float({ min: price * 0.4, max: price * 0.75, fractionDigits: 2 }),
-        businessId: business.id,
-        createdAt: faker.date.between({ from: business.createdAt, to: new Date() }),
-      },
-    });
-    productsByBusiness.get(business.id)!.push(product);
-    allProducts.push(product);
-  }
-
-  // Remaining 10 products randomly distributed
-  for (let i = 0; i < NUM_PRODUCTS - NUM_BUSINESSES; i++) {
-    const business = faker.helpers.arrayElement(businesses);
-    const price = faker.number.float({ min: 150, max: 12500, fractionDigits: 2 });
-    const product = await prisma.product.create({
-      data: {
-        name: faker.commerce.productName(),
-        imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-        stockQuantity: faker.number.int({ min: 5, max: 380 }),
-        price,
-        buyingPrice: faker.number.float({ min: price * 0.4, max: price * 0.75, fractionDigits: 2 }),
-        businessId: business.id,
-        createdAt: faker.date.between({ from: business.createdAt, to: new Date() }),
-      },
-    });
-    productsByBusiness.get(business.id)!.push(product);
-    allProducts.push(product);
-  }
-
-  // ── 3. CUSTOMERS (exactly 70) ──────────────────────────────────────
-  console.log('Creating 70 customers...');
-
-  // First give every business at least 1 customer
-  for (const business of businesses) {
-    const customer = await prisma.customer.create({
-      data: {
-        name: faker.person.fullName(),
-        email: faker.internet.email().toLowerCase(),
-        phone: `+254${faker.string.numeric(9)}`,
-        businessId: business.id,
-        createdAt: faker.date.between({ from: business.createdAt, to: new Date() }),
-      },
-    });
-    customersByBusiness.get(business.id)!.push(customer);
-  }
-
-  // Remaining 15 customers randomly distributed
-  for (let i = 0; i < NUM_CUSTOMERS - NUM_BUSINESSES; i++) {
-    const business = faker.helpers.arrayElement(businesses);
-    const customer = await prisma.customer.create({
-      data: {
-        name: faker.person.fullName(),
-        email: faker.internet.email().toLowerCase(),
-        phone: `+254${faker.string.numeric(9)}`,
-        businessId: business.id,
-        createdAt: faker.date.between({ from: business.createdAt, to: new Date() }),
-      },
-    });
-    customersByBusiness.get(business.id)!.push(customer);
-  }
-
-  // ── 4. EXPENSES (exactly 60) ───────────────────────────────────────
-  console.log('Creating 60 expenses...');
-  const expenseTypes = [
-    'Rent', 'Electricity', 'Water', 'Internet', 'Transport', 'Marketing',
-    'Salaries', 'Stock Purchase', 'Repairs', 'Licenses', 'Security', 'Packaging',
-  ];
-
-  for (let i = 0; i < NUM_EXPENSES; i++) {
-    const business = faker.helpers.arrayElement(businesses);
-    const amount = faker.number.int({ min: 4500, max: 750000 });
-    const isRecurring = faker.datatype.boolean({ probability: 0.7 });
-
-    await prisma.expenses.create({
-      data: {
-        type: faker.helpers.arrayElement(expenseTypes),
-        description: isRecurring ? null : faker.lorem.sentence(8),
-        amount,
-        isRecurring,
-        frequency: isRecurring ? faker.helpers.arrayElement(['monthly', 'quarterly']) : null,
-        nextDueDate: isRecurring ? faker.date.future({ years: 1 }) : null,
-        businessId: business.id as number,
-        createdAt: faker.date.between({ from: business.createdAt, to: new Date() }),
-      },
-    });
-  }
-
-  // ── 5. ORDERS + ORDERITEMS + SALES (exactly 58 orders, 58 items, 58 sales) ──
-  console.log('Creating 58 orders with 1 item each...');
-
-  const orderStatuses = ['drafted', 'created', 'pending', 'paid', 'canceled', 'failed'] as const;
-
-  for (let i = 0; i < NUM_ORDERS; i++) {
-    const business = faker.helpers.arrayElement(businesses);
-    const customer = faker.helpers.arrayElement(customersByBusiness.get(business.id)!);
-    const product = faker.helpers.arrayElement(productsByBusiness.get(business.id)!);
-
-    const status = faker.helpers.arrayElement(orderStatuses);
-    const orderDate = faker.date.between({ from: customer.createdAt!, to: new Date() });
-
-    const order = await prisma.order.create({
-      data: {
-        customerId: customer.id,
-        totalAmount: 0,
-        status,
-        createdAt: orderDate,
-        businessId: business.id,
-      },
-    });
-
-    const quantity = faker.number.int({ min: 1, max: 8 });
-    const itemTotal = product.price * quantity;
-
-    // OrderItem
-    await prisma.orderItem.create({
-      data: {
-        orderId: order.id,
-        productId: product.id,
-        quantity,
-      },
-    });
-
-    // Sales (mirrors the sale)
-    await prisma.sales.create({
-      data: {
-        orderId: order.id,
-        productId: product.id,
-        quantity,
-        totalAmount: itemTotal,
-        createdAt: orderDate,
-        businessId: business.id,
-      },
-    });
-
-    // Update order total
-    await prisma.order.update({
-      where: { id: order.id },
-      data: { totalAmount: itemTotal },
-    });
-  }
-
-  console.log('🎉 Seed completed successfully!');
-  console.log(`   Businesses   : ${NUM_BUSINESSES}`);
-  console.log(`   Products     : ${NUM_PRODUCTS}`);
-  console.log(`   Customers    : ${NUM_CUSTOMERS}`);
-  console.log(`   Expenses     : ${NUM_EXPENSES}`);
-  console.log(`   Orders       : ${NUM_ORDERS}`);
-  console.log(`   OrderItems   : ${NUM_ORDERS}`);
-  console.log(`   Sales        : ${NUM_ORDERS}`);
+  console.log(`🎉 Seed completed successfully!`);
+  console.log(`Total Businesses: ${NUM_BUSINESSES}`);
 }
 
 main()
