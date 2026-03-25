@@ -1,15 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BizSawa — Intelligent Business Management</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --teal:#00C4B4;
+  --teal-dark:#009E91;
+  --teal-light:#E6FAF9;
+  --dark:#0D1B1E;
+  --dark2:#162428;
+  --muted:#7A9097;
+  --white:#FFFFFF;
+  --card-bg:#1A2D31;
+  --border:#253A3F;
+  --light-bg:#F7F9F9;
+  --light-card:#FFFFFF;
+  --light-border:#E8EEEE;
+  --text-dark:#0D1B1E;
+  --text-muted:#5A7075;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);overflow-x:hidden;background:var(--dark)}
 
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>BizSawa MVP Development</title>
-    </head>
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 2rem;
+  background:rgba(13,27,30,0.9);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+.logo{font-size:1.35rem;font-weight:800;color:var(--teal);letter-spacing:-0.5px}
+.nav-links{display:flex;align-items:center;gap:2rem}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.9rem;transition:color .2s}
+.nav-links a:hover{color:var(--white)}
+.nav-cta{
+  background:var(--teal);color:var(--dark);
+  padding:.5rem 1.25rem;border-radius:100px;
+  font-weight:600;font-size:.875rem;text-decoration:none;
+  transition:background .2s,transform .15s;
+}
+.nav-cta:hover{background:var(--teal-dark);transform:scale(1.04)}
 
-    <body>
-      <div id="root"></div>
-      <script type="module" src="/src/main.tsx"></script>
-    </body>
-  </html>
-  
+/* ── HERO (dark) ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:8rem 1.5rem 5rem;
+  position:relative;overflow:hidden;
+  background:var(--dark);
+}
+.hero-glow{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 10%, rgba(0,196,180,.13) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 30% at 85% 85%, rgba(0,196,180,.07) 0%, transparent 60%);
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(0,196,180,.1);border:1px solid rgba(0,196,180,.25);
+  color:var(--teal);padding:.4rem 1rem;border-radius:100px;
+  font-size:.78rem;font-weight:600;letter-spacing:.04em;
+  margin-bottom:2rem;
+  animation:fadeUp .5s ease both;
+}
+.hero-badge span{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0}
+.hero h1{
+  font-size:clamp(2.6rem,7vw,5rem);
+  font-weight:800;line-height:1.08;
+  letter-spacing:-2px;color:var(--white);
+  margin-bottom:1.5rem;
+  animation:fadeUp .5s .1s ease both;
+}
+.hero h1 .accent{color:var(--teal)}
+.hero-sub{
+  font-size:1.1rem;color:var(--muted);
+  max-width:500px;margin:0 auto 2.5rem;
+  line-height:1.75;
+  animation:fadeUp .5s .2s ease both;
+}
+.hero-actions{
+  display:flex;align-items:center;gap:1rem;justify-content:center;flex-wrap:wrap;
+  animation:fadeUp .5s .3s ease both;margin-bottom:4rem;
+}
+.btn-primary{
+  background:var(--teal);color:var(--dark);
+  padding:.9rem 2rem;border-radius:100px;
+  font-weight:700;font-size:.95rem;text-decoration:none;
+  display:inline-flex;align-items:center;gap:.5rem;
+  transition:all .2s;
+}
+.btn-primary:hover{background:var(--teal-dark);transform:translateY(-2px)}
+.btn-ghost{
+  border:1.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);
+  padding:.9rem 2rem;border-radius:100px;
+  font-weight:500;font-size:.9rem;text-decoration:none;
+  transition:all .2s;
+}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal)}
+
+/* stats row */
+.hero-stats{
+  display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;
+  animation:fadeUp .5s .4s ease both;
+}
+.stat-item{text-align:center}
+.stat-num{font-size:1.8rem;font-weight:800;color:var(--white)}
+.stat-label{font-size:.75rem;color:var(--muted);margin-top:.2rem}
+.stat-div{width:1px;background:var(--border);align-self:stretch}
+
+/* ── MARQUEE ── */
+.marquee-wrap{
+  overflow:hidden;padding:1.25rem 0;
+  background:var(--dark2);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.marquee-track{
+  display:flex;gap:2.5rem;
+  animation:marquee 20s linear infinite;
+  width:max-content;
+}
+.m-item{
+  display:flex;align-items:center;gap:.6rem;
+  color:var(--muted);font-size:.85rem;white-space:nowrap;
+}
+.m-dot{width:5px;height:5px;background:var(--teal);border-radius:50%;flex-shrink:0}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── LIGHT SECTIONS ── */
+.light{background:var(--light-bg);color:var(--text-dark)}
+.light .section-label{color:var(--teal)}
+.light .section-title{color:var(--text-dark)}
+.light .section-sub{color:var(--text-muted)}
+
+section{padding:5.5rem 1.5rem}
+.container{max-width:1080px;margin:0 auto}
+.section-label{
+  display:inline-flex;align-items:center;gap:.5rem;
+  color:var(--teal);font-size:.75rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;
+}
+.section-label::before{content:'';width:18px;height:1.5px;background:var(--teal);border-radius:1px}
+.section-title{font-size:clamp(1.8rem,4vw,2.75rem);font-weight:800;letter-spacing:-1px;line-height:1.15;margin-bottom:.75rem}
+.section-sub{font-size:1rem;line-height:1.75;max-width:500px;color:var(--muted)}
+
+/* ── FEATURES GRID ── */
+.feat-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
+  gap:1.25rem;margin-top:3rem;
+}
+.feat-card{
+  background:var(--light-card);border:1px solid var(--light-border);
+  border-radius:20px;padding:1.75rem;
+  transition:border-color .2s,transform .2s,box-shadow .2s;
+}
+.feat-card:hover{
+  border-color:var(--teal);transform:translateY(-3px);
+  box-shadow:0 8px 32px rgba(0,196,180,.1);
+}
+.feat-icon{
+  width:46px;height:46px;border-radius:14px;
+  background:var(--teal-light);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;margin-bottom:1.1rem;
+}
+.feat-title{font-size:1rem;font-weight:700;color:var(--text-dark);margin-bottom:.4rem}
+.feat-desc{font-size:.875rem;color:var(--text-muted);line-height:1.65}
+
+/* ── PHONE SHOWCASE ── */
+.showcase-wrap{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:4rem;align-items:center;
+}
+@media(max-width:720px){.showcase-wrap{grid-template-columns:1fr;text-align:center}}
+.phone-outer{
+  display:flex;justify-content:center;
+  position:relative;
+}
+.phone-outer::before{
+  content:'';
+  position:absolute;inset:-20px;
+  background:radial-gradient(ellipse at 50% 50%,rgba(0,196,180,.12),transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+.phone{
+  width:240px;
+  background:#fff;
+  border-radius:32px;
+  border:2px solid #E0E8E8;
+  overflow:hidden;
+  box-shadow:0 32px 64px rgba(0,0,0,.12);
+  position:relative;z-index:1;
+}
+.p-header{
+  background:#fff;
+  padding:.6rem 1rem;
+  border-bottom:1px solid #F0F5F5;
+  text-align:center;
+}
+.p-title{font-size:.8rem;font-weight:800;color:#0D1B1E}
+.p-sub{font-size:.6rem;color:#7A9097}
+.p-body{padding:.7rem;background:#F7F9F9}
+.p-greeting{
+  background:#fff;border-radius:14px;
+  padding:.75rem;margin-bottom:.6rem;
+  text-align:center;
+  border:1px solid #E8EEEE;
+}
+.p-greet-title{font-size:.75rem;font-weight:800;color:#0D1B1E}
+.p-greet-sub{font-size:.6rem;color:#7A9097}
+.p-cards{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.5rem}
+.p-card{
+  background:#fff;border-radius:12px;
+  padding:.6rem;border:1px solid #E8EEEE;
+}
+.p-card-icon{
+  width:24px;height:24px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;margin-bottom:.3rem;
+}
+.p-card-label{font-size:.55rem;color:#7A9097}
+.p-card-val{font-size:.8rem;font-weight:800;color:#0D1B1E}
+.p-ai{
+  background:linear-gradient(135deg,#E6FAF9,#F0FBF9);
+  border-radius:12px;padding:.65rem;
+  border:1px solid rgba(0,196,180,.2);
+}
+.p-ai-label{font-size:.55rem;font-weight:700;color:var(--teal);margin-bottom:.3rem}
+.p-ai-text{font-size:.6rem;color:#5A7075;line-height:1.5}
+.p-nav{
+  display:flex;justify-content:space-around;
+  padding:.4rem .5rem;background:#fff;
+  border-top:1px solid #F0F5F5;
+}
+.p-tab{text-align:center;font-size:.55rem;color:#7A9097;flex:1}
+.p-tab.active{color:var(--teal);font-weight:600}
+.p-tab-bar{height:2px;border-radius:1px;margin:0 auto .2rem;width:18px}
+.p-tab.active .p-tab-bar{background:var(--teal)}
+.p-tab:not(.active) .p-tab-bar{background:#E8EEEE}
+
+/* checklist */
+.checklist{display:flex;flex-direction:column;gap:.65rem;margin-top:1.75rem}
+.check-item{display:flex;align-items:center;gap:.75rem;font-size:.9rem;color:var(--text-dark)}
+.check-dot{
+  width:20px;height:20px;border-radius:50%;
+  background:var(--teal-light);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:.65rem;color:var(--teal);font-weight:700;
+}
+
+/* ── STEPS ── */
+.steps-dark{background:var(--dark2)}
+.steps-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:2rem;margin-top:3rem;
+}
+.step-card{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:20px;padding:1.75rem;
+  transition:border-color .2s;
+}
+.step-card:hover{border-color:var(--teal)}
+.step-num{
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(0,196,180,.1);border:1px solid rgba(0,196,180,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;font-weight:800;color:var(--teal);
+  margin-bottom:1.1rem;
+}
+.step-title{font-size:.95rem;font-weight:700;color:var(--white);margin-bottom:.4rem}
+.step-desc{font-size:.85rem;color:var(--muted);line-height:1.65}
+
+/* ── WHO IT'S FOR ── */
+.aud-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:1rem;margin-top:2.5rem;
+}
+.aud-card{
+  background:var(--light-card);border:1px solid var(--light-border);
+  border-radius:16px;padding:1.25rem;
+  transition:border-color .2s,transform .2s;
+}
+.aud-card:hover{border-color:var(--teal);transform:translateY(-2px)}
+.aud-emoji{font-size:1.5rem;margin-bottom:.6rem}
+.aud-name{font-size:.875rem;font-weight:700;color:var(--text-dark);margin-bottom:.3rem}
+.aud-desc{font-size:.78rem;color:var(--text-muted);line-height:1.55}
+
+/* ── TESTIMONIALS ── */
+.testi-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+  gap:1.25rem;margin-top:2.5rem;
+}
+.testi{
+  background:var(--light-card);border:1px solid var(--light-border);
+  border-radius:20px;padding:1.75rem;
+}
+.testi-stars{color:#FFB800;font-size:.85rem;letter-spacing:2px;margin-bottom:.9rem}
+.testi-quote{font-size:.9rem;line-height:1.7;color:var(--text-dark);margin-bottom:1.1rem}
+.testi-author{display:flex;align-items:center;gap:.7rem}
+.testi-av{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--teal);display:flex;align-items:center;
+  justify-content:center;font-weight:700;font-size:.75rem;
+  color:var(--dark);flex-shrink:0;
+}
+.testi-name{font-size:.82rem;font-weight:600;color:var(--text-dark)}
+.testi-role{font-size:.72rem;color:var(--text-muted)}
+
+/* ── CTA DARK ── */
+.cta-section{
+  background:var(--dark);
+  border-top:1px solid var(--border);
+  text-align:center;
+}
+.cta-section .section-title{color:var(--white)}
+.cta-sub{color:var(--muted);font-size:1rem;max-width:440px;margin:1rem auto 2.5rem;line-height:1.75}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--dark2);
+  border-top:1px solid var(--border);
+  padding:2rem 1.5rem;
+  display:flex;flex-wrap:wrap;gap:1.25rem;
+  justify-content:space-between;align-items:center;
+}
+.footer-copy{font-size:.78rem;color:var(--muted)}
+.footer-links{display:flex;gap:1.5rem}
+.footer-links a{font-size:.78rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--teal)}
+
+/* ── UTILS ── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .55s ease,transform .55s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:580px){
+  nav .nav-links{display:none}
+  .hero-stats{gap:1.5rem}
+  .stat-num{font-size:1.4rem}
+  footer{flex-direction:column;align-items:flex-start;gap:.75rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">BizSawa</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#audience">Who it's for</a>
+  </div>
+  <a href="./app.html" class="nav-cta">Open App →</a>
+</nav>
+
+<!-- HERO (dark) -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge"><span></span> Built for African entrepreneurs</div>
+  <h1>Run your business<br><span class="accent">sawa sawa</span></h1>
+  <p class="hero-sub">BizSawa gives African small business owners the tools to track sales, manage stock, grow their brand, and get AI-powered advice — all in one app.</p>
+  <div class="hero-actions">
+    <a href="./app.html" class="btn-primary">Get Started Free →</a>
+    <a href="#features" class="btn-ghost">See features</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num">10K+</div><div class="stat-label">Businesses</div></div>
+    <div class="stat-div"></div>
+    <div class="stat-item"><div class="stat-num">KES 2B+</div><div class="stat-label">Sales tracked</div></div>
+    <div class="stat-div"></div>
+    <div class="stat-item"><div class="stat-num">8</div><div class="stat-label">Countries</div></div>
+    <div class="stat-div"></div>
+    <div class="stat-item"><div class="stat-num">4.8★</div><div class="stat-label">Rating</div></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="m-item"><span class="m-dot"></span>Sales Tracking</div>
+    <div class="m-item"><span class="m-dot"></span>Inventory Management</div>
+    <div class="m-item"><span class="m-dot"></span>AI Business Coach</div>
+    <div class="m-item"><span class="m-dot"></span>Social Media Generator</div>
+    <div class="m-item"><span class="m-dot"></span>Loan Information</div>
+    <div class="m-item"><span class="m-dot"></span>M-Pesa Integration</div>
+    <div class="m-item"><span class="m-dot"></span>Business Insights</div>
+    <div class="m-item"><span class="m-dot"></span>Sales Tracking</div>
+    <div class="m-item"><span class="m-dot"></span>Inventory Management</div>
+    <div class="m-item"><span class="m-dot"></span>AI Business Coach</div>
+    <div class="m-item"><span class="m-dot"></span>Social Media Generator</div>
+    <div class="m-item"><span class="m-dot"></span>Loan Information</div>
+    <div class="m-item"><span class="m-dot"></span>M-Pesa Integration</div>
+    <div class="m-item"><span class="m-dot"></span>Business Insights</div>
+  </div>
+</div>
+
+<!-- FEATURES (light) -->
+<section id="features" class="light">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Features</div>
+      <h2 class="section-title">Everything your<br>business needs</h2>
+      <p class="section-sub">Powerful tools designed around how African small businesses actually work.</p>
+    </div>
+    <div class="feat-grid reveal">
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <div class="feat-title">Sales Tracker</div>
+        <div class="feat-desc">Log every sale instantly. See daily, weekly, and monthly revenue at a glance. Know exactly what's selling and what's not.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📦</div>
+        <div class="feat-title">Inventory Manager</div>
+        <div class="feat-desc">Track stock levels in real time. Get low-stock alerts before you run out. Know your best-selling products automatically.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🤖</div>
+        <div class="feat-title">AI Business Coach</div>
+        <div class="feat-desc">Get personalised advice based on your actual sales data. Ask anything — pricing, loans, growth strategy — in plain English or Swahili.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">✨</div>
+        <div class="feat-title">Social Media Generator</div>
+        <div class="feat-desc">Create Instagram, WhatsApp, and Facebook posts in seconds. AI writes the caption and generates the image — you just share.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📈</div>
+        <div class="feat-title">Business Insights</div>
+        <div class="feat-desc">Understand your trends, peak hours, top customers, and profit margins without needing an accountant.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🏦</div>
+        <div class="feat-title">Loan & SACCO Guide</div>
+        <div class="feat-desc">See real loan products from KCB, Equity, Co-op, and SACCOs tailored to your business type.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PHONE SHOWCASE (light) -->
+<section class="light" style="padding-top:2rem;padding-bottom:5.5rem;border-top:1px solid var(--light-border)">
+  <div class="container">
+    <div class="showcase-wrap">
+      <div class="reveal">
+        <div class="section-label">App Preview</div>
+        <h2 class="section-title">Built for<br>your phone</h2>
+        <p class="section-sub">No laptops needed. Track sales from the counter, check stock from the market, get AI advice on the go.</p>
+        <div class="checklist">
+          <div class="check-item"><span class="check-dot">✓</span>Works on any Android or iOS device</div>
+          <div class="check-item"><span class="check-dot">✓</span>Available in English and Swahili</div>
+          <div class="check-item"><span class="check-dot">✓</span>M-Pesa integration built in</div>
+          <div class="check-item"><span class="check-dot">✓</span>No monthly fees to get started</div>
+        </div>
+        <div style="margin-top:2rem">
+          <a href="./app.html" class="btn-primary">Try BizSawa →</a>
+        </div>
+      </div>
+      <div class="reveal phone-outer">
+        <div class="phone">
+          <div class="p-header">
+            <div class="p-title">BizSawa</div>
+            <div class="p-sub">Intelligent Business Management</div>
+          </div>
+          <div class="p-body">
+            <div class="p-greeting">
+              <div class="p-greet-title">Good morning, Nessa! 👋</div>
+              <div class="p-greet-sub">Here's your business overview</div>
+            </div>
+            <div class="p-cards">
+              <div class="p-card">
+                <div class="p-card-icon" style="background:#E6FAF9">📈</div>
+                <div class="p-card-label">Today's Sales</div>
+                <div class="p-card-val">Ksh 14,850</div>
+              </div>
+              <div class="p-card">
+                <div class="p-card-icon" style="background:#EEF2FF">💰</div>
+                <div class="p-card-label">Total Revenue</div>
+                <div class="p-card-val">Ksh 92,400</div>
+              </div>
+              <div class="p-card">
+                <div class="p-card-icon" style="background:#FEF2F2">📉</div>
+                <div class="p-card-label">Cash Out</div>
+                <div class="p-card-val">Ksh 3,200</div>
+              </div>
+              <div class="p-card">
+                <div class="p-card-icon" style="background:#FFFBEB">📦</div>
+                <div class="p-card-label">Inventory Alerts</div>
+                <div class="p-card-val" style="color:#D97706">3 items</div>
+              </div>
+            </div>
+            <div class="p-ai">
+              <div class="p-ai-label">🤖 AI Coach</div>
+              <div class="p-ai-text">Your Chick Mash sales are up 24% this week. Consider restocking — you may run out by Thursday.</div>
+            </div>
+          </div>
+          <div class="p-nav">
+            <div class="p-tab active"><div class="p-tab-bar"></div>Home</div>
+            <div class="p-tab"><div class="p-tab-bar"></div>Sales</div>
+            <div class="p-tab"><div class="p-tab-bar"></div>Stock</div>
+            <div class="p-tab"><div class="p-tab-bar"></div>Insights</div>
+            <div class="p-tab"><div class="p-tab-bar"></div>Profile</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS (dark) -->
+<section id="how" class="steps-dark">
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <div class="section-label" style="justify-content:center">How it works</div>
+      <h2 class="section-title" style="color:var(--white)">Up and running<br>in 3 steps</h2>
+    </div>
+    <div class="steps-grid reveal">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-title">Create your account</div>
+        <div class="step-desc">Sign up with your email. Tell us about your business. Takes under 2 minutes.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-title">Add your products</div>
+        <div class="step-desc">Enter your products and starting stock levels. Connect your M-Pesa number for automatic payment tracking.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-title">Start tracking</div>
+        <div class="step-desc">Log sales as they happen. Watch your insights grow. Let the AI Coach guide your next move.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR (light) -->
+<section id="audience" class="light">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Who it's for</div>
+      <h2 class="section-title">Made for<br>real hustlers</h2>
+      <p class="section-sub">Whether you sell groceries, fix phones, or run a restaurant — BizSawa was built with your business in mind.</p>
+    </div>
+    <div class="aud-grid reveal">
+      <div class="aud-card">
+        <div class="aud-emoji">🌾</div>
+        <div class="aud-name">Agrovet & Farmers</div>
+        <div class="aud-desc">Track animal feed stock, seasonal sales, and get agri-business loan info.</div>
+      </div>
+      <div class="aud-card">
+        <div class="aud-emoji">🛒</div>
+        <div class="aud-name">Retail & Dukas</div>
+        <div class="aud-desc">Manage your shop inventory, daily sales, and customer trends without spreadsheets.</div>
+      </div>
+      <div class="aud-card">
+        <div class="aud-emoji">🍽️</div>
+        <div class="aud-name">Restaurants & Hotels</div>
+        <div class="aud-desc">Track orders, ingredients, and daily revenue. Know your most profitable meals.</div>
+      </div>
+      <div class="aud-card">
+        <div class="aud-emoji">📱</div>
+        <div class="aud-name">Services & Fundi</div>
+        <div class="aud-desc">Log service jobs, track income, and build a professional social media presence.</div>
+      </div>
+      <div class="aud-card">
+        <div class="aud-emoji">👗</div>
+        <div class="aud-name">Fashion & Boutiques</div>
+        <div class="aud-desc">Manage clothing inventory by size and style. Generate Instagram posts for new arrivals in seconds.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS (light) -->
+<section class="light" style="border-top:1px solid var(--light-border)">
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <div class="section-label" style="justify-content:center">Testimonials</div>
+      <h2 class="section-title">Trusted across Africa</h2>
+    </div>
+    <div class="testi-grid reveal">
+      <div class="testi">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"Since I started using BizSawa, I can see exactly which products make me money. I stopped selling things at a loss without even knowing it."</div>
+        <div class="testi-author">
+          <div class="testi-av">GW</div>
+          <div><div class="testi-name">Grace Wanjiku</div><div class="testi-role">Agrovet Owner, Nairobi</div></div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"The AI Coach told me exactly how much I could borrow based on my actual sales. I walked into the bank confident for the first time."</div>
+        <div class="testi-author">
+          <div class="testi-av">JM</div>
+          <div><div class="testi-name">Joseph Mutua</div><div class="testi-role">Hardware Shop, Mombasa</div></div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"I used to spend hours on Instagram posts. Now BizSawa makes them for me in 30 seconds and my page looks more professional than ever."</div>
+        <div class="testi-author">
+          <div class="testi-av">AF</div>
+          <div><div class="testi-name">Amina Farah</div><div class="testi-role">Fashion Boutique, Kisumu</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA (dark) -->
+<section class="cta-section">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label" style="justify-content:center">Get started</div>
+      <h2 class="section-title">Your business deserves<br>better tools</h2>
+      <p class="cta-sub">Join thousands of African entrepreneurs running smarter, growing faster, and stressing less with BizSawa.</p>
+      <div class="hero-actions">
+        <a href="./app.html" class="btn-primary">Create free account →</a>
+        <a href="#features" class="btn-ghost">Learn more</a>
+      </div>
+      <p style="margin-top:1.25rem;font-size:.78rem;color:var(--muted)">No credit card required · Free to get started</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">BizSawa</div>
+  <div class="footer-copy">© 2026 BizSawa. Built for African entrepreneurs.</div>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="https://github.com/Codecx-Org/FinAI" target="_blank">GitHub</a>
+  </div>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold:.1});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
