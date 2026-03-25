@@ -52,6 +52,12 @@
     build: {
       target: 'esnext',
       outDir: 'build',
+      rollupOptions: {
+        input: {
+          main: 'app.html',
+          landing: 'index.html',
+        },
+      },
     },
     server: {
       port: 3000,
