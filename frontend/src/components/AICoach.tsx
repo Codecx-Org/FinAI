@@ -34,41 +34,6 @@ const quickActions = [
   { id: '4', label: 'M-Pesa Setup', icon: Globe, query: 'Help me set up M-Pesa for my business' },
 ];
 
-const businessInsights = [
-  {
-    title: 'Chick Mash Demand Prediction',
-    insight: 'AI predicts 35% increase in chick mash demand next week due to new poultry farmers in your area. Stock up now to capture this growing market.',
-    action: 'Increase chick mash inventory',
-    type: 'prediction'
-  },
-  {
-    title: 'Layers Mash Pricing Opportunity',
-    insight: 'Current layers mash prices are 12% below optimal market rate. Consider increasing price to KES 4,200 per 70kg bag for better margins.',
-    action: 'Optimize layers mash pricing',
-    type: 'pricing'
-  },
-  {
-    title: 'Growers Mash Stock Alert',
-    insight: 'Growers mash stock is running low. Current inventory will last only 4 more days based on recent sales trends.',
-    action: 'Reorder growers mash immediately',
-    type: 'alert'
-  },
-  {
-    title: 'Peak Sales Hours',
-    insight: 'Your best sales are between 6-8 PM. Consider extending hours or promoting during this time.',
-    action: 'Extend evening hours'
-  },
-  {
-    title: 'Product Opportunity',
-    insight: 'Customers often ask for milk when buying tea. Consider stocking UHT milk.',
-    action: 'Add dairy products'
-  },
-  {
-    title: 'Payment Trends',
-    insight: '70% of your customers prefer M-Pesa. Promote this payment method.',
-    action: 'Display M-Pesa prominently'
-  }
-];
 
 export function AICoach() {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
@@ -134,7 +99,8 @@ export function AICoach() {
 
       const data = await sendMessage({
         message: currentInput,
-        history
+        history,
+        language
       });
       // Handle both response formats (with or without success flag)
       const responseText = data.success ? data.response : data.response;
@@ -203,9 +169,8 @@ export function AICoach() {
       </div>
 
       <Tabs defaultValue="chat" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="chat">Chat</TabsTrigger>
-          <TabsTrigger value="insights">Insights</TabsTrigger>
+        <TabsList className="grid w-full">
+          <TabsTrigger value="chat w-full">Chat</TabsTrigger>
         </TabsList>
         
         <TabsContent value="chat" className="space-y-4">
@@ -300,15 +265,6 @@ export function AICoach() {
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                   className="flex-1"
                 />
-                {/* 🎤 Voice Button */}
-                <Button
-                  onClick={handleVoiceInput}
-                  //onClick={startRecording}
-                  size="sm"
-                  variant={isListening ? 'default' : 'outline'}
-                >
-                  {isListening ? '🎙️' : '🎤'}
-                </Button>
                 <Button onClick={handleSendMessage} size="sm">
                   <Send className="w-4 h-4" />
                 </Button>
@@ -317,47 +273,6 @@ export function AICoach() {
           </Card>
         </TabsContent>
         
-        <TabsContent value="insights" className="space-y-4">
-          <div className="space-y-3">
-            {businessInsights.map((insight, index) => (
-              <Card key={index} className={
-                insight.type === 'prediction' ? 'border-purple-200 bg-purple-50' :
-                insight.type === 'pricing' ? 'border-green-200 bg-green-50' :
-                insight.type === 'alert' ? 'border-red-200 bg-red-50' :
-                'border-blue-200 bg-blue-50'
-              }>
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-medium flex items-center gap-2">
-                      {insight.type === 'prediction' && <TrendingUp className="w-4 h-4 text-purple-600" />}
-                      {insight.type === 'pricing' && <TrendingUp className="w-4 h-4 text-green-600" />}
-                      {insight.type === 'alert' && <AlertTriangle className="w-4 h-4 text-red-600" />}
-                      {!insight.type && <Lightbulb className="w-4 h-4 text-blue-600" />}
-                      {insight.title}
-                    </h3>
-                    <Badge variant="secondary" className={
-                      insight.type === 'prediction' ? 'bg-purple-100 text-purple-700' :
-                      insight.type === 'pricing' ? 'bg-green-100 text-green-700' :
-                      insight.type === 'alert' ? 'bg-red-100 text-red-700' :
-                      'bg-blue-100 text-blue-700'
-                    }>
-                      {insight.type === 'prediction' ? 'Demand AI' :
-                       insight.type === 'pricing' ? 'Pricing AI' :
-                       insight.type === 'alert' ? 'Stock Alert' :
-                       'Business AI'}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    {insight.insight}
-                  </p>
-                  <Button variant="outline" size="sm" className="w-full">
-                    {insight.action}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
       </Tabs>
     </div>
   );

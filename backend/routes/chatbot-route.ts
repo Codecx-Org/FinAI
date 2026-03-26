@@ -1,40 +1,18 @@
 // routes/chatbot-route.ts
 import { Router, type Response } from 'express';
 import { ChatbotAgent } from '../chatbot/agent.js';
+import { getAgentForBusiness, clearAgentCache, hasCachedAgent } from '../chatbot/agent-manager.js';
 import { asyncHandler } from '../utils/async-handler.js';
-import { authenticate} from '../utils/auth-middleware';
+import { authenticate } from '../utils/auth-middleware.js';
 import type { AuthenticatedRequest } from '../utils/auth-middleware.js';
 const router = Router();
-
-// Cache agent instances per business
-const agentCache = new Map<number, ChatbotAgent>();
-
-/**
- * Get or create a chatbot agent for a specific business
- */
-const getAgentForBusiness = async (businessId: number): Promise<ChatbotAgent> => {
-  if (!agentCache.has(businessId)) {
-    console.log(`[CHATBOT] Creating new agent for business ${businessId}`);
-    const agent = new ChatbotAgent();
-    
-    await agent.setBusinessContext(businessId);
-    await agent.initialize();
-    
-    agentCache.set(businessId, agent);
-    console.log(`[CHATBOT] Agent created and cached for business ${businessId}`);
-  } else {
-    console.log(`[CHATBOT] Using cached agent for business ${businessId}`);
-  }
-  
-  return agentCache.get(businessId)!;
-};
 
 /**
  * @route POST /api/chatbot/chat
  * @desc Send a message to the AI assistant
  */
 router.post('/chatbot/chat', authenticate, asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-  const { message, history = [] } = req.body;
+  const { message, history = [], language = 'en' } = req.body;
   const businessId = req.user?.id;
 
   // Validate request
@@ -64,7 +42,7 @@ router.post('/chatbot/chat', authenticate, asyncHandler(async (req: Authenticate
 
   try {
     const agent = await getAgentForBusiness(businessId);
-    const response = await agent.chat(message, history);
+    const response = await agent.chat(message, history, businessId, language);
     
     return res.json({
       success: true,
@@ -105,14 +83,44 @@ router.post('/chatbot/chat', authenticate, asyncHandler(async (req: Authenticate
 }));
 
 /**
+ * @route GET /api/chatbot/insights
+ * @desc Get AI-generated business insights and summaries
+ */
+router.get('/chatbot/insights', authenticate, asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  const businessId = Number(req.query.businessId) || req.user?.id;
+  
+  if (!businessId) {
+    return res.status(401).json({ 
+      success: false,
+      error: 'Unauthorized: Missing business context' 
+    });
+  }
+
+  try {
+    const agent = await getAgentForBusiness(businessId);
+    const insights = await agent.getInsights(businessId);
+    
+    return res.json(insights);
+  } catch (error: any) {
+    console.error(`[CHATBOT] Error generating insights for business ${businessId}:`, error);
+    
+    // Fallback in case of LLM error
+    return res.status(503).json({
+      success: false,
+      error: 'Insights temporarily unavailable',
+      details: error.message
+    });
+  }
+}));
+
+/**
  * @route POST /api/chatbot/clear-cache
  * @desc Clear the agent cache for the authenticated business
  */
 router.post('/chatbot/clear-cache', authenticate, asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
   const businessId = req.user?.id;
   
-  if (businessId && agentCache.has(businessId)) {
-    agentCache.delete(businessId);
+  if (businessId && clearAgentCache(businessId)) {
     console.log(`[CHATBOT] Cleared cache for business ${businessId}`);
     return res.json({ 
       success: true, 
@@ -149,7 +157,7 @@ router.get('/chatbot/health', authenticate, asyncHandler(async (req: Authenticat
       success: true,
       status: 'healthy',
       businessId,
-      cached: agentCache.has(businessId),
+      cached: hasCachedAgent(businessId),
       message: 'Chatbot is ready'
     });
   } catch (error: any) {

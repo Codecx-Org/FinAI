@@ -31,6 +31,7 @@ import orderItemRoutes from './routes/order-items-route.js';
 import webhookRoutes from './routes/payment-route.js';
 import chatbotRoutes from './routes/chatbot-route.js';
 import contentGenerationRoutes from './routes/content-generation-route.js';
+import analyticsRoutes from './routes/analytics-route.js';
 import { authenticate } from './utils/auth-middleware.js';
 
 // Load environment variables
@@ -105,6 +106,7 @@ app.use('/api', salesRoutes);
 app.use('/api', orderItemRoutes);
 app.use('/api', chatbotRoutes);
 app.use('/api', contentGenerationRoutes);
+app.use('/api', analyticsRoutes);
 app.use('/api', webhookRoutes);
 
 // Health check endpoint
@@ -157,7 +159,7 @@ if (cluster.isPrimary && process.env.NODE_ENV !== 'test') {
   });
 } else if (!cluster.isPrimary || process.env.NODE_ENV === 'test') {
   // Worker process or test environment: Start Express server and background tasks
-  const PORT = process.env.PORT || 3001;
+  const PORT = process.env.PORT || 3000;
   const server = app.listen(PORT, () => {
     logger.info(`Process ${process.pid} started web server on port ${PORT}`);
   });

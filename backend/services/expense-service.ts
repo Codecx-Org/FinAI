@@ -26,9 +26,9 @@ export class ExpenseService {
     }
   }
 
-  async getExpense(id: number) {
+  async getExpense(id: number, businessId: number) {
     const expense = await prisma.expenses.findUnique({ 
-      where: { id },
+      where: { id, businessId },
       include: { business: true }
     });
     if (!expense) throw new NotFoundError('Expense not found');
@@ -42,10 +42,10 @@ export class ExpenseService {
     });
   }
 
-  async updateExpense(id: number, data: any) {
+  async updateExpense(id: number, businessId: number, data: any) {
     try {
       return await prisma.expenses.update({
-        where: { id },
+        where: { id, businessId },
         data,
       });
     } catch (error: any) {
@@ -54,9 +54,9 @@ export class ExpenseService {
     }
   }
 
-  async deleteExpense(id: number) {
+  async deleteExpense(id: number, businessId: number) {
     try {
-      await prisma.expenses.delete({ where: { id } });
+      await prisma.expenses.delete({ where: { id, businessId } });
     } catch (error: any) {
       if (error.code === 'P2025') throw new NotFoundError('Expense not found');
       throw new InternalServerError('Failed to delete expense');

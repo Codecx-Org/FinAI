@@ -7,6 +7,7 @@ import { useSales } from '../hooks/api/useSales';
 import { useProducts } from '../hooks/api/useProducts';
 import { useExpenses } from '../hooks/api/useExpenses';
 import { useInsights } from '../hooks/api/useInsights';
+import { DashboardSkeleton } from './Skeletons';
 
 interface UserData {
   id?: number;
@@ -48,11 +49,7 @@ export function Dashboard({ userData, businessId }: DashboardProps) {
   const firstName = userData?.firstName || "there";
 
   if (isLoadingSales || isLoadingProducts || isLoadingExpenses || isLoadingInsights) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (

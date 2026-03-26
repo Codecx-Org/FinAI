@@ -11,12 +11,6 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 // CONFIG
 // ─────────────────────────────────────────────
 const PROXY_URL: string = (() => {
-  try {
-    // @ts-ignore
-    if (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_PROXY_URL)
-      // @ts-ignore
-      return (import.meta as any).env.VITE_PROXY_URL as string;
-  } catch {}
   return 'http://localhost:3001';
 })();
 
@@ -34,8 +28,8 @@ interface APIResponse {
 const generateContentViaAPI = async (
   platform: string, type: string, tone: string, description: string,
 ): Promise<APIResponse> => {
-  const token = localStorage.getItem('numeraai_token');
-  const res = await fetch(`${PROXY_URL}/api/content/generate-social-media`, {
+  const token = localStorage.getItem('bizsawa_token');
+  const res = await fetch('http://localhost:3000/api/content/generate-social-media', {
     method: 'POST',
     signal: AbortSignal.timeout(60000), // CF image gen can take ~20-30s
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },

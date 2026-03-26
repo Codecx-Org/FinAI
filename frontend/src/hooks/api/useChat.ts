@@ -9,6 +9,7 @@ export interface ChatMessage {
 export interface ChatRequest {
   message: string;
   history: ChatMessage[];
+  language?: 'en' | 'sw';
 }
 
 export interface ChatResponse {
@@ -22,7 +23,7 @@ export const useChat = () => {
   return useMutation({
     mutationFn: async (data: ChatRequest) => {
       // Get token from localStorage
-      const token = localStorage.getItem('numeraai_token');
+      const token = localStorage.getItem('bizsawa_token');
       
       if (!token) {
         throw new Error('No authentication token found. Please log in.');

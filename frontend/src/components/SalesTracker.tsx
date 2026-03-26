@@ -13,6 +13,7 @@ import { useProducts } from '../hooks/api/useProducts';
 import { useInitiatePayment, usePaymentStatus } from '../hooks/api/usePayments';
 import { useCustomers, useCreateCustomer } from '../hooks/api/useCustomers';
 import { toast } from 'sonner';
+import { SalesTrackerSkeleton } from './Skeletons';
 
 interface SalesTrackerProps {
   businessId?: number;
@@ -221,6 +222,10 @@ export function SalesTracker({ businessId }: SalesTrackerProps) {
   const pendingOrders = orders.filter(order => order.status === 'pending').length;
   const completedOrders = orders.filter(order => order.status === 'paid').length;
   const totalOrderValue = orders.filter(order => order.status === 'paid').reduce((sum, order) => sum + order.totalAmount, 0);
+
+  if (isLoadingSales || isLoadingOrders) {
+    return <SalesTrackerSkeleton />;
+  }
 
   return (
     <div className="p-4 space-y-4">

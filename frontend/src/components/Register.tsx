@@ -10,6 +10,7 @@ interface RegisterProps {
   onRegister: (userData: {
     ownerName: string;
     ownerEmail: string;
+    whatsappNumber: string;
     password: string;
     name: string;
     businessType?: string;
@@ -22,6 +23,7 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
   const [formData, setFormData] = useState({
     ownerName: '',
     ownerEmail: '',
+    whatsappNumber: '',
     password: '',
     confirmPassword: '',
     name: '',
@@ -44,6 +46,12 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
       newErrors.ownerEmail = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.ownerEmail)) {
       newErrors.ownerEmail = 'Please enter a valid email address';
+    }
+
+    if (!formData.whatsappNumber) {
+      newErrors.whatsappNumber = 'WhatsApp number is required';
+    } else if (!/^(07|01|254|\+254)\d{7,12}$/.test(formData.whatsappNumber.replace(/\s/g, ''))) {
+      newErrors.whatsappNumber = 'Please enter a valid phone number';
     }
 
     if (!formData.password) {
@@ -152,6 +160,26 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
                   </div>
                   {errors.ownerEmail && (
                     <p className="text-xs text-red-600">{errors.ownerEmail}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="whatsappNumber">WhatsApp Number</Label>
+                  <Input
+                    id="whatsappNumber"
+                    placeholder="0712345678"
+                    value={formData.whatsappNumber}
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, whatsappNumber: e.target.value }));
+                      clearFieldError('whatsappNumber');
+                    }}
+                    disabled={isLoading}
+                  />
+                  <p className="text-[10px] text-muted-foreground italic">
+                    Used for receiving AI business insights and managing your shop via WhatsApp.
+                  </p>
+                  {errors.whatsappNumber && (
+                    <p className="text-xs text-red-600">{errors.whatsappNumber}</p>
                   )}
                 </div>
               </div>

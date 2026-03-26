@@ -22,17 +22,18 @@ export class ProductService {
    * Automatically generates and updates a product image using AI.
    * 
    * @param id - The ID of the product.
+   * @param businessId - The ID of the business.
    * @param options - Generation options.
    * @returns The updated product.
    */
-  async generateProductImage(id: number, options: any = {}) {
-    const product = await prisma.product.findUnique({ where: { id } });
+  async generateProductImage(id: number, businessId: number, options: any = {}) {
+    const product = await prisma.product.findUnique({ where: { id, businessId } });
     if (!product) throw new NotFoundError('Product not found');
 
     const imageUrl = pollinationsService.generateImageUrl(product.name, options);
     
     return await prisma.product.update({
-      where: { id },
+      where: { id, businessId },
       data: { imageUrl },
       select: { id: true, name: true, stockQuantity: true, price: true, buyingPrice: true, businessId: true, imageUrl: true }
     });

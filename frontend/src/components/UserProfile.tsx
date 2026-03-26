@@ -186,6 +186,9 @@ const formatCurrency = (amount: number) =>
 
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
 export function UserProfile({ initialUserData, onLogout, businessId, onOpenAICoach }: UserProfileProps) {
+  if (!initialUserData && !mockUserData) {
+    return <UserProfileSkeleton />;
+  }
   const mergedUserData: UserData = {
     ...mockUserData,
     ...initialUserData,

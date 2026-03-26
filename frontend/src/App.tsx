@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bot, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Dashboard } from './components/Dashboard';
 import { SalesTracker } from './components/SalesTracker';
 import { AICoach } from './components/AICoach';
@@ -10,6 +11,7 @@ import { SocialMediaGenerator } from './components/SocialMediaGenerator';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
 import { BottomNavigation } from './components/BottomNavigation';
+import { SplashScreen } from './components/SplashScreen';
 import { Toaster } from 'sonner';
 import { api } from './lib/axios';
 import { toast } from 'sonner';
@@ -24,6 +26,7 @@ interface UserData {
 }
 
 export default function App() {
+  const [isLoading, setIsLoading]               = useState(true);
   const [activeTab, setActiveTab]             = useState<Tab>('home');
   const [showAI, setShowAI]                   = useState(false);
   const [showSocialMedia, setShowSocialMedia] = useState(false);
@@ -32,6 +35,13 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return !!localStorage.getItem('bizsawa_token');
   });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2700); // Increased to 2.7 seconds
+    return () => clearTimeout(timer);
+  }, []);
 
   const [userData, setUserData] = useState<UserData | null>(() => {
     const saved = localStorage.getItem('bizsawa_userdata');
@@ -134,80 +144,94 @@ export default function App() {
     }
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Toaster position="top-center" />
-        {authMode === 'login' ? (
-          <Login onLogin={handleLogin} onSwitchToRegister={() => setAuthMode('register')} />
-        ) : (
-          <Register onRegister={handleRegister} onSwitchToLogin={() => setAuthMode('login')} />
-        )}
-      </div>
-    );
-  }
-
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden">
-      <Toaster position="top-center" />
+    <div className="h-screen w-full bg-background overflow-hidden relative">
+      <AnimatePresence mode="wait">
+        {isLoading ? (
+          <SplashScreen key="splash" />
+        ) : (
+          <motion.div
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="h-full w-full"
+          >
+            {!isAuthenticated ? (
+              <div className="min-h-screen bg-background">
+                <Toaster position="top-center" />
+                {authMode === 'login' ? (
+                  <Login onLogin={handleLogin} onSwitchToRegister={() => setAuthMode('register')} />
+                ) : (
+                  <Register onRegister={handleRegister} onSwitchToLogin={() => setAuthMode('login')} />
+                )}
+              </div>
+            ) : (
+              <div className="h-full flex flex-col">
+                <Toaster position="top-center" />
 
-      {/* Header */}
-      <header className="bg-card border-b border-border p-4 flex-shrink-0">
-        <div className="max-w-md mx-auto text-center relative">
-          <h1 className="text-lg font-medium">BizSawa</h1>
-          <p className="text-xs text-muted-foreground">Intelligent Business Management</p>
-        </div>
-      </header>
+                {/* Header */}
+                <header className="bg-card border-b border-border p-4 flex-shrink-0">
+                  <div className="max-w-md mx-auto text-center relative">
+                    <h1 className="text-lg font-medium">BizSawa</h1>
+                    <p className="text-xs text-muted-foreground">Intelligent Business Management</p>
+                  </div>
+                </header>
 
-      {/* Scrollable content */}
-      <main className="w-full max-w-md mx-auto pb-20 flex-1 overflow-y-auto">
-        {renderContent()}
-      </main>
+                {/* Scrollable content */}
+                <main className="w-full max-w-md mx-auto pb-20 flex-1 overflow-y-auto">
+                  {renderContent()}
+                </main>
 
-      {/* Floating AI Button */}
-      <button
-        onClick={() => {
-          setShowAI(!showAI);
-          if (showAI) setActiveTab('home');
-          setShowSocialMedia(false);
-        }}
-        className={`fixed bottom-24 right-6 w-14 h-14 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center z-50 ${
-          showAI
-            ? 'bg-purple-600 hover:bg-purple-700 rotate-45'
-            : 'bg-purple-600 hover:bg-purple-700 hover:scale-110'
-        }`}
-        aria-label={showAI ? 'Close AI Coach' : 'Open AI Coach'}
-      >
-        <Bot className={`w-6 h-6 text-white transition-transform duration-300 ${showAI ? 'rotate-45' : ''}`} />
-      </button>
+                {/* Floating AI Button */}
+                <button
+                  onClick={() => {
+                    setShowAI(!showAI);
+                    if (showAI) setActiveTab('home');
+                    setShowSocialMedia(false);
+                  }}
+                  className={`fixed bottom-24 right-6 w-14 h-14 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center z-50 ${
+                    showAI
+                      ? 'bg-purple-600 hover:bg-purple-700 rotate-45'
+                      : 'bg-purple-600 hover:bg-purple-700 hover:scale-110'
+                  }`}
+                  aria-label={showAI ? 'Close AI Coach' : 'Open AI Coach'}
+                >
+                  <Bot className={`w-6 h-6 text-white transition-transform duration-300 ${showAI ? 'rotate-45' : ''}`} />
+                </button>
 
-      {/* Social Media FAB */}
-      <button
-        onClick={() => {
-          setShowSocialMedia(!showSocialMedia);
-          if (showSocialMedia) setActiveTab('home');
-          setShowAI(false);
-        }}
-        className={`fixed right-6 w-14 h-14 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center z-50 ${
-          showSocialMedia
-            ? 'bg-[#00C4B4] hover:bg-[#00B3A6] rotate-45 bottom-40'
-            : 'bg-[#00C4B4] hover:bg-[#00B3A6] hover:scale-110 bottom-40'
-        }`}
-        style={{ boxShadow: '0 4px 12px rgba(0, 196, 180, 0.3), 0 2px 4px rgba(0, 196, 180, 0.2)' }}
-        aria-label={showSocialMedia ? 'Close Social Media Generator' : 'Open Social Media Generator'}
-      >
-        <Sparkles className={`w-6 h-6 text-white transition-transform duration-300 ${showSocialMedia ? 'rotate-45' : ''}`} />
-      </button>
+                {/* Social Media FAB */}
+                <button
+                  onClick={() => {
+                    setShowSocialMedia(!showSocialMedia);
+                    if (showSocialMedia) setActiveTab('home');
+                    setShowAI(false);
+                  }}
+                  className={`fixed right-6 w-14 h-14 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center z-50 ${
+                    showSocialMedia
+                      ? 'bg-[#00C4B4] hover:bg-[#00B3A6] rotate-45 bottom-40'
+                      : 'bg-[#00C4B4] hover:bg-[#00B3A6] hover:scale-110 bottom-40'
+                  }`}
+                  style={{ boxShadow: '0 4px 12px rgba(0, 196, 180, 0.3), 0 2px 4px rgba(0, 196, 180, 0.2)' }}
+                  aria-label={showSocialMedia ? 'Close Social Media Generator' : 'Open Social Media Generator'}
+                >
+                  <Sparkles className={`w-6 h-6 text-white transition-transform duration-300 ${showSocialMedia ? 'rotate-45' : ''}`} />
+                </button>
 
-      {/* Bottom Navigation */}
-      <BottomNavigation
-        activeTab={activeTab}
-        onTabChange={(tab) => {
-          setActiveTab(tab);
-          setShowAI(false);
-          setShowSocialMedia(false);
-        }}
-      />
+                {/* Bottom Navigation */}
+                <BottomNavigation
+                  activeTab={activeTab}
+                  onTabChange={(tab) => {
+                    setActiveTab(tab);
+                    setShowAI(false);
+                    setShowSocialMedia(false);
+                  }}
+                />
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
