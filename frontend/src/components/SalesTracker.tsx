@@ -14,6 +14,7 @@ import { useInitiatePayment, usePaymentStatus } from '../hooks/api/usePayments';
 import { useCustomers, useCreateCustomer } from '../hooks/api/useCustomers';
 import { toast } from 'sonner';
 import { SalesTrackerSkeleton } from './Skeletons';
+import { SplashScreen } from './SplashScreen';
 
 interface SalesTrackerProps {
   businessId?: number;
@@ -224,7 +225,7 @@ export function SalesTracker({ businessId }: SalesTrackerProps) {
   const totalOrderValue = orders.filter(order => order.status === 'paid').reduce((sum, order) => sum + order.totalAmount, 0);
 
   if (isLoadingSales || isLoadingOrders) {
-    return <SalesTrackerSkeleton />;
+    return <SplashScreen />;
   }
 
   return (

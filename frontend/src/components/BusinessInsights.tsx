@@ -14,6 +14,7 @@ import { useExpenses, useCreateExpense, useDeleteExpense } from '../hooks/api/us
 import { useWeeklyOverview, useCategoryPerformance, useProfitAnalytics, useAIInsights, Timeframe } from '../hooks/api/useAnalytics';
 import { toast } from 'sonner';
 import { BusinessInsightsSkeleton } from './Skeletons';
+import { SplashScreen } from './SplashScreen';
 
 interface Goal {
   id: number;
@@ -173,7 +174,7 @@ export function BusinessInsights({ businessId }: BusinessInsightsProps) {
   };
 
   if (isLoadingExpenses || isLoadingOverview || isLoadingCategories || isLoadingProfit) {
-    return <BusinessInsightsSkeleton />;
+    return <SplashScreen />;
   }
 
   return (
