@@ -31,6 +31,7 @@ import orderItemRoutes from './routes/order-items-route.js';
 import webhookRoutes from './routes/payment-route.js';
 import chatbotRoutes from './routes/chatbot-route.js';
 import contentGenerationRoutes from './routes/content-generation-route.js';
+import analyticsRoutes from './routes/analytics-route.js';
 import { authenticate } from './utils/auth-middleware.js';
 
 // Load environment variables
@@ -105,6 +106,7 @@ app.use('/api', salesRoutes);
 app.use('/api', orderItemRoutes);
 app.use('/api', chatbotRoutes);
 app.use('/api', contentGenerationRoutes);
+app.use('/api', analyticsRoutes);
 app.use('/api', webhookRoutes);
 
 // Health check endpoint

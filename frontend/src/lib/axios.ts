@@ -11,7 +11,7 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('numeraai_token');
+    const token = localStorage.getItem('bizsawa_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

@@ -43,9 +43,9 @@ export class OrderService {
     }
   }
 
-  async getOrder(id: number) {
+  async getOrder(id: number, businessId: number) {
     const order = await prisma.order.findUnique({
-      where: { id },
+      where: { id, businessId },
       include: { orderItems: { include: { product: true } }, customer: true, sales: true, business: true },
     });
 
@@ -63,13 +63,13 @@ export class OrderService {
     });
   }
 
-  async updateOrder(id: number, data: { customerId?: number; totalAmount?: number; status?: OrderStatus; businessId?: number }) {
-    const order = await prisma.order.findUnique({ where: { id } });
+  async updateOrder(id: number, businessId: number, data: { customerId?: number; totalAmount?: number; status?: OrderStatus }) {
+    const order = await prisma.order.findUnique({ where: { id, businessId } });
     if (!order) throw new NotFoundError('Order not found');
 
     try {
       const updated = await prisma.order.update({
-        where: { id },
+        where: { id, businessId },
         data,
         include: { orderItems: true, customer: true, business: true },
       });
@@ -87,9 +87,9 @@ export class OrderService {
     }
   }
 
-  async deleteOrder(id: number) {
+  async deleteOrder(id: number, businessId: number) {
     try {
-      await prisma.order.delete({ where: { id } });
+      await prisma.order.delete({ where: { id, businessId } });
       await redisService.publish('order:deleted', JSON.stringify({ orderId: id }));
     } catch (error: any) {
       if (error.code === 'P2025') throw new NotFoundError('Order not found');

@@ -1,0 +1,54 @@
+graph TD
+    subgraph "External Integrations"
+        Mpesa[M-Pesa API]
+        Twilio[Twilio WhatsApp]
+    end
+
+    subgraph "API Gateway (Express)"
+        R_Order[Order Routes]
+        R_Pay[Payment Routes]
+        R_WA[WhatsApp Routes]
+        R_Exp[Expense Routes]
+    end
+
+    subgraph "Services Layer"
+        S_Order[Order Service]
+        S_Pay[Payment Service]
+        S_WA[WhatsApp Service]
+        S_Exp[Expense Service]
+        S_Prod[Product Service]
+    end
+
+    subgraph "Event & Job Processing"
+        Redis[(Redis Pub/Sub)]
+        Bull[BullMQ Order Workflow]
+        Cron[Node-Cron Scheduler]
+    end
+
+    subgraph "Data Storage"
+        DB[(PostgreSQL)]
+        CSV[/CSV Reports/]
+    end
+
+    %% Flow: WhatsApp Order
+    Twilio --> R_WA --> S_WA
+    S_WA --> S_Prod
+    S_WA --> S_Order
+
+    %% Flow: Payment
+    R_Order --> S_Order
+    S_Order -- "order:payment_pending" --> S_Pay
+    S_Pay --> Mpesa
+    Mpesa -- Webhook Callback --> R_Pay
+    R_Pay --> S_Pay
+    S_Pay -- "payment:completed" --> Redis
+
+    %% Flow: Workflow
+    Redis -- Trigger --> Bull
+    Bull --> S_Prod
+    Bull --> DB
+    Bull --> CSV
+
+    %% Flow: Expenses
+    Cron --> S_Exp
+    S_Exp --> DB

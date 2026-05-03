@@ -22,26 +22,27 @@ export class ProductService {
    * Automatically generates and updates a product image using AI.
    * 
    * @param id - The ID of the product.
+   * @param businessId - The ID of the business.
    * @param options - Generation options.
    * @returns The updated product.
    */
-  async generateProductImage(id: number, options: any = {}) {
-    const product = await prisma.product.findUnique({ where: { id } });
+  async generateProductImage(id: number, businessId: number, options: any = {}) {
+    const product = await prisma.product.findUnique({ where: { id, businessId } });
     if (!product) throw new NotFoundError('Product not found');
 
     const imageUrl = pollinationsService.generateImageUrl(product.name, options);
     
     return await prisma.product.update({
-      where: { id },
+      where: { id, businessId },
       data: { imageUrl },
       select: { id: true, name: true, stockQuantity: true, price: true, buyingPrice: true, businessId: true, imageUrl: true }
     });
   }
 
-  async getProduct(id: number) {
+  async getProduct(id: number,businessId: number) {
     const product = await prisma.product.findUnique({
-      where: { id },
-      include: { orderItems: true, sales: true, business: true },
+      where: { id ,businessId},
+      include: { orderItems: true, sales: true },
     });
 
     if (!product) {
@@ -50,9 +51,9 @@ export class ProductService {
     return product;
   }
 
-  async getProductFilter(filters: any) {
+  async getProductFilter(filters: any,businessId: number) {
     return await prisma.product.findMany({
-      where: filters,
+      where: { ...filters, businessId },
     });
   }
 
@@ -63,7 +64,12 @@ export class ProductService {
     });
   }
 
-  async updateProduct(id: number, data: { name?: string; stockQuantity?: number; price?: number; buyingPrice?: number; businessId?: number; imageUrl?: string }) {
+  async updateProduct(id: number, businessId: number, data: { name?: string; stockQuantity?: number; price?: number; buyingPrice?: number; imageUrl?: string }) {
+    // Verify ownership first
+    const product = await prisma.product.findUnique({ where: { id }, select: { businessId: true } });
+    if (!product || product.businessId !== businessId) {
+      throw new NotFoundError('Product not found or not accessible');
+    }
     try {
       return await prisma.product.update({
         where: { id },
@@ -78,8 +84,12 @@ export class ProductService {
     }
   }
 
-  async deleteProduct(id: number) {
-    try {
+  async deleteProduct(id: number, businessId: number) {
+    const product = await prisma.product.findUnique({ where: { id }, select: { businessId: true } });
+    if (!product || product.businessId !== businessId) {
+      throw new NotFoundError('Product not found or not accessible');
+    }
+     try {
       return await prisma.product.delete({
         where: { id },
       });

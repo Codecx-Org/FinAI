@@ -61,7 +61,7 @@ export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
         <div className="text-center">
           <h1 className="text-2xl font-medium">Welcome Back</h1>
           <p className="text-muted-foreground text-sm mt-2">
-            Karibu tena / Sign in to your NumeraAI account
+            Karibu tena / Sign in to your BizSawa account
           </p>
         </div>
 

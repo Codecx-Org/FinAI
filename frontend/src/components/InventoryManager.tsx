@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { useProducts, useCreateProduct, type Product } from '../hooks/api/useProducts';
 import { toast } from 'sonner';
+import { InventoryManagerSkeleton } from './Skeletons';
 
 interface InventoryManagerProps {
   businessId?: number;
@@ -234,13 +235,9 @@ export function InventoryManager({ businessId }: InventoryManagerProps) {
         </Dialog>
       </div>
 
-      {isLoading && (
-        <div className="flex justify-center p-8">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        </div>
-      )}
-
-      {!isLoading && (
+      {isLoading ? (
+        <InventoryManagerSkeleton />
+      ) : (
         <>
       {/* Quick Stats */}
       <div className="grid grid-cols-3 gap-3">

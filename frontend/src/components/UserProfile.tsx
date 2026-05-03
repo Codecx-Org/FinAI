@@ -1,5 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { User, Edit3, Shield, CreditCard, Phone, MapPin, Building, Calendar, Star, Trophy, TrendingUp, CheckCircle, AlertCircle, Wallet, Heart, Smartphone, Plus, LogOut, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import {
+  User, Edit3, Shield, Phone, MapPin, Building, Calendar,
+  Star, Trophy, TrendingUp, CheckCircle, Heart, Smartphone,
+  Plus, LogOut, Bot, ExternalLink, Info, Landmark, ChevronRight
+} from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -9,7 +13,6 @@ import { Progress } from './ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { useBusiness } from '../hooks/api/useBusiness';
 
 interface UserData {
   id?: number;
@@ -26,39 +29,13 @@ interface UserData {
 
 interface MobileMoneyData {
   mpesaNumber: string;
-  airtelNumber: string;
 }
 
 interface UserProfileProps {
   initialUserData?: Partial<UserData>;
   onLogout?: () => void;
-}
-
-interface LoanEligibility {
-  eligible: boolean;
-  maxAmount: number;
-  interestRate: number;
-  term: number;
-  trustScore: number;
-  factors: {
-    paymentHistory: number;
-    businessStability: number;
-    transactionVolume: number;
-    customerRatings: number;
-  };
-}
-
-interface SACCO {
-  id: string;
-  name: string;
-  description: string;
-  location: string;
-  memberCount: number;
-  maxLoanAmount: number;
-  interestRate: number;
-  requirements: string[];
-  compatibilityScore: number;
-  logo: string;
+  businessId?: number;
+  onOpenAICoach?: () => void;
 }
 
 const mockUserData: UserData = {
@@ -68,188 +45,192 @@ const mockUserData: UserData = {
   phone: '+254712345678',
   location: 'Nairobi, Kenya',
   businessType: 'Agrovet',
-  yearsInBusiness: '3'
+  yearsInBusiness: '3',
 };
 
-const mockMobileMoneyData: MobileMoneyData = {
-  mpesaNumber: '+254712345678',
-  airtelNumber: ''
-};
+const mockMobileMoneyData: MobileMoneyData = { mpesaNumber: '+254712345678' };
 
-const mockLoanData: LoanEligibility = {
-  eligible: true,
-  maxAmount: 50000,
-  interestRate: 12,
-  term: 6,
-  trustScore: 78,
-  factors: {
-    paymentHistory: 85,
-    businessStability: 75,
-    transactionVolume: 80,
-    customerRatings: 72
-  }
-};
-
-const mockSACCOs: SACCO[] = [
+// ─── Real Kenyan bank & SACCO loan products ───────────────────────────────────
+const LOAN_PRODUCTS = [
   {
     id: '1',
-    name: 'Nairobi Business SACCO',
-    description: 'Leading SACCO for Nairobi business owners with competitive rates',
-    location: 'Nairobi CBD',
-    memberCount: 2500,
-    maxLoanAmount: 100000,
-    interestRate: 10,
-    requirements: ['3+ years in business', 'Monthly turnover > KES 50,000', 'Good credit history'],
-    compatibilityScore: 92,
-    logo: '🏢'
+    institution: 'KCB Bank',
+    logo: '🏦',
+    product: 'KCB Biashara Loan',
+    type: 'bank',
+    maxAmount: 1_000_000,
+    interestRate: '13% p.a.',
+    term: 'Up to 36 months',
+    requirements: ['Business registration', '6 months bank statements', 'KRA PIN'],
+    applyUrl: 'https://www.kcbgroup.com/business/borrowing/business-loan/',
+    tag: 'Popular',
+    tagColor: 'bg-blue-100 text-blue-700',
+    suitedFor: ['Retail Store', 'Restaurant', 'Services', 'Manufacturing', 'Agrovet', 'Agriculture', 'Other'],
   },
   {
     id: '2',
-    name: 'Kenya Agrovet SACCO',
-    description: 'Specialized SACCO for agricultural and agrovet businesses',
-    location: 'Nakuru',
-    memberCount: 1800,
-    maxLoanAmount: 75000,
-    interestRate: 11,
-    requirements: ['Agrovet license', '2+ years experience', 'Regular agricultural suppliers'],
-    compatibilityScore: 88,
-    logo: '🌾'
+    institution: 'Equity Bank',
+    logo: '🏦',
+    product: 'Equity Biashara Loan',
+    type: 'bank',
+    maxAmount: 500_000,
+    interestRate: '14% p.a.',
+    term: 'Up to 24 months',
+    requirements: ['Equity account (3+ months)', 'Business permit', 'KRA PIN'],
+    applyUrl: 'https://equitygroupholdings.com/ke/borrow/sme-loans/',
+    tag: 'Fast Approval',
+    tagColor: 'bg-green-100 text-green-700',
+    suitedFor: ['Retail Store', 'Restaurant', 'Services', 'Agrovet', 'Agriculture', 'Other'],
   },
   {
     id: '3',
-    name: 'Cooperative Bank SACCO',
-    description: 'Large cooperative with extensive branch network',
-    location: 'Nationwide',
-    memberCount: 5000,
-    maxLoanAmount: 150000,
-    interestRate: 12,
-    requirements: ['Business registration', '6 months bank statements', 'Collateral or guarantor'],
-    compatibilityScore: 75,
-    logo: '🏦'
+    institution: 'Co-operative Bank',
+    logo: '🏦',
+    product: 'Co-op Biashara Loan',
+    type: 'bank',
+    maxAmount: 3_000_000,
+    interestRate: '12.5% p.a.',
+    term: 'Up to 48 months',
+    requirements: ['Co-op account', '1 year business history', 'Security/Guarantor'],
+    applyUrl: 'https://www.co-opbank.co.ke/business-banking/loans/',
+    tag: 'High Limit',
+    tagColor: 'bg-purple-100 text-purple-700',
+    suitedFor: ['Manufacturing', 'Agrovet', 'Agriculture', 'Services', 'Other'],
   },
   {
     id: '4',
-    name: 'Women Enterprise SACCO',
-    description: 'SACCO focused on women-owned businesses',
-    location: 'Nairobi & Mombasa',
-    memberCount: 3200,
-    maxLoanAmount: 60000,
-    interestRate: 9,
-    requirements: ['Women-owned business', '1+ year in operation', 'Business plan'],
-    compatibilityScore: 85,
-    logo: '👩‍💼'
+    institution: 'Stanbic Bank',
+    logo: '🏦',
+    product: 'SME Business Loan',
+    type: 'bank',
+    maxAmount: 5_000_000,
+    interestRate: '13.5% p.a.',
+    term: 'Up to 60 months',
+    requirements: ['2 years audited accounts', 'Business registration', 'Security'],
+    applyUrl: 'https://www.stanbicbank.co.ke/kenya/business/products-and-services/borrow/sme-loans',
+    tag: 'Large Loans',
+    tagColor: 'bg-orange-100 text-orange-700',
+    suitedFor: ['Manufacturing', 'Agriculture', 'Services', 'Other'],
   },
   {
     id: '5',
-    name: 'Youth Enterprise SACCO',
-    description: 'Supporting young entrepreneurs under 35 years',
-    location: 'Multiple locations',
-    memberCount: 1500,
-    maxLoanAmount: 40000,
-    interestRate: 8,
-    requirements: ['Under 35 years', 'Business registration', 'Youth enterprise certificate'],
-    compatibilityScore: 70,
-    logo: '青年'
-  }
+    institution: 'Nairobi Business SACCO',
+    logo: '🤝',
+    product: 'Business Development Loan',
+    type: 'sacco',
+    maxAmount: 100_000,
+    interestRate: '10% p.a.',
+    term: 'Up to 12 months',
+    requirements: ['SACCO membership', '3+ months savings', 'Business permit'],
+    applyUrl: 'https://www.nairobibusinesssacco.com/',
+    tag: 'Low Interest',
+    tagColor: 'bg-teal-100 text-teal-700',
+    suitedFor: ['Retail Store', 'Restaurant', 'Services', 'Agrovet', 'Agriculture', 'Other'],
+  },
+  {
+    id: '6',
+    institution: 'Kenya Agrovet SACCO',
+    logo: '🌾',
+    product: 'Agri-Business Loan',
+    type: 'sacco',
+    maxAmount: 75_000,
+    interestRate: '11% p.a.',
+    term: 'Up to 12 months',
+    requirements: ['Agrovet license', '2+ months savings', 'Regular supplier receipts'],
+    applyUrl: '#',
+    tag: 'Agrovet Specialist',
+    tagColor: 'bg-green-100 text-green-700',
+    suitedFor: ['Agrovet', 'Agriculture'],
+  },
+  {
+    id: '7',
+    institution: 'Women Enterprise Fund',
+    logo: '👩‍💼',
+    product: 'WEF Business Loan',
+    type: 'government',
+    maxAmount: 500_000,
+    interestRate: '8% p.a.',
+    term: 'Up to 36 months',
+    requirements: ['Women-owned business', 'Business registration', 'Group or individual'],
+    applyUrl: 'https://www.wef.co.ke/',
+    tag: 'Government',
+    tagColor: 'bg-yellow-100 text-yellow-700',
+    suitedFor: ['Retail Store', 'Restaurant', 'Services', 'Agrovet', 'Agriculture', 'Other'],
+  },
+  {
+    id: '8',
+    institution: 'Youth Enterprise Fund',
+    logo: '🚀',
+    product: 'Youth Business Loan',
+    type: 'government',
+    maxAmount: 300_000,
+    interestRate: '8% p.a.',
+    term: 'Up to 36 months',
+    requirements: ['Under 35 years', 'Business registration', 'Business plan'],
+    applyUrl: 'https://www.youthfund.go.ke/',
+    tag: 'Government',
+    tagColor: 'bg-yellow-100 text-yellow-700',
+    suitedFor: ['Retail Store', 'Restaurant', 'Services', 'Agrovet', 'Agriculture', 'Other'],
+  },
 ];
 
 const achievements = [
-  { title: 'Consistent Earner', description: '6 months of steady revenue', icon: Trophy, earned: true },
-  { title: 'Payment Master', description: 'No late payments in 3 months', icon: CheckCircle, earned: true },
-  { title: 'Growth Champion', description: '20% month-over-month growth', icon: TrendingUp, earned: false },
-  { title: 'Customer Favorite', description: '4.5+ customer rating', icon: Heart, earned: true }
+  { title: 'Consistent Earner',  description: '6 months of steady revenue',      icon: Trophy,      earned: true  },
+  { title: 'Payment Master',     description: 'No late payments in 3 months',    icon: CheckCircle, earned: true  },
+  { title: 'Growth Champion',    description: '20% month-over-month growth',      icon: TrendingUp,  earned: false },
+  { title: 'Customer Favorite',  description: '4.5+ customer rating',            icon: Heart,       earned: true  },
 ];
 
-export function UserProfile({ initialUserData, onLogout }: UserProfileProps) {
-  // Merge initial data with mock data, prioritizing initial data
+const formatCurrency = (amount: number) =>
+  new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(amount);
+
+// ─── COMPONENT ────────────────────────────────────────────────────────────────
+export function UserProfile({ initialUserData, onLogout, businessId, onOpenAICoach }: UserProfileProps) {
+  if (!initialUserData && !mockUserData) {
+    return <UserProfileSkeleton />;
+  }
   const mergedUserData: UserData = {
     ...mockUserData,
     ...initialUserData,
-    location: initialUserData?.location || 'Nairobi, Kenya' // Default location if not provided
+    location: initialUserData?.location || 'Nairobi, Kenya',
   };
 
-  const [userData, setUserData] = useState<UserData>(mergedUserData);
-  const [loanData] = useState<LoanEligibility>(mockLoanData);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedData, setEditedData] = useState<UserData>(mergedUserData);
-  const [mobileMoneyData, setMobileMoneyData] = useState<MobileMoneyData>(mockMobileMoneyData);
+  const [userData, setUserData]                         = useState<UserData>(mergedUserData);
+  const [isEditing, setIsEditing]                       = useState(false);
+  const [editedData, setEditedData]                     = useState<UserData>(mergedUserData);
+  const [mobileMoneyData, setMobileMoneyData]           = useState<MobileMoneyData>(mockMobileMoneyData);
   const [isEditingMobileMoney, setIsEditingMobileMoney] = useState(false);
   const [editedMobileMoneyData, setEditedMobileMoneyData] = useState<MobileMoneyData>(mockMobileMoneyData);
-  const [showSACCOSelection, setShowSACCOSelection] = useState(false);
+  const [loanFilter, setLoanFilter]                     = useState<'all' | 'bank' | 'sacco' | 'government'>('all');
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-KE', {
-      style: 'currency',
-      currency: 'KES',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
+  const handleSaveProfile = () => { setUserData(editedData); setIsEditing(false); };
+  const handleCancelEdit  = () => { setEditedData(userData); setIsEditing(false); };
+  const handleSaveMobileMoney   = () => { setMobileMoneyData(editedMobileMoneyData); setIsEditingMobileMoney(false); };
+  const handleCancelMobileMoneyEdit = () => { setEditedMobileMoneyData(mobileMoneyData); setIsEditingMobileMoney(false); };
 
-  const getTrustScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    return 'text-red-600';
-  };
-
-  const getTrustScoreLabel = (score: number) => {
-    if (score >= 80) return 'Excellent';
-    if (score >= 60) return 'Good';
-    return 'Fair';
-  };
-
-  const getSACCOCompatibilityColor = (score: number) => {
-    if (score >= 85) return 'text-green-600 bg-green-100';
-    if (score >= 70) return 'text-blue-600 bg-blue-100';
-    if (score >= 50) return 'text-yellow-600 bg-yellow-100';
-    return 'text-red-600 bg-red-100';
-  };
-
-  const getSACCOCompatibilityLabel = (score: number) => {
-    if (score >= 85) return 'Excellent Match';
-    if (score >= 70) return 'Good Match';
-    if (score >= 50) return 'Fair Match';
-    return 'Low Match';
-  };
-
-  const handleSaveProfile = () => {
-    setUserData(editedData);
-    setIsEditing(false);
-  };
-
-  const handleCancelEdit = () => {
-    setEditedData(userData);
-    setIsEditing(false);
-  };
-
-  const handleSaveMobileMoney = () => {
-    setMobileMoneyData(editedMobileMoneyData);
-    setIsEditingMobileMoney(false);
-  };
-
-  const handleCancelMobileMoneyEdit = () => {
-    setEditedMobileMoneyData(mobileMoneyData);
-    setIsEditingMobileMoney(false);
-  };
+  // Filter loans by type AND business type
+  const filteredLoans = LOAN_PRODUCTS.filter(loan => {
+    const typeMatch = loanFilter === 'all' || loan.type === loanFilter;
+    const businessMatch = loan.suitedFor.includes(userData.businessType) || loan.suitedFor.includes('Other');
+    return typeMatch && businessMatch;
+  });
 
   return (
     <div className="p-4 space-y-4">
-      {/* Header */}
       <div className="text-center">
         <h2>Profile</h2>
-        <p className="text-muted-foreground text-sm">
-          Wasifu wako / Your business profile
-        </p>
+        <p className="text-muted-foreground text-sm">Wasifu wako / Your business profile</p>
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="credit">Credit</TabsTrigger>
+          <TabsTrigger value="credit">Loans</TabsTrigger>
           <TabsTrigger value="achievements">Rewards</TabsTrigger>
         </TabsList>
 
+        {/* ── PROFILE TAB ── */}
         <TabsContent value="profile" className="space-y-4">
-          {/* Profile Header */}
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-4">
@@ -268,20 +249,11 @@ export function UserProfile({ initialUserData, onLogout }: UserProfileProps) {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsEditing(!isEditing)}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => setIsEditing(!isEditing)}>
                     <Edit3 className="w-4 h-4" />
                   </Button>
                   {onLogout && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={onLogout}
-                      className="text-red-600 border-red-200 hover:bg-red-50"
-                    >
+                    <Button variant="outline" size="sm" onClick={onLogout} className="text-red-600 border-red-200 hover:bg-red-50">
                       <LogOut className="w-4 h-4" />
                     </Button>
                   )}
@@ -290,13 +262,9 @@ export function UserProfile({ initialUserData, onLogout }: UserProfileProps) {
             </CardContent>
           </Card>
 
-          {/* Profile Details */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="w-4 h-4" />
-                Personal Information
-              </CardTitle>
+              <CardTitle className="flex items-center gap-2"><User className="w-4 h-4" />Personal Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {isEditing ? (
@@ -304,55 +272,29 @@ export function UserProfile({ initialUserData, onLogout }: UserProfileProps) {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <Label htmlFor="firstName">First Name</Label>
-                      <Input
-                        id="firstName"
-                        value={editedData.firstName}
-                        onChange={(e) => setEditedData({ ...editedData, firstName: e.target.value })}
-                      />
+                      <Input id="firstName" value={editedData.firstName} onChange={e => setEditedData({ ...editedData, firstName: e.target.value })} />
                     </div>
                     <div>
                       <Label htmlFor="lastName">Last Name</Label>
-                      <Input
-                        id="lastName"
-                        value={editedData.lastName}
-                        onChange={(e) => setEditedData({ ...editedData, lastName: e.target.value })}
-                      />
+                      <Input id="lastName" value={editedData.lastName} onChange={e => setEditedData({ ...editedData, lastName: e.target.value })} />
                     </div>
                   </div>
-
                   <div>
                     <Label htmlFor="businessName">Business Name</Label>
-                    <Input
-                      id="businessName"
-                      value={editedData.businessName}
-                      onChange={(e) => setEditedData({ ...editedData, businessName: e.target.value })}
-                    />
+                    <Input id="businessName" value={editedData.businessName} onChange={e => setEditedData({ ...editedData, businessName: e.target.value })} />
                   </div>
-
                   <div>
                     <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                      id="phone"
-                      value={editedData.phone}
-                      onChange={(e) => setEditedData({ ...editedData, phone: e.target.value })}
-                    />
+                    <Input id="phone" value={editedData.phone} onChange={e => setEditedData({ ...editedData, phone: e.target.value })} />
                   </div>
-
                   <div>
                     <Label htmlFor="location">Location</Label>
-                    <Input
-                      id="location"
-                      value={editedData.location}
-                      onChange={(e) => setEditedData({ ...editedData, location: e.target.value })}
-                    />
+                    <Input id="location" value={editedData.location} onChange={e => setEditedData({ ...editedData, location: e.target.value })} />
                   </div>
-
                   <div>
                     <Label htmlFor="businessType">Business Type</Label>
-                    <Select value={editedData.businessType} onValueChange={(value) => setEditedData({ ...editedData, businessType: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
+                    <Select value={editedData.businessType} onValueChange={value => setEditedData({ ...editedData, businessType: value })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Retail Store">Retail Store</SelectItem>
                         <SelectItem value="Restaurant">Restaurant</SelectItem>
@@ -364,13 +306,10 @@ export function UserProfile({ initialUserData, onLogout }: UserProfileProps) {
                       </SelectContent>
                     </Select>
                   </div>
-
                   <div>
                     <Label htmlFor="years">Years in Business</Label>
-                    <Select value={editedData.yearsInBusiness} onValueChange={(value) => setEditedData({ ...editedData, yearsInBusiness: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
+                    <Select value={editedData.yearsInBusiness} onValueChange={value => setEditedData({ ...editedData, yearsInBusiness: value })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="0-1">0-1 years</SelectItem>
                         <SelectItem value="1-2">1-2 years</SelectItem>
@@ -379,107 +318,50 @@ export function UserProfile({ initialUserData, onLogout }: UserProfileProps) {
                       </SelectContent>
                     </Select>
                   </div>
-
                   <div className="flex gap-2 mt-4">
-                    <Button onClick={handleSaveProfile} className="flex-1">
-                      Save Changes
-                    </Button>
-                    <Button variant="outline" onClick={handleCancelEdit}>
-                      Cancel
-                    </Button>
+                    <Button onClick={handleSaveProfile} className="flex-1">Save Changes</Button>
+                    <Button variant="outline" onClick={handleCancelEdit}>Cancel</Button>
                   </div>
                 </>
               ) : (
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm">{userData.phone}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Building className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm">{userData.businessType}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm">{userData.yearsInBusiness} years in business</span>
-                  </div>
+                  <div className="flex items-center gap-2"><Phone className="w-4 h-4 text-muted-foreground" /><span className="text-sm">{userData.phone}</span></div>
+                  <div className="flex items-center gap-2"><Building className="w-4 h-4 text-muted-foreground" /><span className="text-sm">{userData.businessType}</span></div>
+                  <div className="flex items-center gap-2"><Calendar className="w-4 h-4 text-muted-foreground" /><span className="text-sm">{userData.yearsInBusiness} years in business</span></div>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* Mobile Money Integration */}
+          {/* Mobile Money */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Smartphone className="w-4 h-4" />
                 Mobile Money Integration
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsEditingMobileMoney(!isEditingMobileMoney)}
-                  className="ml-auto"
-                >
+                <Button variant="outline" size="sm" onClick={() => setIsEditingMobileMoney(!isEditingMobileMoney)} className="ml-auto">
                   <Edit3 className="w-4 h-4" />
                 </Button>
               </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Connect your M-Pesa or Airtel Money for seamless transactions
-              </p>
             </CardHeader>
             <CardContent className="space-y-4">
               {isEditingMobileMoney ? (
                 <>
                   <div>
                     <Label htmlFor="mpesa">M-Pesa Number</Label>
-                    <div className="flex gap-2">
-                      <div className="relative flex-1">
-                        <Phone className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                        <Input
-                          id="mpesa"
-                          placeholder="+254712345678"
-                          value={editedMobileMoneyData.mpesaNumber}
-                          onChange={(e) => setEditedMobileMoneyData({ 
-                            ...editedMobileMoneyData, 
-                            mpesaNumber: e.target.value 
-                          })}
-                          className="pl-10"
-                        />
-                      </div>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                      <Input id="mpesa" placeholder="+254712345678" value={editedMobileMoneyData.mpesaNumber}
+                        onChange={e => setEditedMobileMoneyData({ ...editedMobileMoneyData, mpesaNumber: e.target.value })} className="pl-10" />
                     </div>
                   </div>
-
-                  <div>
-                    <Label htmlFor="airtel">Airtel Money Number</Label>
-                    <div className="flex gap-2">
-                      <div className="relative flex-1">
-                        <Phone className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                        <Input
-                          id="airtel"
-                          placeholder="+254701234567"
-                          value={editedMobileMoneyData.airtelNumber}
-                          onChange={(e) => setEditedMobileMoneyData({ 
-                            ...editedMobileMoneyData, 
-                            airtelNumber: e.target.value 
-                          })}
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
                   <div className="flex gap-2 mt-4">
-                    <Button onClick={handleSaveMobileMoney} className="flex-1">
-                      Save Changes
-                    </Button>
-                    <Button variant="outline" onClick={handleCancelMobileMoneyEdit}>
-                      Cancel
-                    </Button>
+                    <Button onClick={handleSaveMobileMoney} className="flex-1">Save Changes</Button>
+                    <Button variant="outline" onClick={handleCancelMobileMoneyEdit}>Cancel</Button>
                   </div>
                 </>
               ) : (
                 <div className="space-y-3">
-                  {/* M-Pesa */}
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
@@ -487,39 +369,11 @@ export function UserProfile({ initialUserData, onLogout }: UserProfileProps) {
                       </div>
                       <div>
                         <p className="font-medium text-sm">M-Pesa</p>
-                        <p className="text-xs text-muted-foreground">
-                          {mobileMoneyData.mpesaNumber || 'Not connected'}
-                        </p>
+                        <p className="text-xs text-muted-foreground">{mobileMoneyData.mpesaNumber || 'Not connected'}</p>
                       </div>
                     </div>
-                    {mobileMoneyData.mpesaNumber ? (
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                    ) : (
-                      <Plus className="w-5 h-5 text-muted-foreground" />
-                    )}
+                    {mobileMoneyData.mpesaNumber ? <CheckCircle className="w-5 h-5 text-green-600" /> : <Plus className="w-5 h-5 text-muted-foreground" />}
                   </div>
-
-                  {/* Airtel Money */}
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                        <span className="text-red-700 font-medium text-sm">AM</span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-sm">Airtel Money</p>
-                        <p className="text-xs text-muted-foreground">
-                          {mobileMoneyData.airtelNumber || 'Not connected'}
-                        </p>
-                      </div>
-                    </div>
-                    {mobileMoneyData.airtelNumber ? (
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                    ) : (
-                      <Plus className="w-5 h-5 text-muted-foreground" />
-                    )}
-                  </div>
-
-                  {/* Benefits Info */}
                   <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-blue-600 mt-0.5" />
@@ -528,7 +382,6 @@ export function UserProfile({ initialUserData, onLogout }: UserProfileProps) {
                         <ul className="text-xs text-blue-600 mt-1 space-y-0.5">
                           <li>• Automatic payment tracking</li>
                           <li>• Faster transaction processing</li>
-                          <li>• Improved credit score calculations</li>
                           <li>• Real-time sales notifications</li>
                         </ul>
                       </div>
@@ -540,277 +393,153 @@ export function UserProfile({ initialUserData, onLogout }: UserProfileProps) {
           </Card>
         </TabsContent>
 
+        {/* ── LOANS TAB ── */}
         <TabsContent value="credit" className="space-y-4">
-          {/* Trust Score */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="w-4 h-4" />
-                Trust Score
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center mb-4">
-                <div className={`text-4xl font-medium ${getTrustScoreColor(loanData.trustScore)}`}>
-                  {loanData.trustScore}
+
+          {/* AI Coach CTA */}
+          <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-blue-50">
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                  <Bot className="w-5 h-5 text-white" />
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  {getTrustScoreLabel(loanData.trustScore)} Credit Rating
-                </p>
-              </div>
-              
-              <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span>Payment History</span>
-                    <span>{loanData.factors.paymentHistory}%</span>
-                  </div>
-                  <Progress value={loanData.factors.paymentHistory} className="h-2" />
-                </div>
-                
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span>Business Stability</span>
-                    <span>{loanData.factors.businessStability}%</span>
-                  </div>
-                  <Progress value={loanData.factors.businessStability} className="h-2" />
-                </div>
-                
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span>Transaction Volume</span>
-                    <span>{loanData.factors.transactionVolume}%</span>
-                  </div>
-                  <Progress value={loanData.factors.transactionVolume} className="h-2" />
-                </div>
-                
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span>Customer Ratings</span>
-                    <span>{loanData.factors.customerRatings}%</span>
-                  </div>
-                  <Progress value={loanData.factors.customerRatings} className="h-2" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Loan Eligibility */}
-          <Card className={loanData.eligible ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="w-4 h-4" />
-                Loan Eligibility
-                {loanData.eligible ? (
-                  <CheckCircle className="w-4 h-4 text-green-600" />
-                ) : (
-                  <AlertCircle className="w-4 h-4 text-red-600" />
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {loanData.eligible ? (
-                showSACCOSelection ? (
-                  <div className="space-y-4">
-                    <div className="text-center mb-4">
-                      <h3 className="font-medium text-green-700 mb-2">Choose Your SACCO</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Select the SACCO that best matches your business needs
-                      </p>
-                    </div>
-
-                    <div className="space-y-3 max-h-96 overflow-y-auto">
-                      {mockSACCOs
-                        .sort((a, b) => b.compatibilityScore - a.compatibilityScore)
-                        .map((sacco) => (
-                        <div key={sacco.id} className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                          <div className="flex items-start gap-3">
-                            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-lg">
-                              {sacco.logo}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between mb-2">
-                                <h4 className="font-medium text-sm">{sacco.name}</h4>
-                                <div className={`px-2 py-1 rounded-full text-xs font-medium ${getSACCOCompatibilityColor(sacco.compatibilityScore)}`}>
-                                  {sacco.compatibilityScore}% Match
-                                </div>
-                              </div>
-
-                              <p className="text-xs text-muted-foreground mb-2">{sacco.description}</p>
-
-                              <div className="grid grid-cols-2 gap-4 mb-3">
-                                <div>
-                                  <p className="text-xs text-muted-foreground">Max Loan</p>
-                                  <p className="font-medium text-sm">{formatCurrency(sacco.maxLoanAmount)}</p>
-                                </div>
-                                <div>
-                                  <p className="text-xs text-muted-foreground">Interest Rate</p>
-                                  <p className="font-medium text-sm">{sacco.interestRate}%</p>
-                                </div>
-                              </div>
-
-                              <div className="mb-3">
-                                <p className="text-xs font-medium text-muted-foreground mb-1">Requirements:</p>
-                                <div className="flex flex-wrap gap-1">
-                                  {sacco.requirements.slice(0, 2).map((req, index) => (
-                                    <Badge key={index} variant="outline" className="text-xs">
-                                      {req}
-                                    </Badge>
-                                  ))}
-                                  {sacco.requirements.length > 2 && (
-                                    <Badge variant="outline" className="text-xs">
-                                      +{sacco.requirements.length - 2} more
-                                    </Badge>
-                                  )}
-                                </div>
-                              </div>
-
-                              <div className="flex items-center justify-between">
-                                <div className="text-xs text-muted-foreground">
-                                  📍 {sacco.location} • 👥 {sacco.memberCount.toLocaleString()} members
-                                </div>
-                                <Button size="sm" className="text-xs">
-                                  Apply Here
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="pt-3 border-t">
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowSACCOSelection(false)}
-                        className="w-full"
-                      >
-                        Back to Loan Summary
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center">
-                        <p className="text-2xl font-medium text-green-600">
-                          {formatCurrency(loanData.maxAmount)}
-                        </p>
-                        <p className="text-xs text-muted-foreground">Maximum Amount</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-2xl font-medium text-green-600">
-                          {loanData.interestRate}%
-                        </p>
-                        <p className="text-xs text-muted-foreground">Interest Rate</p>
-                      </div>
-                    </div>
-
-                    <div className="text-center">
-                      <p className="text-sm text-muted-foreground">
-                        Loan Term: {loanData.term} months
-                      </p>
-                    </div>
-
-                    <div className="p-3 bg-white/70 rounded-lg">
-                      <p className="text-xs text-green-700 mb-2">
-                        🎉 Congratulations! You're eligible for a business loan.
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Monthly repayment would be approximately {formatCurrency(Math.round((loanData.maxAmount * (1 + loanData.interestRate / 100)) / loanData.term))}
-                      </p>
-                    </div>
-
-                    <Button
-                      className="w-full"
-                      onClick={() => setShowSACCOSelection(true)}
-                    >
-                      Apply for Loan
-                    </Button>
-                  </div>
-                )
-              ) : (
-                <div className="text-center">
-                  <p className="text-sm text-red-600 mb-2">
-                    You're not currently eligible for a loan.
+                <div className="flex-1">
+                  <p className="font-semibold text-sm text-purple-900">Want to know how much you can borrow?</p>
+                  <p className="text-xs text-purple-700 mt-1">
+                    Our AI Coach analyses your actual sales data and tells you exactly how much loan you could realistically afford to repay — before you apply.
                   </p>
-                  <p className="text-xs text-muted-foreground mb-4">
-                    Improve your trust score by maintaining consistent sales and payments.
-                  </p>
-                  <Button variant="outline" className="w-full">
-                    Learn How to Improve
+                  <Button
+                    size="sm"
+                    className="mt-3 bg-purple-600 hover:bg-purple-700 text-white text-xs"
+                    onClick={onOpenAICoach}
+                  >
+                    <Bot className="w-3 h-3 mr-1" />
+                    Ask AI Coach about loans
                   </Button>
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
 
-          {/* Credit Tips */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Improve Your Credit Score</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
-                  <p className="text-sm">Make all M-Pesa payments on time</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
-                  <p className="text-sm">Maintain steady business transactions</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
-                  <p className="text-sm">Keep good relationships with suppliers</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
-                  <p className="text-sm">Update your business information regularly</p>
+          {/* Disclaimer */}
+          <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+            <Info className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+            <p className="text-xs text-amber-800">
+              Loan products below are from real Kenyan banks and SACCOs. Filtered for your business type ({userData.businessType}). Always verify current rates directly with the institution before applying.
+            </p>
+          </div>
+
+          {/* Filter tabs */}
+          <div className="flex gap-2 flex-wrap">
+            {(['all', 'bank', 'sacco', 'government'] as const).map(f => (
+              <button key={f} onClick={() => setLoanFilter(f)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                  loanFilter === f
+                    ? 'bg-[#00C4B4] text-white border-[#00C4B4]'
+                    : 'bg-white text-muted-foreground border-gray-200 hover:border-gray-300'
+                }`}>
+                {f === 'all' ? 'All' : f === 'bank' ? '🏦 Banks' : f === 'sacco' ? '🤝 SACCOs' : '🏛️ Government'}
+              </button>
+            ))}
+          </div>
+
+          {/* Loan cards */}
+          <div className="space-y-3">
+            {filteredLoans.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground text-sm">
+                No loan products found for this filter. Try "All".
+              </div>
+            ) : filteredLoans.map(loan => (
+              <Card key={loan.id} className="overflow-hidden">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-lg flex-shrink-0">
+                      {loan.logo}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <div>
+                          <p className="font-semibold text-sm">{loan.institution}</p>
+                          <p className="text-xs text-muted-foreground">{loan.product}</p>
+                        </div>
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${loan.tagColor}`}>
+                          {loan.tag}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2 my-3">
+                        <div className="bg-gray-50 rounded-lg p-2 text-center">
+                          <p className="text-[10px] text-muted-foreground">Max Loan</p>
+                          <p className="text-xs font-semibold">{formatCurrency(loan.maxAmount)}</p>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg p-2 text-center">
+                          <p className="text-[10px] text-muted-foreground">Interest</p>
+                          <p className="text-xs font-semibold">{loan.interestRate}</p>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg p-2 text-center">
+                          <p className="text-[10px] text-muted-foreground">Term</p>
+                          <p className="text-xs font-semibold">{loan.term.replace('Up to ', '')}</p>
+                        </div>
+                      </div>
+
+                      <div className="mb-3">
+                        <p className="text-[10px] font-medium text-muted-foreground mb-1">Requirements:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {loan.requirements.map((req, i) => (
+                            <span key={i} className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{req}</span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <a href={loan.applyUrl} target="_blank" rel="noopener noreferrer">
+                        <Button size="sm" variant="outline" className="w-full text-xs border-[#00C4B4] text-[#00C4B4] hover:bg-[#00C4B4] hover:text-white">
+                          <ExternalLink className="w-3 h-3 mr-1" />
+                          Visit {loan.institution}
+                        </Button>
+                      </a>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Bottom tip */}
+          <Card className="border-green-200 bg-green-50">
+            <CardContent className="p-4">
+              <div className="flex items-start gap-2">
+                <Landmark className="w-4 h-4 text-green-700 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-green-800">Tip before you apply</p>
+                  <p className="text-xs text-green-700 mt-1">
+                    Banks and SACCOs will look at your business history, M-Pesa statements, and ability to repay. Use the AI Coach (purple button) to simulate your repayment capacity based on your real sales data first.
+                  </p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
+        {/* ── ACHIEVEMENTS TAB ── */}
         <TabsContent value="achievements" className="space-y-4">
-          {/* Achievements */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Star className="w-4 h-4" />
-                Business Achievements
-              </CardTitle>
+              <CardTitle className="flex items-center gap-2"><Star className="w-4 h-4" />Business Achievements</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 gap-3">
                 {achievements.map((achievement, index) => {
                   const Icon = achievement.icon;
                   return (
-                    <div
-                      key={index}
-                      className={`flex items-center gap-3 p-3 rounded-lg ${
-                        achievement.earned
-                          ? 'bg-green-50 border border-green-200'
-                          : 'bg-muted/30 border border-muted'
-                      }`}
-                    >
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        achievement.earned
-                          ? 'bg-green-500 text-white'
-                          : 'bg-muted text-muted-foreground'
-                      }`}>
+                    <div key={index} className={`flex items-center gap-3 p-3 rounded-lg ${achievement.earned ? 'bg-green-50 border border-green-200' : 'bg-muted/30 border border-muted'}`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${achievement.earned ? 'bg-green-500 text-white' : 'bg-muted text-muted-foreground'}`}>
                         <Icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium text-sm">{achievement.title}</h4>
                         <p className="text-xs text-muted-foreground">{achievement.description}</p>
                       </div>
-                      {achievement.earned && (
-                        <Badge variant="secondary" className="bg-green-100 text-green-700">
-                          Earned
-                        </Badge>
-                      )}
+                      {achievement.earned && <Badge variant="secondary" className="bg-green-100 text-green-700">Earned</Badge>}
                     </div>
                   );
                 })}
@@ -818,11 +547,8 @@ export function UserProfile({ initialUserData, onLogout }: UserProfileProps) {
             </CardContent>
           </Card>
 
-          {/* Next Achievement */}
           <Card className="border-blue-200 bg-blue-50">
-            <CardHeader>
-              <CardTitle className="text-blue-700">Next Achievement</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle className="text-blue-700">Next Achievement</CardTitle></CardHeader>
             <CardContent>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center">
@@ -830,14 +556,9 @@ export function UserProfile({ initialUserData, onLogout }: UserProfileProps) {
                 </div>
                 <div className="flex-1">
                   <h4 className="font-medium text-sm">Growth Champion</h4>
-                  <p className="text-xs text-muted-foreground">
-                    Achieve 20% month-over-month growth
-                  </p>
+                  <p className="text-xs text-muted-foreground">Achieve 20% month-over-month growth</p>
                   <div className="mt-2">
-                    <div className="flex justify-between text-xs mb-1">
-                      <span>Progress</span>
-                      <span>15%</span>
-                    </div>
+                    <div className="flex justify-between text-xs mb-1"><span>Progress</span><span>15%</span></div>
                     <Progress value={75} className="h-2" />
                   </div>
                 </div>

@@ -9,17 +9,33 @@ export interface ChatMessage {
 export interface ChatRequest {
   message: string;
   history: ChatMessage[];
+  language?: 'en' | 'sw';
 }
 
 export interface ChatResponse {
   response: string;
   history: ChatMessage[];
+  businessId?: number;
+  success: boolean;
 }
 
 export const useChat = () => {
   return useMutation({
     mutationFn: async (data: ChatRequest) => {
-      const response = await api.post<ChatResponse>('/chatbot/chat', data);
+      // Get token from localStorage
+      const token = localStorage.getItem('bizsawa_token');
+      
+      if (!token) {
+        throw new Error('No authentication token found. Please log in.');
+      }
+      
+      // IMPORTANT: Send the token in the Authorization header
+      const response = await api.post<ChatResponse>('/chatbot/chat', data, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
       return response.data;
     },
   });

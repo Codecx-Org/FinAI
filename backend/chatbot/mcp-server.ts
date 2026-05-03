@@ -9,15 +9,17 @@ import { CustomerService } from "../services/customer-service.js";
 import { OrderService } from "../services/orders-services.js";
 import { SalesService } from "../services/sales-service.js";
 import { PaymentService } from "../services/payment-service.js";
+import { BusinessService } from "../services/business-service.js";
+
 import { ExpenseService } from "../services/expense-service.js";
 import axios from "axios";
-
 const productService = new ProductService();
 const customerService = new CustomerService();
 const orderService = new OrderService();
 const salesService = new SalesService();
 const paymentService = new PaymentService();
-const expensesService = new ExpenseService();
+const businessService = new BusinessService();
+const expenseService = new ExpenseService();
 
 const WHATSAPP_SERVICE_URL = process.env.WHATSAPP_INTERNAL_URL || "http://localhost:3001";
 
@@ -40,16 +42,27 @@ const server = new Server(
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
-      // Product Tools
+      //forusiness contxt
       {
-        name: "list_products",
-        description: "List all products in the inventory",
+        name: "getBusinessById",
+        description: "Get business details by ID",
         inputSchema: {
           type: "object",
           properties: {
             businessId: { type: "number" },
           },
+          required: ["businessId"],
         },
+      },
+      // Product Tools
+      {
+        name: "getAllProducts",
+        description: "List all products in the inventory",
+        inputSchema: {
+          type: "object",
+          properties: {businessId: { type: "number" },},
+        },
+        required: ["businessId"],
       },
       {
         name: "get_product",
@@ -58,8 +71,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           type: "object",
           properties: {
             id: { type: "number" },
+            businessId: { type: "number" },
           },
-          required: ["id"],
+          required: ["id", "businessId"],
         },
       },
       {
@@ -87,6 +101,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             businessId: { type: "number" },
           },
         },
+        required: ["businessId"],
       },
       {
         name: "create_customer",
@@ -97,9 +112,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             name: { type: "string" },
             email: { type: "string" },
             phone: { type: "string" },
-            businessId: { type: "number" },
           },
-          required: ["name", "businessId"],
+          required: ["name"],
         },
       },
       // Order Tools
@@ -108,9 +122,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         description: "List all orders",
         inputSchema: {
           type: "object",
-          properties: {
-            businessId: { type: "number" },
-          },
+          properties: {},
         },
       },
       {
@@ -132,7 +144,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             customerId: { type: "number" },
             totalAmount: { type: "number" },
-            businessId: { type: "number" },
             status: { type: "string", enum: ["created", "pending", "paid", "shipped", "delivered", "cancelled", "failed"] },
             orderItems: {
               type: "array",
@@ -146,7 +157,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               },
             },
           },
-          required: ["customerId", "totalAmount", "status", "businessId"],
+          required: ["customerId", "totalAmount", "status"],
         },
       },
       // Sales Tools
@@ -155,9 +166,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         description: "List all sales records",
         inputSchema: {
           type: "object",
-          properties: {
-            businessId: { type: "number" },
-          },
+          properties: {},
         },
       },
       {
@@ -170,9 +179,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             productId: { type: "number" },
             quantity: { type: "number" },
             totalAmount: { type: "number" },
-            businessId: { type: "number" },
           },
-          required: ["orderId", "productId", "quantity", "totalAmount", "businessId"],
+          required: ["orderId", "productId", "quantity", "totalAmount"],
         },
       },
       // Payment Tools
@@ -299,47 +307,210 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
  * Handle tool calls.
  */
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const { name, arguments: args } = request.params;
+  // Extract businessId from context
+  const { name, arguments: rawArgs = {} } = request.params;
+  const args = (rawArgs || {}) as Record<string, any>;
+  
+  console.log(`[MCP SERVER] Tool called: ${name}`);
+  console.log(`[MCP SERVER] Raw request.params:`, JSON.stringify(request.params, null, 2));
+  console.log(`[MCP SERVER] Context received:`, JSON.stringify((request as any).context || (request.params as any)?.context));
+  
+  const businessIdRaw = (args as any).businessId;
+
+  if (!businessIdRaw) {
+    return {
+      content: [{ type: "text", text: "Business context missing. Please log in." }],
+      isError: true,
+    };
+  }
+
+  const safeBusinessId = Number(businessIdRaw);
+  if (isNaN(safeBusinessId) || safeBusinessId <= 0) {
+    return {
+      content: [{ type: "text", text: "Invalid businessId provided." }],
+      isError: true,
+    };
+  }
 
   try {
     switch (name) {
-      case "list_products":
-        return { content: [{ type: "text", text: JSON.stringify(await productService.getAllProducts(args?.businessId ? Number(args.businessId) : undefined)) }] };
+      case "get_business_info":
+        return { 
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify(await businessService.getBusinessById(safeBusinessId)) 
+          }] 
+        };
+
+      case "getAllProducts":
+        return { 
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify(await productService.getAllProducts(safeBusinessId)) 
+          }] 
+        };
+
       case "get_product":
-        return { content: [{ type: "text", text: JSON.stringify(await productService.getProduct(Number(args?.id))) }] };
+        return { 
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify(await productService.getProduct(Number(args?.id), safeBusinessId)) 
+          }] 
+        };
+
       case "create_product":
-        return { content: [{ type: "text", text: JSON.stringify(await productService.createProduct(args as any)) }] };
+        // Fix: Properly construct the product object
+        return { 
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify(await productService.createProduct({
+              name: args.name,
+              stockQuantity: Number(args.stockQuantity),
+              price: Number(args.price),
+              buyingPrice: Number(args.buyingPrice),
+              businessId: safeBusinessId
+            })) 
+          }] 
+        };
+
       case "list_customers":
-        return { content: [{ type: "text", text: JSON.stringify(await customerService.getAllCustomers(args?.businessId ? Number(args.businessId) : undefined)) }] };
+        return { 
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify(await customerService.getAllCustomers(safeBusinessId)) 
+          }] 
+        };
+
       case "create_customer":
-        return { content: [{ type: "text", text: JSON.stringify(await customerService.createCustomer(args as any)) }] };
+        // Fix: Properly construct the customer object
+        return { 
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify(await customerService.createCustomer({
+              name: args.name,
+              email: args.email || null,
+              phone: args.phone || null,
+              businessId: safeBusinessId
+            })) 
+          }] 
+        };
+
       case "list_orders":
-        return { content: [{ type: "text", text: JSON.stringify(await orderService.getAllOrders(args?.businessId ? Number(args.businessId) : undefined)) }] };
+        return { 
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify(await orderService.getAllOrders(safeBusinessId)) 
+          }] 
+        };
+
       case "get_order":
-        return { content: [{ type: "text", text: JSON.stringify(await orderService.getOrder(Number(args?.id))) }] };
+        return { 
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify(await orderService.getOrder(Number(args?.id))) 
+          }] 
+        };
+
       case "create_order":
-        return { content: [{ type: "text", text: JSON.stringify(await orderService.createOrder(args as any)) }] };
+        // Fix: Properly construct the order object
+        return { 
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify(await orderService.createOrder({
+              customerId: Number(args.customerId),
+              totalAmount: Number(args.totalAmount),
+              status: args.status,
+              orderItems: args.orderItems || [],
+              businessId: safeBusinessId
+            })) 
+          }] 
+        };
+
       case "list_sales":
-        return { content: [{ type: "text", text: JSON.stringify(await salesService.getAllSales(args?.businessId ? Number(args.businessId) : undefined)) }] };
+        return { 
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify(await salesService.getAllSales(safeBusinessId)) 
+          }] 
+        };
+
       case "create_sale":
-        return { content: [{ type: "text", text: JSON.stringify(await salesService.createSale(args as any)) }] };
+        // Fix: Properly construct the sale object
+        return { 
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify(await salesService.createSale({
+              orderId: Number(args.orderId),
+              productId: Number(args.productId),
+              quantity: Number(args.quantity),
+              totalAmount: Number(args.totalAmount),
+              businessId: safeBusinessId
+            })) 
+          }] 
+        };
+
       case "initiate_payment":
-        return { content: [{ type: "text", text: JSON.stringify(await paymentService.initiateSTKPush(Number(args?.orderId), String(args?.phone), Number(args?.amount))) }] };
+        return { 
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify(await paymentService.initiateSTKPush(
+              Number(args?.orderId), 
+              String(args?.phone), 
+              Number(args?.amount)
+            )) 
+          }] 
+        };
+
       case "check_payment_status":
         const order = await orderService.getOrder(Number(args?.orderId));
-        return { content: [{ type: "text", text: JSON.stringify({ orderId: order.id, status: order.status }) }] };
-      case "list_expenses":
-        return { content: [{ type: "text", text: JSON.stringify(await expensesService.getAllExpenses(args?.businessId ? Number(args.businessId) : undefined)) }] };
-      case "get_expense":
-        return { content: [{ type: "text", text: JSON.stringify(await expensesService.getExpense(Number(args?.id))) }] };
-      case "create_expense":
-        const expenseData = {
-          ...args,
-          nextDueDate: args?.nextDueDate ? new Date(String(args.nextDueDate)) : undefined,
-          businessId: Number(args?.businessId),
-          amount: Number(args?.amount),
+        return { 
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify({ 
+              orderId: order.id, 
+              status: order.status,
+              businessId: safeBusinessId 
+            }) 
+          }] 
         };
-        return { content: [{ type: "text", text: JSON.stringify(await expensesService.createExpense(expenseData as any)) }] };
+      // Expense Tools
+      case "list_expenses":
+      return {
+         content: [{
+         type: "text",
+         text: JSON.stringify(
+        await expenseService.getAllExpenses(safeBusinessId)
+        )
+       }]
+      };
+
+      case "get_expense":
+       return {
+       content: [{
+       type: "text",
+       text: JSON.stringify(
+        await expenseService.getExpense(Number(args?.id))
+       )
+      }]
+     };
+
+     case "create_expense":
+      return {
+           content: [{
+          type: "text",
+           text: JSON.stringify(
+            await expenseService.createExpense({
+          type: args.type,
+          amount: Number(args.amount),
+          description: args.description || "",
+          isRecurring: Boolean(args.isRecurring),
+          frequency: args.frequency || null,
+          nextDueDate: args.nextDueDate || null, // ← Keep as string, don't convert to Date
+          businessId: safeBusinessId
+        })
+      )
+    }]
+  };
       
       case "whatsapp_send_text":
         const textRes = await axios.post(`${WHATSAPP_SERVICE_URL}/send-text`, args);
@@ -381,7 +552,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           productService.getAllProducts(bId),
           orderService.getAllOrders(bId),
           salesService.getAllSales(bId),
-          expensesService.getAllExpenses(bId),
+          expenseService.getAllExpenses(bId),
         ]);
 
         const totalRevenue = allSales.reduce((acc, sale) => acc + sale.totalAmount, 0);

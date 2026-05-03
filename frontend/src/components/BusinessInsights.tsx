@@ -1,18 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { TrendingUp, TrendingDown, BarChart3, Users, Calendar, Target, Lightbulb, Edit2, Save, X, Plus, Receipt, Trash2, Download, DollarSign } from 'lucide-react';
+import React, { useState } from 'react';
+import { TrendingUp, TrendingDown, BarChart3, Receipt, Plus, Trash2, DollarSign, Target, Lightbulb, Edit2, Save, X } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend, CartesianGrid } from 'recharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { useExpenses, useCreateExpense, useDeleteExpense } from '../hooks/api/useExpenses';
+import { useWeeklyOverview, useCategoryPerformance, useProfitAnalytics, useAIInsights, Timeframe } from '../hooks/api/useAnalytics';
 import { toast } from 'sonner';
+import { BusinessInsightsSkeleton } from './Skeletons';
+import { SplashScreen } from './SplashScreen';
 
 interface Goal {
   id: number;
@@ -26,40 +28,25 @@ interface BusinessInsightsProps {
   businessId?: number;
 }
 
-const productCategories = [
-  { name: 'Dairy Feed', value: 35, color: '#8884d8' },
-  { name: 'Poultry Feed', value: 25, color: '#82ca9d' },
-  { name: 'Swine Feed', value: 20, color: '#ffc658' },
-  { name: 'Aquaculture', value: 12, color: '#ff7300' },
-  { name: 'Others', value: 8, color: '#0088fe' }
-];
-
-const customerSegments = [
-  { segment: 'Regular Farmers', count: 156, growth: 12, color: 'text-green-600' },
-  { segment: 'New Farmers', count: 23, growth: 8, color: 'text-blue-600' },
-  { segment: 'Large-Scale Farms', count: 67, growth: -3, color: 'text-orange-600' }
-];
-
 const defaultGoals = [
   { id: 1, title: 'Monthly Feed Sales Target', current: 450000, target: 600000, unit: 'KES' },
   { id: 2, title: 'New Farmer Customers', current: 23, target: 30, unit: 'farmers' },
   { id: 3, title: 'Feed Inventory Turnover', current: 2.3, target: 3.0, unit: 'times' }
 ];
 
-const salesData = [
-  { day: 'Mon', sales: 25000 },
-  { day: 'Tue', sales: 18000 },
-  { day: 'Wed', sales: 22000 },
-  { day: 'Thu', sales: 28000 },
-  { day: 'Fri', sales: 32000 },
-  { day: 'Sat', sales: 45000 },
-  { day: 'Sun', sales: 15000 }
-];
+const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#0088fe', '#00C49F', '#FFBB28', '#FF8042'];
 
 export function BusinessInsights({ businessId }: BusinessInsightsProps) {
   const { data: expenses = [], isLoading: isLoadingExpenses } = useExpenses(businessId);
-  const { mutate: createExpense, isPending: isCreatingExpense } = useCreateExpense();
+  const { mutate: createExpense } = useCreateExpense();
   const { mutate: deleteExpense } = useDeleteExpense();
+
+  // Analytics Hooks
+  const { data: weeklyOverview = [], isLoading: isLoadingOverview } = useWeeklyOverview(businessId);
+  const { data: categoryPerformance = { sales: [], expenses: [] }, isLoading: isLoadingCategories } = useCategoryPerformance(businessId);
+  const [timeframe, setTimeframe] = useState<Timeframe>('week');
+  const { data: profitData = [], isLoading: isLoadingProfit } = useProfitAnalytics(businessId, timeframe);
+  const { data: aiInsights, isLoading: isLoadingAI } = useAIInsights(businessId);
 
   const [goals, setGoals] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -92,6 +79,25 @@ export function BusinessInsights({ businessId }: BusinessInsightsProps) {
       currency: 'KES',
       minimumFractionDigits: 0,
     }).format(amount);
+  };
+
+  const formatYAxis = (value: number) => {
+    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1000) return `${(value / 1000).toFixed(0)}K`;
+    return value.toString();
+  };
+
+  const formatXAxis = (val: string) => {
+    if (!val) return '';
+    // If it's yyyy-MM-dd, return MM-dd
+    if (val.length === 10) return val.slice(5);
+    // If it's yyyy-MM, return Month Name
+    if (val.length === 7) {
+      const month = parseInt(val.slice(5)) - 1;
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return months[month] || val;
+    }
+    return val;
   };
 
   const handleEditGoal = (goalId: number) => {
@@ -167,9 +173,9 @@ export function BusinessInsights({ businessId }: BusinessInsightsProps) {
     }
   };
 
-  const downloadFinancialReport = () => {
-    console.log('Downloading financial report...');
-  };
+  if (isLoadingExpenses || isLoadingOverview || isLoadingCategories || isLoadingProfit) {
+    return <SplashScreen />;
+  }
 
   return (
     <div className="p-3 space-y-3">
@@ -188,13 +194,13 @@ export function BusinessInsights({ businessId }: BusinessInsightsProps) {
           <TabsTrigger value="expenses">Expenses</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-3">
+        <TabsContent value="overview" className="space-y-3 pt-2">
           {/* Goals Progress - Compact */}
           <Card className="p-3">
             <CardHeader className="p-0 pb-3">
-              <CardTitle className="flex items-center justify-between text-sm">
+              <CardTitle className="flex items-center justify-between text-sm font-bold">
                 <div className="flex items-center gap-2">
-                  <Target className="w-4 h-4" />
+                  <Target className="w-4 h-4 text-primary" />
                   Monthly Goals
                 </div>
                 <div className="flex items-center gap-2">
@@ -358,12 +364,6 @@ export function BusinessInsights({ businessId }: BusinessInsightsProps) {
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-medium">{goal.title}</span>
-                        <button
-                          className="h-5 w-5 p-0 opacity-60 hover:opacity-100 flex items-center justify-center rounded-sm hover:bg-accent"
-                          onClick={() => handleEditGoal(goal.id)}
-                        >
-                          <Edit2 className="w-2.5 h-2.5" />
-                        </button>
                       </div>
                       <span className="text-xs text-muted-foreground">
                         {goal.unit === 'KES' ? formatCurrency(goal.current) : `${goal.current} ${goal.unit}`} / {' '}
@@ -371,7 +371,7 @@ export function BusinessInsights({ businessId }: BusinessInsightsProps) {
                       </span>
                     </div>
                     <Progress value={Math.min(percentage, 100)} className="h-1.5" />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[10px] text-muted-foreground">
                       {percentage.toFixed(1)}% complete
                     </p>
                   </div>
@@ -380,345 +380,206 @@ export function BusinessInsights({ businessId }: BusinessInsightsProps) {
             </CardContent>
           </Card>
 
-          {/* AI Recommendations - Overview */}
-          <Card className="p-3">
+          {/* AI Insights - Overview */}
+          <Card className="p-3 border-blue-100 bg-blue-50/30">
             <CardHeader className="p-0 pb-3">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Lightbulb className="w-4 h-4" />
-                AI Insights
+              <CardTitle className="flex items-center gap-2 text-sm font-bold text-blue-900">
+                <Lightbulb className="w-4 h-4 text-blue-600" />
+                AI Business Insights
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0 space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" className="h-auto p-3 flex flex-col items-center gap-2 hover:bg-blue-50 hover:border-blue-200">
-                      <TrendingUp className="w-5 h-5 text-blue-600" />
-                      <div className="text-center">
-                        <h3 className="font-medium text-blue-700 text-sm">Demand Prediction</h3>
-                        <p className="text-xs text-muted-foreground">Forecast demand for each product</p>
-                      </div>
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-blue-600" />
-                        Demand Predictions
-                      </DialogTitle>
-                      <DialogDescription>
-                        AI-powered demand forecasting for your animal feed products
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-3 max-h-96 overflow-y-auto">
-                      <div className="grid gap-3">
-                        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <h4 className="font-medium text-sm text-green-700">Chick Mash 50kg</h4>
-                          </div>
-                          <p className="text-xs text-green-600 mb-1">
-                            🔼 High demand expected next week (+35% increase)
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Based on seasonal trends and new poultry farmers in your area
-                          </p>
-                        </div>
-
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                            <h4 className="font-medium text-sm text-blue-700">Layers Mash 50kg</h4>
-                          </div>
-                          <p className="text-xs text-blue-600 mb-1">
-                            ➡️ Stable demand expected (±8% variation)
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Consistent demand from regular poultry farmers
-                          </p>
-                        </div>
-
-                        <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                            <h4 className="font-medium text-sm text-yellow-700">Growers Mash 50kg</h4>
-                          </div>
-                          <p className="text-xs text-yellow-600 mb-1">
-                            📈 Growing demand trend (+15% this month)
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Increasing poultry farming activity in your area
-                          </p>
-                        </div>
-
-                        <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                            <h4 className="font-medium text-sm text-purple-700">Dairy Meal 50kg</h4>
-                          </div>
-                          <p className="text-xs text-purple-600 mb-1">
-                            🔽 Seasonal dip expected (-12% next 2 weeks)
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Post-holiday reduction in dairy farming
-                          </p>
+              {aiInsights ? (
+                <>
+                  <div className="p-3 bg-white border border-blue-100 rounded-lg shadow-sm">
+                    <p className="text-xs text-blue-800 italic leading-relaxed">"{aiInsights.summary}"</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 gap-2">
+                    {aiInsights.trends.slice(0, 2).map((trend, idx) => (
+                      <div key={idx} className={`p-2 border rounded-lg flex items-start gap-2 ${
+                        trend.sentiment === 'positive' ? 'bg-green-50 border-green-100' : 
+                        trend.sentiment === 'negative' ? 'bg-red-50 border-red-100' : 'bg-gray-50 border-gray-100'
+                      }`}>
+                         {trend.sentiment === 'positive' ? <TrendingUp className="w-4 h-4 text-green-600 mt-0.5" /> :
+                          trend.sentiment === 'negative' ? <TrendingDown className="w-4 h-4 text-red-600 mt-0.5" /> :
+                          <BarChart3 className="w-4 h-4 text-gray-600 mt-0.5" />}
+                        <div>
+                          <h4 className={`font-bold text-[11px] ${
+                            trend.sentiment === 'positive' ? 'text-green-800' : 
+                            trend.sentiment === 'negative' ? 'text-red-800' : 'text-gray-800'
+                          }`}>{trend.title}</h4>
+                          <p className={`text-[10px] ${
+                            trend.sentiment === 'positive' ? 'text-green-700' : 
+                            trend.sentiment === 'negative' ? 'text-red-700' : 'text-gray-700'
+                          }`}>{trend.description}</p>
                         </div>
                       </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" className="h-auto p-3 flex flex-col items-center gap-2 hover:bg-purple-50 hover:border-purple-200">
-                      <DollarSign className="w-5 h-5 text-purple-600" />
-                      <div className="text-center">
-                        <h3 className="font-medium text-purple-700 text-sm">Pricing Suggestions</h3>
-                        <p className="text-xs text-muted-foreground">Optimize prices for maximum profit</p>
-                      </div>
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-2">
-                        <DollarSign className="w-5 h-5 text-purple-600" />
-                        Pricing Recommendations
-                      </DialogTitle>
-                      <DialogDescription>
-                        AI-powered pricing suggestions based on market analysis
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-3 max-h-96 overflow-y-auto">
-                      <div className="grid gap-3">
-                        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <h4 className="font-medium text-sm text-green-700">Chick Mash 50kg</h4>
-                          </div>
-                          <p className="text-xs text-green-600 mb-1">
-                            💰 Current: KES 2,800 → Suggested: KES 2,950 (+5.4%)
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            High demand for chick feed supports price increase
-                          </p>
-                        </div>
-
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                            <h4 className="font-medium text-sm text-blue-700">Layers Mash 50kg</h4>
-                          </div>
-                          <p className="text-xs text-blue-600 mb-1">
-                            ⚖️ Current: KES 2,200 → Suggested: KES 2,300 (+4.5%)
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Optimal pricing for steady egg production demand
-                          </p>
-                        </div>
-
-                        <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                            <h4 className="font-medium text-sm text-yellow-700">Growers Mash 50kg</h4>
-                          </div>
-                          <p className="text-xs text-yellow-600 mb-1">
-                            📈 Current: KES 2,400 → Suggested: KES 2,520 (+5%)
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Growing market supports moderate price increase
-                          </p>
-                        </div>
-
-                        <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                            <h4 className="font-medium text-sm text-orange-700">Pig Finisher 50kg</h4>
-                          </div>
-                          <p className="text-xs text-orange-600 mb-1">
-                            📈 Current: KES 2,800 → Suggested: KES 2,900 (+3.5%)
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Growing demand supports moderate price increase
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-
-              <div className="p-2 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-xs text-blue-700 text-center">
-                  💡 Click on Demand Prediction or Pricing Suggestions to get detailed AI-powered recommendations for each product
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="text-center text-xs text-muted-foreground py-4 italic">
+                  AI is analyzing your data...
                 </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Performance Summary - Compact */}
-          <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200 p-3">
-            <CardHeader className="p-0 pb-3">
-              <CardTitle className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-green-600" />
-                  This Week's Performance
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={downloadFinancialReport}
-                  className="h-7 px-2 text-xs"
-                >
-                  <Download className="w-3 h-3 mr-1" />
-                  Export
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="grid grid-cols-2 gap-3 text-center">
-                <div>
-                  <p className="text-xs text-muted-foreground">Revenue</p>
-                  <p className="text-base font-medium text-green-600">
-                    {formatCurrency(159000)}
-                  </p>
-                  <p className="text-xs text-green-600">+18.5% vs last week</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Transactions</p>
-                  <p className="text-base font-medium text-blue-600">438</p>
-                  <p className="text-xs text-blue-600">+12.3% vs last week</p>
-                </div>
-              </div>
-              <div className="mt-3 p-2 bg-white/50 rounded-lg">
-                <p className="text-xs text-center">
-                  🎉 Great job! You're on track to exceed your monthly target by 15%
-                </p>
-              </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-3">
-          {/* Sales Trend & Product Performance - Combined Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            <Card className="p-3">
-              <CardHeader className="p-0 pb-3">
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <TrendingUp className="w-4 h-4" />
-                  Weekly Sales Trend
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="h-32">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={salesData}>
-                      <XAxis dataKey="day" tick={{fontSize: 10}} />
-                      <YAxis tick={{fontSize: 10}} />
-                      <Line
-                        type="monotone"
-                        dataKey="sales"
-                        stroke="#8884d8"
-                        strokeWidth={2}
-                        dot={{ fill: '#8884d8', strokeWidth: 1, r: 3 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="mt-2 grid grid-cols-2 gap-2 text-center">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Best Day</p>
-                    <p className="text-sm font-medium">Sat - {formatCurrency(32000)}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Growth</p>
-                    <p className="text-sm font-medium text-green-600">+18.5%</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+        <TabsContent value="analytics" className="space-y-3 pt-2">
+          <div className="flex justify-between items-center mb-1">
+            <h3 className="text-sm font-bold">Performance Trends</h3>
+            <Select value={timeframe} onValueChange={(val: Timeframe) => setTimeframe(val)}>
+              <SelectTrigger className="w-[120px] h-8 text-xs">
+                <SelectValue placeholder="Timeframe" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="week">This Week</SelectItem>
+                <SelectItem value="month">This Month</SelectItem>
+                <SelectItem value="year">This Year</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
+          <Card className="p-3">
+            <CardHeader className="p-0 pb-3">
+              <CardTitle className="flex items-center gap-2 text-sm font-bold">
+                <TrendingUp className="w-4 h-4 text-primary" />
+                Sales Trend
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="h-40 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={timeframe === 'week' ? weeklyOverview : profitData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                    <XAxis 
+                      dataKey={timeframe === 'week' ? "day" : "date"} 
+                      tick={{fontSize: 10}} 
+                      tickFormatter={timeframe === 'week' ? undefined : formatXAxis}
+                    />
+                    <YAxis 
+                      tick={{fontSize: 10}} 
+                      tickFormatter={formatYAxis}
+                      width={40}
+                    />
+                    <Tooltip 
+                      contentStyle={{ fontSize: '12px', borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                      formatter={(value: number) => [formatCurrency(value), 'Sales']}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey={timeframe === 'week' ? "sales" : "revenue"}
+                      stroke="#8884d8"
+                      strokeWidth={3}
+                      dot={{ fill: '#8884d8', strokeWidth: 1, r: 3 }}
+                      activeDot={{ r: 5, strokeWidth: 0 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="p-3">
+            <CardHeader className="p-0 pb-3">
+              <CardTitle className="flex items-center gap-2 text-sm font-bold">
+                <DollarSign className="w-4 h-4 text-green-600" />
+                Profit & Loss Analysis
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="h-48 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={profitData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                    <XAxis 
+                      dataKey="date" 
+                      tick={{fontSize: 10}} 
+                      tickFormatter={formatXAxis}
+                    />
+                    <YAxis 
+                      tick={{fontSize: 10}} 
+                      tickFormatter={formatYAxis}
+                      width={40}
+                    />
+                    <Tooltip 
+                      contentStyle={{ fontSize: '12px', borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                      formatter={(value: number) => formatCurrency(value)}
+                    />
+                    <Legend iconType="circle" wrapperStyle={{ fontSize: '10px', paddingTop: '10px' }} />
+                    <Bar dataKey="revenue" name="Revenue" fill="#82ca9d" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="expense" name="Expense" fill="#ff8042" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="profit" name="Profit" fill="#8884d8" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 gap-3">
             <Card className="p-3">
               <CardHeader className="p-0 pb-3">
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <BarChart3 className="w-4 h-4" />
-                  Product Categories
+                <CardTitle className="flex items-center gap-2 text-sm font-bold">
+                  <BarChart3 className="w-4 h-4 text-purple-600" />
+                  Category Breakdown
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-0">
-                <div className="h-32">
+              <CardContent className="p-0 flex flex-col items-center">
+                <div className="h-40 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={productCategories}
+                        data={categoryPerformance.sales.length > 0 ? categoryPerformance.sales : [{ name: 'No Data', value: 1 }]}
                         cx="50%"
                         cy="50%"
-                        innerRadius={20}
-                        outerRadius={50}
+                        innerRadius={40}
+                        outerRadius={60}
+                        paddingAngle={5}
                         dataKey="value"
                       >
-                        {productCategories.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
+                        {categoryPerformance.sales.length > 0 ? (
+                          categoryPerformance.sales.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))
+                        ) : (
+                          <Cell fill="#f0f0f0" />
+                        )}
                       </Pie>
+                      <Tooltip formatter={(value) => typeof value === 'number' ? formatCurrency(value) : value} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="mt-2 space-y-1">
-                  {productCategories.map((category, index) => (
-                    <div key={index} className="flex justify-between items-center text-xs">
+                <div className="mt-2 w-full space-y-1.5 max-h-32 overflow-y-auto px-2">
+                  {categoryPerformance.sales.map((category, index) => (
+                    <div key={index} className="flex justify-between items-center text-[11px]">
                       <div className="flex items-center gap-2">
                         <div
                           className="w-2 h-2 rounded-full"
-                          style={{ backgroundColor: category.color }}
+                          style={{ backgroundColor: COLORS[index % COLORS.length] }}
                         ></div>
-                        <span className="truncate">{category.name}</span>
+                        <span className="truncate max-w-[120px] font-medium">{category.name}</span>
                       </div>
-                      <span className="font-medium">{category.value}%</span>
+                      <span className="text-muted-foreground">{formatCurrency(category.value)}</span>
                     </div>
                   ))}
+                  {categoryPerformance.sales.length === 0 && (
+                    <p className="text-center text-xs text-muted-foreground py-2">No sales data recorded</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
           </div>
-
-          {/* Customer Segments - Compact */}
-          <Card className="p-3">
-            <CardHeader className="p-0 pb-3">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Users className="w-4 h-4" />
-                Customer Segments
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0 space-y-2">
-              {customerSegments.map((segment, index) => (
-                <div key={index} className="flex justify-between items-center py-1">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{segment.segment}</p>
-                    <p className="text-xs text-muted-foreground">{segment.count} customers</p>
-                  </div>
-                  <div className={`flex items-center gap-1 ${segment.color}`}>
-                    {segment.growth > 0 ? (
-                      <TrendingUp className="w-3 h-3" />
-                    ) : (
-                      <TrendingDown className="w-3 h-3" />
-                    )}
-                    <span className="text-xs font-medium">
-                      {segment.growth > 0 ? '+' : ''}{segment.growth}%
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
         </TabsContent>
 
-        <TabsContent value="expenses" className="space-y-3">
+        <TabsContent value="expenses" className="space-y-3 pt-2">
           {/* Expenses Tracking - Compact */}
           <Card className="p-3">
             <CardHeader className="p-0 pb-3">
-              <CardTitle className="flex items-center justify-between text-sm">
+              <CardTitle className="flex items-center justify-between text-sm font-bold">
                 <div className="flex items-center gap-2">
-                  <Receipt className="w-4 h-4" />
+                  <Receipt className="w-4 h-4 text-red-600" />
                   Business Expenses
                 </div>
                 <Dialog open={isExpenseDialogOpen} onOpenChange={setIsExpenseDialogOpen}>
@@ -790,49 +651,47 @@ export function BusinessInsights({ businessId }: BusinessInsightsProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              {isLoadingExpenses ? (
-                <div className="flex justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                </div>
-              ) : expenses.length === 0 ? (
-                <p className="text-center text-muted-foreground py-3 text-sm">
-                  No expenses recorded yet
+              {expenses.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8 text-xs italic">
+                  No expenses recorded yet. Start tracking your costs!
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {expenses.slice(0, 5).map((expense) => (
-                    <div key={expense.id} className="flex justify-between items-center py-2 px-2 bg-muted/30 rounded-lg">
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{expense.description}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(expense.createdAt).toLocaleDateString()} • {expense.type}
-                        </p>
+                  <div className="max-h-64 overflow-y-auto space-y-2 pr-1">
+                    {expenses.slice(0, 10).map((expense) => (
+                      <div key={expense.id} className="flex justify-between items-center py-2 px-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-[11px] truncate">{expense.description}</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            {new Date(expense.createdAt).toLocaleDateString()} • {expense.type}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="font-bold text-red-600 text-[11px]">
+                            -{formatCurrency(expense.amount)}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteExpense(expense.id)}
+                            className="h-7 w-7 p-0 rounded-full hover:bg-red-50 hover:text-red-600"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-red-600 text-sm">
-                          -{formatCurrency(expense.amount)}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteExpense(expense.id)}
-                          className="h-6 w-6 p-0 hover:bg-red-100 hover:text-red-600"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  {expenses.length > 5 && (
-                    <p className="text-xs text-center text-muted-foreground py-1">
-                      And {expenses.length - 5} more expenses...
+                    ))}
+                  </div>
+                  {expenses.length > 10 && (
+                    <p className="text-[10px] text-center text-muted-foreground py-1">
+                      Showing latest 10 of {expenses.length} expenses
                     </p>
                   )}
-                  <div className="pt-2 border-t">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Total Monthly:</span>
-                      <span className="font-medium text-red-600">
-                        -{formatCurrency(expenses.reduce((sum, exp) => sum + exp.amount, 0))}
+                  <div className="pt-3 border-t mt-2">
+                    <div className="flex justify-between items-center bg-red-50 p-2 rounded-lg">
+                      <span className="text-xs font-bold text-red-800">Total Expenses:</span>
+                      <span className="font-bold text-red-700 text-sm">
+                        {formatCurrency(expenses.reduce((sum, exp) => sum + exp.amount, 0))}
                       </span>
                     </div>
                   </div>
