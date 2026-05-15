@@ -6,7 +6,15 @@ import { BadRequestError, UnauthorizedError } from '../utils/types/errors.js';
 const businessService = new BusinessService();
 
 export class AuthService {
-  private secret = process.env.JWT_SECRET || 'your-default-secret-key';
+  private secret: string;
+
+  constructor() {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET must be defined in environment variables');
+    }
+    this.secret = secret;
+  }
 
   async register(data: any) {
     return businessService.createBusiness(data);

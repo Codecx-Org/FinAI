@@ -6,3 +6,5 @@ node_modules
 backend/generated/prisma
 
 /backend/tokens
+
+/NOTES/*

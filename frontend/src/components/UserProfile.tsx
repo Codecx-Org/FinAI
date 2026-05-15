@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   User, Edit3, Shield, Phone, MapPin, Building, Calendar,
   Star, Trophy, TrendingUp, CheckCircle, Heart, Smartphone,
@@ -13,6 +13,10 @@ import { Progress } from './ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { useBusiness } from '../hooks/api/useBusiness';
+import { useCreditTrustPreview } from '../hooks/api/useCreditTrustPreview';
+import { CreditTrustPanel } from './CreditTrustPanel';
+import { toast } from 'sonner';
 
 interface UserData {
   id?: number;
@@ -50,130 +54,6 @@ const mockUserData: UserData = {
 
 const mockMobileMoneyData: MobileMoneyData = { mpesaNumber: '+254712345678' };
 
-// ─── Real Kenyan bank & SACCO loan products ───────────────────────────────────
-const LOAN_PRODUCTS = [
-  {
-    id: '1',
-    institution: 'KCB Bank',
-    logo: '🏦',
-    product: 'KCB Biashara Loan',
-    type: 'bank',
-    maxAmount: 1_000_000,
-    interestRate: '13% p.a.',
-    term: 'Up to 36 months',
-    requirements: ['Business registration', '6 months bank statements', 'KRA PIN'],
-    applyUrl: 'https://www.kcbgroup.com/business/borrowing/business-loan/',
-    tag: 'Popular',
-    tagColor: 'bg-blue-100 text-blue-700',
-    suitedFor: ['Retail Store', 'Restaurant', 'Services', 'Manufacturing', 'Agrovet', 'Agriculture', 'Other'],
-  },
-  {
-    id: '2',
-    institution: 'Equity Bank',
-    logo: '🏦',
-    product: 'Equity Biashara Loan',
-    type: 'bank',
-    maxAmount: 500_000,
-    interestRate: '14% p.a.',
-    term: 'Up to 24 months',
-    requirements: ['Equity account (3+ months)', 'Business permit', 'KRA PIN'],
-    applyUrl: 'https://equitygroupholdings.com/ke/borrow/sme-loans/',
-    tag: 'Fast Approval',
-    tagColor: 'bg-green-100 text-green-700',
-    suitedFor: ['Retail Store', 'Restaurant', 'Services', 'Agrovet', 'Agriculture', 'Other'],
-  },
-  {
-    id: '3',
-    institution: 'Co-operative Bank',
-    logo: '🏦',
-    product: 'Co-op Biashara Loan',
-    type: 'bank',
-    maxAmount: 3_000_000,
-    interestRate: '12.5% p.a.',
-    term: 'Up to 48 months',
-    requirements: ['Co-op account', '1 year business history', 'Security/Guarantor'],
-    applyUrl: 'https://www.co-opbank.co.ke/business-banking/loans/',
-    tag: 'High Limit',
-    tagColor: 'bg-purple-100 text-purple-700',
-    suitedFor: ['Manufacturing', 'Agrovet', 'Agriculture', 'Services', 'Other'],
-  },
-  {
-    id: '4',
-    institution: 'Stanbic Bank',
-    logo: '🏦',
-    product: 'SME Business Loan',
-    type: 'bank',
-    maxAmount: 5_000_000,
-    interestRate: '13.5% p.a.',
-    term: 'Up to 60 months',
-    requirements: ['2 years audited accounts', 'Business registration', 'Security'],
-    applyUrl: 'https://www.stanbicbank.co.ke/kenya/business/products-and-services/borrow/sme-loans',
-    tag: 'Large Loans',
-    tagColor: 'bg-orange-100 text-orange-700',
-    suitedFor: ['Manufacturing', 'Agriculture', 'Services', 'Other'],
-  },
-  {
-    id: '5',
-    institution: 'Nairobi Business SACCO',
-    logo: '🤝',
-    product: 'Business Development Loan',
-    type: 'sacco',
-    maxAmount: 100_000,
-    interestRate: '10% p.a.',
-    term: 'Up to 12 months',
-    requirements: ['SACCO membership', '3+ months savings', 'Business permit'],
-    applyUrl: 'https://www.nairobibusinesssacco.com/',
-    tag: 'Low Interest',
-    tagColor: 'bg-teal-100 text-teal-700',
-    suitedFor: ['Retail Store', 'Restaurant', 'Services', 'Agrovet', 'Agriculture', 'Other'],
-  },
-  {
-    id: '6',
-    institution: 'Kenya Agrovet SACCO',
-    logo: '🌾',
-    product: 'Agri-Business Loan',
-    type: 'sacco',
-    maxAmount: 75_000,
-    interestRate: '11% p.a.',
-    term: 'Up to 12 months',
-    requirements: ['Agrovet license', '2+ months savings', 'Regular supplier receipts'],
-    applyUrl: '#',
-    tag: 'Agrovet Specialist',
-    tagColor: 'bg-green-100 text-green-700',
-    suitedFor: ['Agrovet', 'Agriculture'],
-  },
-  {
-    id: '7',
-    institution: 'Women Enterprise Fund',
-    logo: '👩‍💼',
-    product: 'WEF Business Loan',
-    type: 'government',
-    maxAmount: 500_000,
-    interestRate: '8% p.a.',
-    term: 'Up to 36 months',
-    requirements: ['Women-owned business', 'Business registration', 'Group or individual'],
-    applyUrl: 'https://www.wef.co.ke/',
-    tag: 'Government',
-    tagColor: 'bg-yellow-100 text-yellow-700',
-    suitedFor: ['Retail Store', 'Restaurant', 'Services', 'Agrovet', 'Agriculture', 'Other'],
-  },
-  {
-    id: '8',
-    institution: 'Youth Enterprise Fund',
-    logo: '🚀',
-    product: 'Youth Business Loan',
-    type: 'government',
-    maxAmount: 300_000,
-    interestRate: '8% p.a.',
-    term: 'Up to 36 months',
-    requirements: ['Under 35 years', 'Business registration', 'Business plan'],
-    applyUrl: 'https://www.youthfund.go.ke/',
-    tag: 'Government',
-    tagColor: 'bg-yellow-100 text-yellow-700',
-    suitedFor: ['Retail Store', 'Restaurant', 'Services', 'Agrovet', 'Agriculture', 'Other'],
-  },
-];
-
 const achievements = [
   { title: 'Consistent Earner',  description: '6 months of steady revenue',      icon: Trophy,      earned: true  },
   { title: 'Payment Master',     description: 'No late payments in 3 months',    icon: CheckCircle, earned: true  },
@@ -184,16 +64,31 @@ const achievements = [
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(amount);
 
+function readLocationFromMetadata(metadata: unknown): string | undefined {
+  if (!metadata || typeof metadata !== 'object') return undefined;
+  const m = metadata as Record<string, unknown>;
+  const v = m.location ?? m.address ?? m.city;
+  return typeof v === 'string' && v.trim() ? v.trim() : undefined;
+}
+
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
 export function UserProfile({ initialUserData, onLogout, businessId, onOpenAICoach }: UserProfileProps) {
+  const { data: businessRecord } = useBusiness(businessId);
+
   if (!initialUserData && !mockUserData) {
     return <UserProfileSkeleton />;
   }
-  const mergedUserData: UserData = {
-    ...mockUserData,
-    ...initialUserData,
-    location: initialUserData?.location || 'Nairobi, Kenya',
-  };
+  const mergedUserData: UserData = useMemo(
+    () => ({
+      ...mockUserData,
+      ...initialUserData,
+      location:
+        initialUserData?.location ||
+        readLocationFromMetadata(businessRecord?.metadata as unknown) ||
+        'Not set',
+    }),
+    [initialUserData, businessRecord?.metadata],
+  );
 
   const [userData, setUserData]                         = useState<UserData>(mergedUserData);
   const [isEditing, setIsEditing]                       = useState(false);
@@ -202,14 +97,50 @@ export function UserProfile({ initialUserData, onLogout, businessId, onOpenAICoa
   const [isEditingMobileMoney, setIsEditingMobileMoney] = useState(false);
   const [editedMobileMoneyData, setEditedMobileMoneyData] = useState<MobileMoneyData>(mockMobileMoneyData);
   const [loanFilter, setLoanFilter]                     = useState<'all' | 'bank' | 'sacco' | 'government'>('all');
+  const [mainTab, setMainTab]                           = useState<'profile' | 'credit' | 'achievements'>('profile');
+
+  const creditPreview = useCreditTrustPreview('en', mainTab === 'credit' && !!businessId);
+
+  useEffect(() => {
+    if (creditPreview.isError) {
+      toast.error('Could not load trust preview. Loan list may be unavailable.');
+    }
+  }, [creditPreview.isError]);
+
+  useEffect(() => {
+    if (!businessRecord) return;
+    const parts = businessRecord.ownerName.trim().split(/\s+/);
+    const loc = readLocationFromMetadata(businessRecord.metadata as unknown);
+    setUserData((prev) => ({
+      ...prev,
+      firstName: parts[0] || prev.firstName,
+      lastName: parts.slice(1).join(' ') || prev.lastName,
+      businessName: businessRecord.name,
+      phone: (businessRecord.ownerPhone || businessRecord.whatsappNumber || prev.phone || '').trim(),
+      businessType: (businessRecord.businessType || prev.businessType || '').trim() || prev.businessType,
+      yearsInBusiness: (businessRecord.yearsInBusiness || prev.yearsInBusiness || '').trim() || prev.yearsInBusiness,
+      location: loc || prev.location,
+    }));
+    setEditedData((prev) => ({
+      ...prev,
+      firstName: parts[0] || prev.firstName,
+      lastName: parts.slice(1).join(' ') || prev.lastName,
+      businessName: businessRecord.name,
+      phone: (businessRecord.ownerPhone || businessRecord.whatsappNumber || prev.phone || '').trim(),
+      businessType: (businessRecord.businessType || prev.businessType || '').trim() || prev.businessType,
+      yearsInBusiness: (businessRecord.yearsInBusiness || prev.yearsInBusiness || '').trim() || prev.yearsInBusiness,
+      location: loc || prev.location,
+    }));
+  }, [businessRecord]);
 
   const handleSaveProfile = () => { setUserData(editedData); setIsEditing(false); };
   const handleCancelEdit  = () => { setEditedData(userData); setIsEditing(false); };
   const handleSaveMobileMoney   = () => { setMobileMoneyData(editedMobileMoneyData); setIsEditingMobileMoney(false); };
   const handleCancelMobileMoneyEdit = () => { setEditedMobileMoneyData(mobileMoneyData); setIsEditingMobileMoney(false); };
 
-  // Filter loans by type AND business type
-  const filteredLoans = LOAN_PRODUCTS.filter(loan => {
+  const loanCatalog = creditPreview.data?.loanProviders ?? [];
+
+  const filteredLoans = loanCatalog.filter(loan => {
     const typeMatch = loanFilter === 'all' || loan.type === loanFilter;
     const businessMatch = loan.suitedFor.includes(userData.businessType) || loan.suitedFor.includes('Other');
     return typeMatch && businessMatch;
@@ -222,7 +153,7 @@ export function UserProfile({ initialUserData, onLogout, businessId, onOpenAICoa
         <p className="text-muted-foreground text-sm">Wasifu wako / Your business profile</p>
       </div>
 
-      <Tabs defaultValue="profile" className="w-full">
+      <Tabs value={mainTab} onValueChange={(v) => setMainTab(v as typeof mainTab)} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="credit">Loans</TabsTrigger>
@@ -395,6 +326,12 @@ export function UserProfile({ initialUserData, onLogout, businessId, onOpenAICoa
 
         {/* ── LOANS TAB ── */}
         <TabsContent value="credit" className="space-y-4">
+          <CreditTrustPanel
+            data={creditPreview.data}
+            isLoading={creditPreview.isLoading}
+            isError={creditPreview.isError}
+            onRetry={() => creditPreview.refetch()}
+          />
 
           {/* AI Coach CTA */}
           <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-blue-50">
@@ -491,12 +428,16 @@ export function UserProfile({ initialUserData, onLogout, businessId, onOpenAICoa
                         </div>
                       </div>
 
-                      <a href={loan.applyUrl} target="_blank" rel="noopener noreferrer">
-                        <Button size="sm" variant="outline" className="w-full text-xs border-[#00C4B4] text-[#00C4B4] hover:bg-[#00C4B4] hover:text-white">
-                          <ExternalLink className="w-3 h-3 mr-1" />
-                          Visit {loan.institution}
-                        </Button>
-                      </a>
+                      {loan.applyUrl && loan.applyUrl !== '#' ? (
+                        <a href={loan.applyUrl} target="_blank" rel="noopener noreferrer">
+                          <Button size="sm" variant="outline" className="w-full text-xs border-[#00C4B4] text-[#00C4B4] hover:bg-[#00C4B4] hover:text-white">
+                            <ExternalLink className="w-3 h-3 mr-1" />
+                            Visit {loan.institution}
+                          </Button>
+                        </a>
+                      ) : (
+                        <p className="text-[10px] text-muted-foreground">Apply via institution website or branch.</p>
+                      )}
                     </div>
                   </div>
                 </CardContent>

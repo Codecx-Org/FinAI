@@ -3,6 +3,7 @@ import { AnalyticsService } from '../services/analytics-service.js';
 import { getAgentForBusiness } from '../chatbot/agent-manager.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import { authenticate, type AuthenticatedRequest } from '../utils/auth-middleware.js';
+import prisma from '../utils/prisma.js';
 
 const router = Router();
 const analyticsService = new AnalyticsService();
@@ -54,17 +55,43 @@ router.get('/analytics/ai-insights', authenticate, asyncHandler(async (req: Auth
   const businessId = req.user?.id;
   if (!businessId) return res.status(401).json({ error: 'Unauthorized' });
 
-  // Gather all data for the agent
-  const [overview, categories, profit] = await Promise.all([
+  // Gather enriched data for deeper AI analysis
+  const [overview, categories, profit, business, products, recentSales] = await Promise.all([
     analyticsService.getWeeklyOverview(businessId),
     analyticsService.getCategoryPerformance(businessId),
-    analyticsService.getProfitAnalytics(businessId, 'month') // Default to month for deeper insights
+    analyticsService.getProfitAnalytics(businessId, 'month'),
+    prisma.business.findUnique({ 
+      where: { id: businessId },
+      select: { businessType: true, yearsInBusiness: true, metadata: true }
+    }),
+    prisma.product.findMany({
+      where: { businessId },
+      select: { category: true, stockQuantity: true, price: true, buyingPrice: true, minStockLevel: true }
+    }),
+    prisma.sales.findMany({
+      where: { businessId },
+      take: 50,
+      orderBy: { createdAt: 'desc' },
+      select: { 
+        quantity: true, 
+        totalAmount: true, 
+        createdAt: true,
+        product: { select: { category: true } }
+      }
+    })
   ]);
 
   const analyticsData = {
+    businessContext: {
+      type: business?.businessType,
+      tenure: business?.yearsInBusiness,
+      metadata: business?.metadata
+    },
+    inventorySummary: products,
+    recentSalesPerformance: recentSales,
     weeklyOverview: overview,
     categoryPerformance: categories,
-    monthlyProfit: profit
+    monthlyProfitTrends: profit
   };
 
   try {
