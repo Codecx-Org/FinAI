@@ -76,7 +76,7 @@ export default function LoginScreen() {
               </View>
               <Text className="text-3xl font-bold text-gray-900 mb-2">BizSawa</Text>
               <Text className="text-gray-500 text-center">
-                Welcome back! Sign in to manage your business
+                {"Welcome back! \nSign in to manage your business"}
               </Text>
             </View>
 
@@ -149,7 +149,7 @@ export default function LoginScreen() {
               <TouchableOpacity
                 onPress={handleSubmit}
                 disabled={isLoading}
-                className={`bg-purple-600 rounded-lg py-4 items-center ${
+                className={`bg-purple-600 rounded-lg mt-6 py-4 items-center ${
                   isLoading ? 'opacity-50' : ''
                 }`}
               >

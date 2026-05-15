@@ -1,4 +1,9 @@
 // routes/chatbot-route.ts
+/**
+ * AI Coach (`POST /api/chatbot/chat`): requires JWT. Configure `OPENROUTER_API_KEY`
+ * and optional `CHAT_MODEL` in env (see `chatbot/agent.ts`). MCP/tool failures
+ * typically return 503 — inspect server logs.
+ */
 import { Router, type Response } from 'express';
 import { ChatbotAgent } from '../chatbot/agent.js';
 import { getAgentForBusiness, clearAgentCache, hasCachedAgent } from '../chatbot/agent-manager.js';

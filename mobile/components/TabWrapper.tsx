@@ -2,6 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Bot, Sparkles } from 'lucide-react-native';
 import { router } from 'expo-router';
+import { TAB_BAR_SCROLL_PADDING } from '../constants/tabBar';
 
 interface TabWrapperProps {
   children: React.ReactNode;
@@ -61,12 +62,12 @@ const styles = StyleSheet.create({
   },
   aiFab: {
     backgroundColor: '#7c3aed',
-    bottom: 100,
+    bottom: TAB_BAR_SCROLL_PADDING,
     right: 20,
   },
   socialFab: {
     backgroundColor: '#00C4B4',
-    bottom: 170,
+    bottom: TAB_BAR_SCROLL_PADDING + 70,
     right: 20,
   },
 });

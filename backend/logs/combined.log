@@ -4593,3 +4593,635 @@
 {"level":"info","message":"Request: GET /api/products","params":{},"query":{"businessId":"239"},"timestamp":"2026-03-26T16:56:48.970Z"}
 {"isOperational":false,"level":"error","message":"Error at /api/products: \nInvalid `prisma.product.findMany()` invocation in\n/home/madrigal/Projects/Mini-Projects/NumeralAI_Backend/FinAI/backend/services/products-service.ts:61:33\n\n  58 }\n  59 \n  60 async getAllProducts(businessId?: number) {\n→ 61   return await prisma.product.findMany(\nCan't reach database server at `aws-1-eu-west-1.pooler.supabase.com:5432`\n\nPlease make sure your database server is running at `aws-1-eu-west-1.pooler.supabase.com:5432`.","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.product.findMany()` invocation in\n/home/madrigal/Projects/Mini-Projects/NumeralAI_Backend/FinAI/backend/services/products-service.ts:61:33\n\n  58 }\n  59 \n  60 async getAllProducts(businessId?: number) {\n→ 61   return await prisma.product.findMany(\nCan't reach database server at `aws-1-eu-west-1.pooler.supabase.com:5432`\n\nPlease make sure your database server is running at `aws-1-eu-west-1.pooler.supabase.com:5432`.\n    at handleRequestError (/home/madrigal/Projects/Mini-Projects/NumeralAI_Backend/FinAI/backend/generated/prisma/runtime/library.js:124:7272)\n    at handleAndLogRequestError (/home/madrigal/Projects/Mini-Projects/NumeralAI_Backend/FinAI/backend/generated/prisma/runtime/library.js:124:6593)\n    at request (/home/madrigal/Projects/Mini-Projects/NumeralAI_Backend/FinAI/backend/generated/prisma/runtime/library.js:124:6300)\n    at processTicksAndRejections (native:7:39)","statusCode":500,"timestamp":"2026-03-26T16:56:49.001Z"}
 {"level":"info","message":"Request: GET /api/products","params":{},"query":{"businessId":"239"},"timestamp":"2026-03-26T17:05:09.838Z"}
+{"level":"info","message":"Primary 17352 forking 4 workers","timestamp":"2026-05-07T22:13:25.227Z"}
+{"level":"info","message":"Process 8536 started web server on port 3000","timestamp":"2026-05-07T22:13:31.935Z"}
+{"level":"info","message":"Process 17952 started web server on port 3000","timestamp":"2026-05-07T22:13:32.177Z"}
+{"level":"info","message":"Process 2932 started web server on port 3000","timestamp":"2026-05-07T22:13:32.193Z"}
+{"level":"info","message":"Process 21940 started web server on port 3000","timestamp":"2026-05-07T22:13:32.331Z"}
+{"level":"warn","message":"Worker 8536 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-07T22:13:38.917Z"}
+{"level":"warn","message":"Worker 21940 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-07T22:13:38.978Z"}
+{"level":"warn","message":"Worker 17952 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-07T22:13:39.330Z"}
+{"level":"warn","message":"Worker 2932 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-07T22:13:39.497Z"}
+{"level":"info","message":"Process 18232 started web server on port 3000","timestamp":"2026-05-07T22:13:44.848Z"}
+{"level":"info","message":"Process 20148 started web server on port 3000","timestamp":"2026-05-07T22:13:45.030Z"}
+{"level":"info","message":"Process 5244 started web server on port 3000","timestamp":"2026-05-07T22:13:45.752Z"}
+{"level":"info","message":"Process 10960 started web server on port 3000","timestamp":"2026-05-07T22:13:46.071Z"}
+{"level":"warn","message":"Worker 18232 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-07T22:13:52.099Z"}
+{"level":"warn","message":"Worker 20148 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-07T22:13:52.112Z"}
+{"level":"warn","message":"Worker 10960 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-07T22:13:52.669Z"}
+{"level":"warn","message":"Worker 5244 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-07T22:13:52.989Z"}
+{"level":"info","message":"Process 22340 started web server on port 3000","timestamp":"2026-05-07T22:13:56.737Z"}
+{"level":"info","message":"Process 7468 started web server on port 3000","timestamp":"2026-05-07T22:13:56.856Z"}
+{"level":"info","message":"Process 2068 started web server on port 3000","timestamp":"2026-05-07T22:13:57.594Z"}
+{"level":"info","message":"Process 18940 started web server on port 3000","timestamp":"2026-05-07T22:13:57.941Z"}
+{"level":"info","message":"Worker 7468 shutting down gracefully","timestamp":"2026-05-07T22:14:00.121Z"}
+{"level":"info","message":"Worker 2068 shutting down gracefully","timestamp":"2026-05-07T22:14:00.122Z"}
+{"level":"info","message":"Worker 22340 shutting down gracefully","timestamp":"2026-05-07T22:14:00.123Z"}
+{"level":"info","message":"Primary 14228 forking 4 workers","timestamp":"2026-05-07T22:14:08.800Z"}
+{"level":"warn","message":"Worker 13596 died with code 58, signal null. Forking new worker.","timestamp":"2026-05-07T22:14:11.841Z"}
+{"level":"info","message":"Primary 20028 forking 4 workers","timestamp":"2026-05-07T22:25:30.267Z"}
+{"level":"info","message":"Process 16308 started web server on port 3000","timestamp":"2026-05-07T22:25:41.060Z"}
+{"level":"info","message":"Process 17264 started web server on port 3000","timestamp":"2026-05-07T22:25:41.047Z"}
+{"level":"info","message":"Process 2804 started web server on port 3000","timestamp":"2026-05-07T22:25:41.177Z"}
+{"level":"info","message":"Process 22320 started web server on port 3000","timestamp":"2026-05-07T22:25:41.290Z"}
+{"level":"info","message":"Primary 2196 forking 4 workers","timestamp":"2026-05-07T22:31:09.401Z"}
+{"level":"info","message":"Process 14936 started web server on port 3000","timestamp":"2026-05-07T22:31:18.057Z"}
+{"level":"info","message":"Process 5736 started web server on port 3000","timestamp":"2026-05-07T22:31:18.111Z"}
+{"level":"info","message":"Process 12816 started web server on port 3000","timestamp":"2026-05-07T22:31:18.143Z"}
+{"level":"info","message":"Process 16196 started web server on port 3000","timestamp":"2026-05-07T22:31:18.127Z"}
+{"level":"info","message":"Primary 16728 forking 4 workers","timestamp":"2026-05-07T22:31:34.529Z"}
+{"level":"info","message":"Process 22008 started web server on port 3000","timestamp":"2026-05-07T22:31:43.337Z"}
+{"level":"info","message":"Process 1132 started web server on port 3000","timestamp":"2026-05-07T22:31:43.387Z"}
+{"level":"info","message":"Process 18552 started web server on port 3000","timestamp":"2026-05-07T22:31:43.922Z"}
+{"level":"info","message":"Process 1576 started web server on port 3000","timestamp":"2026-05-07T22:31:43.919Z"}
+{"level":"info","message":"Primary 25364 forking 4 workers","timestamp":"2026-05-12T06:49:47.994Z"}
+{"level":"info","message":"Process 13792 started web server on port 3000","timestamp":"2026-05-12T06:49:56.008Z"}
+{"level":"info","message":"Process 8724 started web server on port 3000","timestamp":"2026-05-12T06:49:56.067Z"}
+{"level":"info","message":"Process 5216 started web server on port 3000","timestamp":"2026-05-12T06:49:56.079Z"}
+{"level":"info","message":"Process 9872 started web server on port 3000","timestamp":"2026-05-12T06:49:56.063Z"}
+{"level":"warn","message":"Worker 13792 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:02.813Z"}
+{"level":"warn","message":"Worker 5216 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:03.125Z"}
+{"level":"warn","message":"Worker 8724 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:03.222Z"}
+{"level":"warn","message":"Worker 9872 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:03.306Z"}
+{"level":"info","message":"Process 26164 started web server on port 3000","timestamp":"2026-05-12T06:50:08.273Z"}
+{"level":"info","message":"Process 19304 started web server on port 3000","timestamp":"2026-05-12T06:50:08.366Z"}
+{"level":"info","message":"Process 26288 started web server on port 3000","timestamp":"2026-05-12T06:50:08.751Z"}
+{"level":"info","message":"Process 13884 started web server on port 3000","timestamp":"2026-05-12T06:50:08.503Z"}
+{"level":"warn","message":"Worker 19304 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:15.574Z"}
+{"level":"warn","message":"Worker 13884 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:15.865Z"}
+{"level":"warn","message":"Worker 26288 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:16.059Z"}
+{"level":"warn","message":"Worker 26164 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:16.084Z"}
+{"level":"info","message":"Process 12160 started web server on port 3000","timestamp":"2026-05-12T06:50:20.748Z"}
+{"level":"info","message":"Process 7140 started web server on port 3000","timestamp":"2026-05-12T06:50:20.891Z"}
+{"level":"info","message":"Process 7548 started web server on port 3000","timestamp":"2026-05-12T06:50:20.972Z"}
+{"level":"info","message":"Process 13184 started web server on port 3000","timestamp":"2026-05-12T06:50:21.176Z"}
+{"level":"warn","message":"Worker 7140 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:27.998Z"}
+{"level":"warn","message":"Worker 7548 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:28.248Z"}
+{"level":"warn","message":"Worker 12160 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:28.589Z"}
+{"level":"warn","message":"Worker 13184 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:28.642Z"}
+{"level":"info","message":"Process 10580 started web server on port 3000","timestamp":"2026-05-12T06:50:33.078Z"}
+{"level":"info","message":"Process 404 started web server on port 3000","timestamp":"2026-05-12T06:50:33.089Z"}
+{"level":"info","message":"Process 10496 started web server on port 3000","timestamp":"2026-05-12T06:50:33.695Z"}
+{"level":"info","message":"Process 17232 started web server on port 3000","timestamp":"2026-05-12T06:50:33.694Z"}
+{"level":"warn","message":"Worker 404 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:40.227Z"}
+{"level":"warn","message":"Worker 10580 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:40.267Z"}
+{"level":"warn","message":"Worker 17232 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:40.657Z"}
+{"level":"warn","message":"Worker 10496 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:40.827Z"}
+{"level":"info","message":"Process 25812 started web server on port 3000","timestamp":"2026-05-12T06:50:44.717Z"}
+{"level":"info","message":"Process 12716 started web server on port 3000","timestamp":"2026-05-12T06:50:44.839Z"}
+{"level":"info","message":"Process 15284 started web server on port 3000","timestamp":"2026-05-12T06:50:45.530Z"}
+{"level":"info","message":"Process 26496 started web server on port 3000","timestamp":"2026-05-12T06:50:46.064Z"}
+{"level":"warn","message":"Worker 25812 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:51.463Z"}
+{"level":"warn","message":"Worker 12716 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:51.624Z"}
+{"level":"warn","message":"Worker 15284 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:52.791Z"}
+{"level":"warn","message":"Worker 26496 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-12T06:50:52.894Z"}
+{"level":"info","message":"Process 15148 started web server on port 3000","timestamp":"2026-05-12T06:50:56.339Z"}
+{"level":"info","message":"Process 19140 started web server on port 3000","timestamp":"2026-05-12T06:50:56.927Z"}
+{"level":"info","message":"Primary 16696 forking 4 workers","timestamp":"2026-05-12T06:52:11.932Z"}
+{"level":"info","message":"Primary 17720 forking 4 workers","timestamp":"2026-05-12T07:08:39.498Z"}
+{"level":"info","message":"Process 5988 started web server on port 3000","timestamp":"2026-05-12T07:08:51.310Z"}
+{"level":"info","message":"Process 20112 started web server on port 3000","timestamp":"2026-05-12T07:08:53.110Z"}
+{"level":"info","message":"Process 25852 started web server on port 3000","timestamp":"2026-05-12T07:08:53.758Z"}
+{"level":"info","message":"Process 11432 started web server on port 3000","timestamp":"2026-05-12T07:08:54.353Z"}
+{"level":"info","message":"Request: GET /health","params":{},"query":{},"timestamp":"2026-05-12T08:26:21.824Z"}
+{"body":{"businessType":"Retail Shop","name":"Test Business","ownerEmail":"test@example.com","ownerName":"Test User","password":"password123","yearsInBusiness":"1-2 years"},"level":"info","message":"Request: POST /api/auth/register","params":{},"query":{},"timestamp":"2026-05-12T08:29:40.949Z"}
+{"isOperational":false,"level":"error","message":"Error at /api/auth/register: \nInvalid `prisma.business.findUnique()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\business-service.ts:17:44\n\n  14   businessType?: string;\n  15   yearsInBusiness?: string;\n  16 }) {\n→ 17   const existing = await prisma.business.findUnique(\nError querying the database: FATAL: (ENOTFOUND) tenant/user postgres.kdsxqmsdgqqdoxasldwh not found","stack":"PrismaClientInitializationError: \nInvalid `prisma.business.findUnique()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\business-service.ts:17:44\n\n  14   businessType?: string;\n  15   yearsInBusiness?: string;\n  16 }) {\n→ 17   const existing = await prisma.business.findUnique(\nError querying the database: FATAL: (ENOTFOUND) tenant/user postgres.kdsxqmsdgqqdoxasldwh not found\n    at handleRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:7572)\n    at handleAndLogRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6593)\n    at request (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6300)\n    at processTicksAndRejections (native:7:39)","statusCode":500,"timestamp":"2026-05-12T08:29:45.052Z"}
+{"level":"info","message":"Request: GET /health","params":{},"query":{},"timestamp":"2026-05-12T08:34:28.079Z"}
+{"body":{"businessType":"Retail Shop","name":"Test Business","ownerEmail":"test@example.com","ownerName":"Test User","password":"password123","yearsInBusiness":"1-2 years"},"level":"info","message":"Request: POST /api/auth/register","params":{},"query":{},"timestamp":"2026-05-12T08:34:35.046Z"}
+{"isOperational":false,"level":"error","message":"Error at /api/auth/register: \nInvalid `prisma.business.findUnique()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\business-service.ts:17:44\n\n  14   businessType?: string;\n  15   yearsInBusiness?: string;\n  16 }) {\n→ 17   const existing = await prisma.business.findUnique(\nError querying the database: FATAL: (ENOTFOUND) tenant/user postgres.kdsxqmsdgqqdoxasldwh not found","stack":"PrismaClientInitializationError: \nInvalid `prisma.business.findUnique()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\business-service.ts:17:44\n\n  14   businessType?: string;\n  15   yearsInBusiness?: string;\n  16 }) {\n→ 17   const existing = await prisma.business.findUnique(\nError querying the database: FATAL: (ENOTFOUND) tenant/user postgres.kdsxqmsdgqqdoxasldwh not found\n    at handleRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:7572)\n    at handleAndLogRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6593)\n    at request (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6300)\n    at processTicksAndRejections (native:7:39)","statusCode":500,"timestamp":"2026-05-12T08:34:39.112Z"}
+{"level":"info","message":"Primary 15076 forking 4 workers","timestamp":"2026-05-12T08:35:29.259Z"}
+{"level":"info","message":"Process 24608 started web server on port 3000","timestamp":"2026-05-12T08:35:51.718Z"}
+{"level":"info","message":"Process 9448 started web server on port 3000","timestamp":"2026-05-12T08:35:51.792Z"}
+{"level":"info","message":"Process 17536 started web server on port 3000","timestamp":"2026-05-12T08:35:51.994Z"}
+{"level":"info","message":"Process 4476 started web server on port 3000","timestamp":"2026-05-12T08:35:52.382Z"}
+{"body":{"businessType":"Retail Shop","name":"Test Business","ownerEmail":"test@example.com","ownerName":"Test User","password":"password123","yearsInBusiness":"1-2 years"},"level":"info","message":"Request: POST /api/auth/register","params":{},"query":{},"timestamp":"2026-05-12T08:36:06.885Z"}
+{"isOperational":false,"level":"error","message":"Error at /api/auth/register: \nInvalid `prisma.business.findUnique()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\business-service.ts:17:44\n\n  14   businessType?: string;\n  15   yearsInBusiness?: string;\n  16 }) {\n→ 17   const existing = await prisma.business.findUnique(\nError querying the database: FATAL: (ENOTFOUND) tenant/user postgres.kdsxqmsdgqqdoxasldwh not found","stack":"PrismaClientInitializationError: \nInvalid `prisma.business.findUnique()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\business-service.ts:17:44\n\n  14   businessType?: string;\n  15   yearsInBusiness?: string;\n  16 }) {\n→ 17   const existing = await prisma.business.findUnique(\nError querying the database: FATAL: (ENOTFOUND) tenant/user postgres.kdsxqmsdgqqdoxasldwh not found\n    at handleRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:7572)\n    at handleAndLogRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6593)\n    at request (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6300)\n    at processTicksAndRejections (native:7:39)","statusCode":500,"timestamp":"2026-05-12T08:36:10.801Z"}
+{"level":"info","message":"Primary 25320 forking 4 workers","timestamp":"2026-05-12T08:37:15.983Z"}
+{"level":"info","message":"Process 7140 started web server on port 3000","timestamp":"2026-05-12T08:37:30.823Z"}
+{"level":"warn","message":"Worker 22744 died with code 3, signal null. Forking new worker.","timestamp":"2026-05-12T08:37:31.344Z"}
+{"level":"warn","message":"Worker 16704 died with code 9, signal null. Forking new worker.","timestamp":"2026-05-12T08:37:44.703Z"}
+{"level":"info","message":"Primary 18348 forking 4 workers","timestamp":"2026-05-12T09:28:43.735Z"}
+{"level":"info","message":"Process 18144 started web server on port 3000","timestamp":"2026-05-12T09:28:52.309Z"}
+{"level":"info","message":"Process 16768 started web server on port 3000","timestamp":"2026-05-12T09:28:52.455Z"}
+{"level":"info","message":"Process 5920 started web server on port 3000","timestamp":"2026-05-12T09:28:53.114Z"}
+{"level":"info","message":"Process 15176 started web server on port 3000","timestamp":"2026-05-12T09:28:52.997Z"}
+{"level":"info","message":"Worker 5920 shutting down gracefully","timestamp":"2026-05-12T09:28:55.787Z"}
+{"level":"info","message":"Worker 16768 shutting down gracefully","timestamp":"2026-05-12T09:28:55.778Z"}
+{"level":"info","message":"Worker 15176 shutting down gracefully","timestamp":"2026-05-12T09:28:55.788Z"}
+{"level":"info","message":"Primary 15384 forking 4 workers","timestamp":"2026-05-12T09:29:15.789Z"}
+{"level":"info","message":"Process 2676 started web server on port 3000","timestamp":"2026-05-12T09:29:21.822Z"}
+{"level":"info","message":"Process 15868 started web server on port 3000","timestamp":"2026-05-12T09:29:21.841Z"}
+{"level":"info","message":"Process 2004 started web server on port 3000","timestamp":"2026-05-12T09:29:21.908Z"}
+{"level":"info","message":"Process 16992 started web server on port 3000","timestamp":"2026-05-12T09:29:22.076Z"}
+{"body":{"email":"njuki@gmail.com","password":"password123"},"level":"info","message":"Request: POST /auth/login","params":{},"query":{},"timestamp":"2026-05-12T10:12:19.402Z"}
+{"level":"info","message":"Primary 21764 forking 4 workers","timestamp":"2026-05-12T11:30:17.947Z"}
+{"level":"info","message":"Process 20228 started web server on port 3000","timestamp":"2026-05-12T11:30:27.894Z"}
+{"level":"info","message":"Process 5292 started web server on port 3000","timestamp":"2026-05-12T11:30:28.321Z"}
+{"level":"info","message":"Process 13332 started web server on port 3000","timestamp":"2026-05-12T11:30:28.602Z"}
+{"level":"info","message":"Process 11028 started web server on port 3000","timestamp":"2026-05-12T11:30:28.740Z"}
+{"level":"info","message":"Primary 11284 forking 4 workers","timestamp":"2026-05-12T16:07:19.771Z"}
+{"level":"info","message":"Primary 18296 forking 4 workers","timestamp":"2026-05-12T16:07:50.336Z"}
+{"level":"info","message":"Process 19676 started web server on port 3000","timestamp":"2026-05-12T16:07:59.801Z"}
+{"level":"info","message":"Process 18336 started web server on port 3000","timestamp":"2026-05-12T16:07:59.838Z"}
+{"level":"info","message":"Process 22660 started web server on port 3000","timestamp":"2026-05-12T16:08:00.044Z"}
+{"level":"info","message":"Process 24960 started web server on port 3000","timestamp":"2026-05-12T16:08:00.361Z"}
+{"body":{"businessType":"Retail Shop","name":"Test Business","ownerEmail":"test@example.com","ownerName":"Test Business Owner","password":"test123456","whatsappNumber":"+254712345678","yearsInBusiness":"1-2 years"},"level":"info","message":"Request: POST /api/auth/register","params":{},"query":{},"timestamp":"2026-05-12T16:38:57.231Z"}
+{"body":{"businessType":"Retail Shop","name":"Test Business","ownerEmail":"test@example.com","ownerName":"Test Business Owner","password":"test123456","whatsappNumber":"+254712345678","yearsInBusiness":"1-2 years"},"level":"info","message":"Request: POST /api/auth/register","params":{},"query":{},"timestamp":"2026-05-12T16:40:08.009Z"}
+{"isOperational":true,"level":"error","message":"Error at /api/auth/register: Business with this owner email already exists","stack":"Error: Business with this owner email already exists\n    at createBusiness (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\business-service.ts:22:17)\n    at processTicksAndRejections (native:7:39)","statusCode":400,"timestamp":"2026-05-12T16:40:08.174Z"}
+{"body":{"businessType":"Technology","name":"John's Electronics","ownerEmail":"johndoe510703688.test@example.com","ownerName":"John Doe","password":"test123456","whatsappNumber":"+254798765432","yearsInBusiness":"3-5 years"},"level":"info","message":"Request: POST /api/auth/register","params":{},"query":{},"timestamp":"2026-05-12T16:40:12.275Z"}
+{"body":{"email":"johndoe1750672004.test@example.com","password":"test123456"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-12T16:40:16.554Z"}
+{"isOperational":true,"level":"error","message":"Error at /api/auth/login: Invalid email or password","stack":"Error: Invalid email or password\n    at login (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\auth-service.ts:19:17)\n    at async <anonymous> (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\routes\\auth-route.ts:30:36)\n    at processTicksAndRejections (native:7:39)","statusCode":401,"timestamp":"2026-05-12T16:40:16.568Z"}
+{"body":{"businessType":"Retail Shop","name":"Test Shop","ownerEmail":"newtest@business.com","ownerName":"Test Owner","password":"password123","whatsappNumber":"+254711223344","yearsInBusiness":"Less than 1 year"},"level":"info","message":"Request: POST /api/auth/register","params":{},"query":{},"timestamp":"2026-05-12T16:41:36.457Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-12T16:41:39.447Z"}
+{"level":"info","message":"Request: GET /health","params":{},"query":{},"timestamp":"2026-05-12T16:48:18.768Z"}
+{"level":"info","message":"Primary 19688 forking 4 workers","timestamp":"2026-05-12T16:48:21.406Z"}
+{"level":"info","message":"Process 22904 started web server on port 3000","timestamp":"2026-05-12T16:48:59.493Z"}
+{"level":"info","message":"Process 24736 started web server on port 3000","timestamp":"2026-05-12T16:49:00.407Z"}
+{"level":"info","message":"Process 22728 started web server on port 3000","timestamp":"2026-05-12T16:49:01.421Z"}
+{"level":"info","message":"Process 20340 started web server on port 3000","timestamp":"2026-05-12T16:49:01.926Z"}
+{"level":"info","message":"Request: GET /health","params":{},"query":{},"timestamp":"2026-05-12T17:08:41.334Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-12T17:09:52.287Z"}
+{"level":"info","message":"Request: GET /health","params":{},"query":{},"timestamp":"2026-05-12T18:31:38.664Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /auth/login","params":{},"query":{},"timestamp":"2026-05-12T18:36:47.093Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-12T18:43:26.518Z"}
+{"level":"warn","message":"Worker 20340 died with code 58, signal null. Forking new worker.","timestamp":"2026-05-13T03:27:44.131Z"}
+{"level":"info","message":"Primary 15848 forking 4 workers","timestamp":"2026-05-13T09:36:46.475Z"}
+{"level":"info","message":"Process 21764 started web server on port 3000","timestamp":"2026-05-13T09:36:56.403Z"}
+{"level":"info","message":"Process 21804 started web server on port 3000","timestamp":"2026-05-13T09:36:56.848Z"}
+{"level":"info","message":"Process 21796 started web server on port 3000","timestamp":"2026-05-13T09:36:56.839Z"}
+{"level":"info","message":"Process 21792 started web server on port 3000","timestamp":"2026-05-13T09:36:57.523Z"}
+{"level":"warn","message":"Worker 21764 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-13T09:37:02.923Z"}
+{"level":"warn","message":"Worker 21804 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-13T09:37:03.415Z"}
+{"level":"warn","message":"Worker 21796 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-13T09:37:03.695Z"}
+{"level":"warn","message":"Worker 21792 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-13T09:37:04.127Z"}
+{"level":"info","message":"Process 22200 started web server on port 3000","timestamp":"2026-05-13T09:37:08.270Z"}
+{"level":"info","message":"Process 21928 started web server on port 3000","timestamp":"2026-05-13T09:37:09.032Z"}
+{"level":"info","message":"Process 22452 started web server on port 3000","timestamp":"2026-05-13T09:37:09.687Z"}
+{"level":"info","message":"Process 22484 started web server on port 3000","timestamp":"2026-05-13T09:37:10.254Z"}
+{"level":"warn","message":"Worker 22200 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-13T09:37:15.435Z"}
+{"level":"warn","message":"Worker 22452 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-13T09:37:16.426Z"}
+{"level":"warn","message":"Worker 21928 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-13T09:37:17.756Z"}
+{"level":"warn","message":"Worker 22484 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-13T09:37:17.869Z"}
+{"level":"info","message":"Process 19004 started web server on port 3000","timestamp":"2026-05-13T09:37:22.598Z"}
+{"level":"info","message":"Process 11908 started web server on port 3000","timestamp":"2026-05-13T09:37:24.325Z"}
+{"level":"info","message":"Process 11596 started web server on port 3000","timestamp":"2026-05-13T09:37:25.101Z"}
+{"level":"info","message":"Process 9952 started web server on port 3000","timestamp":"2026-05-13T09:37:25.128Z"}
+{"level":"warn","message":"Worker 19004 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-13T09:37:29.728Z"}
+{"level":"warn","message":"Worker 11908 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-13T09:37:32.810Z"}
+{"level":"warn","message":"Worker 9952 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-13T09:37:32.997Z"}
+{"level":"warn","message":"Worker 11596 died with code 1, signal null. Forking new worker.","timestamp":"2026-05-13T09:37:33.045Z"}
+{"level":"info","message":"Process 9812 started web server on port 3000","timestamp":"2026-05-13T09:37:35.718Z"}
+{"level":"info","message":"Process 21476 started web server on port 3000","timestamp":"2026-05-13T09:37:38.289Z"}
+{"level":"info","message":"Process 21544 started web server on port 3000","timestamp":"2026-05-13T09:37:38.456Z"}
+{"level":"info","message":"Process 21616 started web server on port 3000","timestamp":"2026-05-13T09:37:38.602Z"}
+{"level":"info","message":"Primary 19240 forking 4 workers","timestamp":"2026-05-13T09:55:22.113Z"}
+{"level":"info","message":"Process 20016 started web server on port 3000","timestamp":"2026-05-13T09:55:35.998Z"}
+{"level":"info","message":"Process 21896 started web server on port 3000","timestamp":"2026-05-13T09:55:35.988Z"}
+{"level":"info","message":"Process 21544 started web server on port 3000","timestamp":"2026-05-13T09:55:36.152Z"}
+{"level":"info","message":"Process 17676 started web server on port 3000","timestamp":"2026-05-13T09:55:36.462Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-13T10:44:28.859Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-13T10:54:42.231Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T10:54:43.222Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T10:54:43.246Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T10:54:43.254Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T10:54:44.321Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T10:54:44.334Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T10:54:44.363Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T10:54:46.367Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T10:54:46.382Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T10:54:46.429Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T10:54:50.423Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T10:54:50.647Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T10:54:50.757Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T10:56:32.926Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T10:56:33.993Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T10:56:36.093Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T10:56:40.151Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T10:56:46.951Z"}
+{"level":"info","message":"Request: GET /expenses","params":{},"query":{},"timestamp":"2026-05-13T10:56:46.965Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T10:56:47.032Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T10:56:48.005Z"}
+{"level":"info","message":"Request: GET /expenses","params":{},"query":{},"timestamp":"2026-05-13T10:56:48.060Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T10:56:48.109Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T10:56:50.090Z"}
+{"level":"info","message":"Request: GET /expenses","params":{},"query":{},"timestamp":"2026-05-13T10:56:50.131Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T10:56:50.186Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T10:56:54.139Z"}
+{"level":"info","message":"Request: GET /expenses","params":{},"query":{},"timestamp":"2026-05-13T10:56:54.524Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T10:56:54.526Z"}
+{"level":"info","message":"Request: GET /sales","params":{},"query":{},"timestamp":"2026-05-13T10:57:06.318Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T10:57:06.333Z"}
+{"level":"info","message":"Request: GET /orders","params":{},"query":{},"timestamp":"2026-05-13T10:57:06.336Z"}
+{"level":"info","message":"Request: GET /customers","params":{},"query":{},"timestamp":"2026-05-13T10:57:06.340Z"}
+{"level":"info","message":"Request: GET /sales","params":{},"query":{},"timestamp":"2026-05-13T10:57:07.385Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T10:57:07.391Z"}
+{"level":"info","message":"Request: GET /orders","params":{},"query":{},"timestamp":"2026-05-13T10:57:07.453Z"}
+{"level":"info","message":"Request: GET /customers","params":{},"query":{},"timestamp":"2026-05-13T10:57:07.455Z"}
+{"level":"info","message":"Request: GET /sales","params":{},"query":{},"timestamp":"2026-05-13T10:57:09.460Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T10:57:09.462Z"}
+{"level":"info","message":"Request: GET /orders","params":{},"query":{},"timestamp":"2026-05-13T10:57:09.525Z"}
+{"level":"info","message":"Request: GET /customers","params":{},"query":{},"timestamp":"2026-05-13T10:57:09.526Z"}
+{"level":"info","message":"Request: GET /sales","params":{},"query":{},"timestamp":"2026-05-13T10:57:13.532Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T10:57:13.540Z"}
+{"level":"info","message":"Request: GET /customers","params":{},"query":{},"timestamp":"2026-05-13T10:57:13.732Z"}
+{"level":"info","message":"Request: GET /orders","params":{},"query":{},"timestamp":"2026-05-13T10:57:14.160Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-13T11:01:23.772Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:01:25.265Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:01:25.272Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T11:01:25.273Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:01:26.383Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:01:26.390Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T11:01:26.391Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:01:28.472Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T11:01:28.476Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:01:28.477Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:01:32.551Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:01:32.554Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T11:01:32.555Z"}
+{"level":"info","message":"Request: GET /expenses","params":{},"query":{},"timestamp":"2026-05-13T11:06:14.762Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:06:14.768Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:06:14.770Z"}
+{"level":"info","message":"Request: GET /expenses","params":{},"query":{},"timestamp":"2026-05-13T11:06:15.874Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:06:15.886Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:06:15.897Z"}
+{"level":"info","message":"Request: GET /expenses","params":{},"query":{},"timestamp":"2026-05-13T11:06:17.930Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:06:17.946Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:06:17.972Z"}
+{"level":"info","message":"Request: GET /sales","params":{},"query":{},"timestamp":"2026-05-13T11:06:21.940Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T11:06:21.963Z"}
+{"level":"info","message":"Request: GET /expenses","params":{},"query":{},"timestamp":"2026-05-13T11:06:22.017Z"}
+{"level":"info","message":"Request: GET /orders","params":{},"query":{},"timestamp":"2026-05-13T11:06:22.072Z"}
+{"level":"info","message":"Request: GET /customers","params":{},"query":{},"timestamp":"2026-05-13T11:06:22.156Z"}
+{"level":"info","message":"Request: GET /analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:06:22.365Z"}
+{"level":"info","message":"Request: GET /analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:06:22.408Z"}
+{"level":"info","message":"Request: GET /sales","params":{},"query":{},"timestamp":"2026-05-13T11:06:29.622Z"}
+{"level":"info","message":"Request: GET /orders","params":{},"query":{},"timestamp":"2026-05-13T11:06:29.653Z"}
+{"level":"info","message":"Request: GET /products","params":{},"query":{},"timestamp":"2026-05-13T11:06:29.672Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:06:30.124Z"}
+{"level":"info","message":"Request: GET /customers","params":{},"query":{},"timestamp":"2026-05-13T11:06:31.592Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:06:31.598Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T11:06:33.260Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-13T11:10:27.198Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:10:28.294Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:10:28.305Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T11:10:28.313Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-13T11:10:38.684Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-13T11:29:15.133Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:29:16.339Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:29:16.378Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T11:29:16.452Z"}
+{"body":{"buyingPrice":210,"category":"Other","name":"John Cavelier","price":300,"stockQuantity":100},"level":"info","message":"Request: POST /api/products","params":{},"query":{},"timestamp":"2026-05-13T11:30:30.769Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T11:30:30.972Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-13T11:31:06.078Z"}
+{"level":"info","message":"Request: GET /api/orders","params":{},"query":{},"timestamp":"2026-05-13T11:31:06.101Z"}
+{"level":"info","message":"Request: GET /api/customers","params":{},"query":{},"timestamp":"2026-05-13T11:31:06.117Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:31:14.507Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:31:14.512Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-13T11:31:14.516Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-13T11:35:35.014Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:35:36.454Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:35:36.471Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T11:35:36.478Z"}
+{"body":{"buyingPrice":28,"category":"Aquaculture","name":"Beans","price":40,"stockQuantity":100},"level":"info","message":"Request: POST /api/products","params":{},"query":{},"timestamp":"2026-05-13T11:36:44.003Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T11:36:44.155Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-13T11:37:36.442Z"}
+{"level":"info","message":"Request: GET /api/customers","params":{},"query":{},"timestamp":"2026-05-13T11:37:36.453Z"}
+{"level":"info","message":"Request: GET /api/orders","params":{},"query":{},"timestamp":"2026-05-13T11:37:36.462Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:37:43.275Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:37:43.279Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-13T11:37:43.315Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-13T11:40:59.473Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-13T11:41:47.817Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-13T11:42:18.962Z"}
+{"level":"info","message":"Request: GET /api/business/58","params":{},"query":{},"timestamp":"2026-05-13T11:54:38.754Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T11:54:52.823Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-13T11:54:52.921Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:54:53.011Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-13T11:54:53.109Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:54:53.277Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:56:03.906Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:56:04.401Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-13T11:56:04.442Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-13T11:56:30.786Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T11:56:30.858Z"}
+{"level":"info","message":"Request: GET /api/orders","params":{},"query":{},"timestamp":"2026-05-13T11:56:30.934Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-13T11:56:30.952Z"}
+{"level":"info","message":"Request: GET /api/customers","params":{},"query":{},"timestamp":"2026-05-13T11:56:30.987Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-13T11:57:07.957Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:57:08.433Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:57:08.446Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T11:57:32.577Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T11:59:25.287Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T11:59:25.449Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T11:59:25.456Z"}
+{"level":"info","message":"Primary 21640 forking 4 workers","timestamp":"2026-05-13T12:15:30.053Z"}
+{"level":"info","message":"Process 5984 started web server on port 3000","timestamp":"2026-05-13T12:15:43.822Z"}
+{"level":"info","message":"Process 3240 started web server on port 3000","timestamp":"2026-05-13T12:15:43.834Z"}
+{"level":"info","message":"Process 21520 started web server on port 3000","timestamp":"2026-05-13T12:15:44.004Z"}
+{"level":"info","message":"Process 23932 started web server on port 3000","timestamp":"2026-05-13T12:15:44.261Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-13T12:39:06.612Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T12:39:08.343Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T12:39:08.390Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-13T12:39:08.395Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T12:39:08.409Z"}
+{"isOperational":false,"level":"error","message":"Error at /api/products: \nInvalid `prisma.product.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\products-service.ts:108:33\n\n  105 }\n  106 \n  107 async getAllProducts(businessId?: number) {\n→ 108   return await prisma.product.findMany(\nThe column `Product.supplier` does not exist in the current database.","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.product.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\products-service.ts:108:33\n\n  105 }\n  106 \n  107 async getAllProducts(businessId?: number) {\n→ 108   return await prisma.product.findMany(\nThe column `Product.supplier` does not exist in the current database.\n    at handleRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:7272)\n    at handleAndLogRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6593)\n    at request (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6300)\n    at processTicksAndRejections (native:7:39)","statusCode":500,"timestamp":"2026-05-13T12:39:08.454Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T12:39:09.599Z"}
+{"isOperational":false,"level":"error","message":"Error at /api/products: \nInvalid `prisma.product.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\products-service.ts:108:33\n\n  105 }\n  106 \n  107 async getAllProducts(businessId?: number) {\n→ 108   return await prisma.product.findMany(\nThe column `Product.supplier` does not exist in the current database.","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.product.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\products-service.ts:108:33\n\n  105 }\n  106 \n  107 async getAllProducts(businessId?: number) {\n→ 108   return await prisma.product.findMany(\nThe column `Product.supplier` does not exist in the current database.\n    at handleRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:7272)\n    at handleAndLogRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6593)\n    at request (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6300)\n    at processTicksAndRejections (native:7:39)","statusCode":500,"timestamp":"2026-05-13T12:39:09.607Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T12:39:11.653Z"}
+{"isOperational":false,"level":"error","message":"Error at /api/products: \nInvalid `prisma.product.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\products-service.ts:108:33\n\n  105 }\n  106 \n  107 async getAllProducts(businessId?: number) {\n→ 108   return await prisma.product.findMany(\nThe column `Product.supplier` does not exist in the current database.","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.product.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\products-service.ts:108:33\n\n  105 }\n  106 \n  107 async getAllProducts(businessId?: number) {\n→ 108   return await prisma.product.findMany(\nThe column `Product.supplier` does not exist in the current database.\n    at handleRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:7272)\n    at handleAndLogRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6593)\n    at request (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6300)\n    at processTicksAndRejections (native:7:39)","statusCode":500,"timestamp":"2026-05-13T12:39:11.659Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T12:39:15.718Z"}
+{"isOperational":false,"level":"error","message":"Error at /api/products: \nInvalid `prisma.product.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\products-service.ts:108:33\n\n  105 }\n  106 \n  107 async getAllProducts(businessId?: number) {\n→ 108   return await prisma.product.findMany(\nThe column `Product.supplier` does not exist in the current database.","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.product.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\products-service.ts:108:33\n\n  105 }\n  106 \n  107 async getAllProducts(businessId?: number) {\n→ 108   return await prisma.product.findMany(\nThe column `Product.supplier` does not exist in the current database.\n    at handleRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:7272)\n    at handleAndLogRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6593)\n    at request (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6300)\n    at processTicksAndRejections (native:7:39)","statusCode":500,"timestamp":"2026-05-13T12:39:15.735Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-13T12:49:42.691Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T12:49:43.965Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T12:49:43.999Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-13T12:49:44.010Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T12:49:44.025Z"}
+{"body":{"buyingPrice":700,"category":"Swine Feed","lastRestockedAt":"2026-05-13T12:51:08.731Z","maxStockLevel":500,"minStockLevel":10,"name":"Swine feed 60kh","price":1000,"stockQuantity":400,"supplier":"Kenchic LTD"},"level":"info","message":"Request: POST /api/products","params":{},"query":{},"timestamp":"2026-05-13T12:51:07.336Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T12:51:07.453Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T12:51:26.151Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T12:51:26.161Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-13T12:51:26.166Z"}
+{"level":"info","message":"Request: GET /api/business/58","params":{},"query":{},"timestamp":"2026-05-13T12:51:32.919Z"}
+{"level":"info","message":"Request: GET /api/orders","params":{},"query":{},"timestamp":"2026-05-13T12:51:39.712Z"}
+{"level":"info","message":"Request: GET /api/customers","params":{},"query":{},"timestamp":"2026-05-13T12:51:39.720Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-13T12:51:39.723Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-13T12:51:42.090Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-13T15:54:27.118Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-13T15:54:28.352Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-13T15:54:28.381Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-13T15:54:28.403Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-13T15:54:28.430Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-13T15:54:50.037Z"}
+{"level":"info","message":"Request: GET /api/business/58","params":{},"query":{},"timestamp":"2026-05-13T15:54:53.360Z"}
+{"body":{"history":[{"content":"Habari! I'm your AI business coach. I can help you in English or Kiswahili. How can I assist your business today?","role":"assistant"}],"language":"en","message":"How is my business doing?"},"level":"info","message":"Request: POST /api/chatbot/chat","params":{},"query":{},"timestamp":"2026-05-13T15:55:08.411Z"}
+{"body":{"history":[{"content":"Habari! I'm your AI business coach. I can help you in English or Kiswahili. How can I assist your business today?","role":"assistant"},{"content":"How is my business doing?","role":"user"},{"content":"Your business snapshot:\n\n- **Revenue:** KES 0  \n- **Expenses:** KES 0  \n- **Profit:** KES 0  \n- **Products in inventory:** 3  \n- **Low‑stock items:** 0  \n- **Pending orders:** 0  \n\nEverything looks like you haven’t recorded any sales or expenses yet. Would you like help adding your first sale, checking product details, or setting up a payment request? Let me know what you’d like to do next!","role":"assistant"}],"language":"en","message":"Nisaidie kuongeza mauuzo"},"level":"info","message":"Request: POST /api/chatbot/chat","params":{},"query":{},"timestamp":"2026-05-13T15:56:16.419Z"}
+{"level":"info","message":"Primary 17436 forking 4 workers","timestamp":"2026-05-14T02:35:54.455Z"}
+{"level":"info","message":"Process 16640 started web server on port 3000","timestamp":"2026-05-14T02:36:05.553Z"}
+{"level":"info","message":"Process 2836 started web server on port 3000","timestamp":"2026-05-14T02:36:05.654Z"}
+{"level":"info","message":"Process 25528 started web server on port 3000","timestamp":"2026-05-14T02:36:05.732Z"}
+{"level":"info","message":"Process 21848 started web server on port 3000","timestamp":"2026-05-14T02:36:05.834Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T02:53:04.739Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T02:53:06.574Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T02:53:06.611Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T02:53:06.617Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T02:53:06.697Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T02:53:34.225Z"}
+{"body":{"buyingPrice":280,"category":"Dairy Feed","lastRestockedAt":"2026-05-14T02:54:45.795Z","maxStockLevel":200,"minStockLevel":20,"name":"Dairy Meal 50kg","price":400,"stockQuantity":5,"supplier":"Kenchic LTD"},"level":"info","message":"Request: POST /api/products","params":{},"query":{},"timestamp":"2026-05-14T02:54:44.309Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T02:54:44.504Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T02:54:55.855Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T02:54:55.868Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-14T02:54:55.880Z"}
+{"level":"info","message":"Request: GET /api/business/58","params":{},"query":{},"timestamp":"2026-05-14T02:55:01.793Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T03:27:45.162Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T03:27:46.607Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T03:27:46.634Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T03:27:46.638Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T03:27:46.651Z"}
+{"level":"info","message":"Request: GET /api/business/58","params":{},"query":{},"timestamp":"2026-05-14T03:27:52.527Z"}
+{"level":"info","message":"Primary 27136 forking 4 workers","timestamp":"2026-05-14T03:39:16.285Z"}
+{"level":"info","message":"Process 22016 started web server on port 3000","timestamp":"2026-05-14T03:39:24.404Z"}
+{"level":"info","message":"Process 5856 started web server on port 3000","timestamp":"2026-05-14T03:39:24.398Z"}
+{"level":"info","message":"Process 26052 started web server on port 3000","timestamp":"2026-05-14T03:39:24.577Z"}
+{"level":"info","message":"Process 18580 started web server on port 3000","timestamp":"2026-05-14T03:39:24.958Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T04:03:56.558Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T04:03:57.877Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T04:03:57.942Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T04:03:57.947Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T04:03:57.952Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T04:04:55.601Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T04:04:56.790Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T04:04:56.807Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T04:04:56.815Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T04:04:56.825Z"}
+{"level":"info","message":"Request: GET /api/business/58","params":{},"query":{},"timestamp":"2026-05-14T04:04:59.709Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-14T04:05:10.338Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-14T04:05:18.925Z"}
+{"level":"info","message":"Request: GET /api/orders","params":{},"query":{},"timestamp":"2026-05-14T04:05:18.941Z"}
+{"level":"info","message":"Request: GET /api/customers","params":{},"query":{},"timestamp":"2026-05-14T04:05:18.952Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T04:09:18.230Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T04:09:20.285Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T04:09:20.291Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T04:09:20.305Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T04:09:20.314Z"}
+{"level":"info","message":"Request: GET /api/business/58","params":{},"query":{},"timestamp":"2026-05-14T04:09:23.371Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T04:13:42.543Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T04:13:43.513Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T04:13:43.524Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T04:13:43.527Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T04:13:43.539Z"}
+{"level":"info","message":"Request: GET /api/business/58","params":{},"query":{},"timestamp":"2026-05-14T04:13:48.628Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T04:17:42.721Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T04:17:43.984Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T04:17:43.990Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T04:17:43.995Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T04:17:44.003Z"}
+{"level":"info","message":"Request: GET /api/business/58","params":{},"query":{},"timestamp":"2026-05-14T04:17:46.316Z"}
+{"level":"info","message":"Request: GET /api/orders","params":{},"query":{},"timestamp":"2026-05-14T04:18:10.386Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-14T04:18:10.389Z"}
+{"level":"info","message":"Request: GET /api/customers","params":{},"query":{},"timestamp":"2026-05-14T04:18:10.391Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T04:25:20.232Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T04:25:21.520Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T04:25:21.534Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T04:25:21.546Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T04:25:21.641Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-14T04:25:33.287Z"}
+{"level":"info","message":"Request: GET /api/business/58","params":{},"query":{},"timestamp":"2026-05-14T04:25:39.477Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T04:34:42.057Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T04:34:43.407Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T04:34:43.607Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T04:34:43.616Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T04:34:43.636Z"}
+{"level":"info","message":"Request: GET /api/business/58","params":{},"query":{},"timestamp":"2026-05-14T04:34:54.580Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T04:43:59.148Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T04:44:00.505Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T04:44:00.515Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T04:44:00.520Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T04:44:00.569Z"}
+{"level":"info","message":"Request: GET /api/business/58","params":{},"query":{},"timestamp":"2026-05-14T04:44:07.159Z"}
+{"level":"info","message":"Primary 1424 forking 4 workers","timestamp":"2026-05-14T05:03:49.026Z"}
+{"level":"info","message":"Process 5744 started web server on port 3000","timestamp":"2026-05-14T05:03:55.864Z"}
+{"level":"info","message":"Process 21996 started web server on port 3000","timestamp":"2026-05-14T05:03:56.072Z"}
+{"level":"info","message":"Process 15876 started web server on port 3000","timestamp":"2026-05-14T05:03:56.085Z"}
+{"level":"info","message":"Process 22256 started web server on port 3000","timestamp":"2026-05-14T05:03:56.279Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T05:09:41.277Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T05:09:42.781Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T05:09:42.927Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T05:09:42.965Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T05:09:42.981Z"}
+{"level":"info","message":"Request: GET /api/business/58","params":{},"query":{},"timestamp":"2026-05-14T05:10:00.109Z"}
+{"level":"info","message":"Request: GET /api/credit/trust-preview","params":{},"query":{"language":"en"},"timestamp":"2026-05-14T05:10:03.017Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T05:13:55.483Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T05:13:56.831Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T05:13:56.838Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T05:13:56.841Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T05:13:56.844Z"}
+{"level":"info","message":"Request: GET /api/customers","params":{},"query":{},"timestamp":"2026-05-14T05:18:43.725Z"}
+{"level":"info","message":"Request: GET /api/orders","params":{},"query":{},"timestamp":"2026-05-14T05:18:43.740Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T05:18:43.785Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-14T05:18:43.814Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-14T05:28:15.316Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T05:28:22.736Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-14T05:28:22.771Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T05:28:22.798Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T05:28:22.810Z"}
+{"level":"info","message":"Request: GET /api/business/58","params":{},"query":{},"timestamp":"2026-05-14T05:28:22.938Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T05:28:30.629Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T05:28:38.433Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T06:05:50.914Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T06:05:52.097Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T06:05:52.158Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T06:05:52.164Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T06:05:52.176Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-14T06:06:34.952Z"}
+{"body":{"email":"newtest@business.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T06:26:01.915Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T06:26:02.974Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T06:26:03.029Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T06:26:03.033Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T06:26:03.043Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-14T06:26:09.684Z"}
+{"level":"info","message":"Request: GET /api/business/58","params":{},"query":{},"timestamp":"2026-05-14T06:29:39.944Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-14T06:30:00.966Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T06:30:00.984Z"}
+{"level":"info","message":"Request: GET /api/orders","params":{},"query":{},"timestamp":"2026-05-14T06:30:00.987Z"}
+{"level":"info","message":"Request: GET /api/customers","params":{},"query":{},"timestamp":"2026-05-14T06:30:00.993Z"}
+{"body":{"businessType":"Retail Shop","name":"Nathanael Retail ","ownerEmail":"nathan.test@gmail.com","ownerName":"Nathanael Mutua ","password":"password123","whatsappNumber":"+254720202020","yearsInBusiness":"1-2 years"},"level":"info","message":"Request: POST /api/auth/register","params":{},"query":{},"timestamp":"2026-05-14T06:43:15.338Z"}
+{"body":{"email":"nathan.test@gmail.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T06:43:36.261Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T06:43:37.056Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T06:43:37.097Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T06:43:37.110Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T06:43:37.119Z"}
+{"body":{"buyingPrice":1715,"category":"Dairy Feed","lastRestockedAt":"2026-05-14T06:47:03.715Z","maxStockLevel":500,"minStockLevel":100,"name":"Fugo Dairy Meal 50kg ","price":2450,"stockQuantity":200,"supplier":"AgriJibu"},"level":"info","message":"Request: POST /api/products","params":{},"query":{},"timestamp":"2026-05-14T06:47:01.788Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T06:47:01.898Z"}
+{"body":{"buyingPrice":3430,"category":"Dairy Feed","lastRestockedAt":"2026-05-14T06:48:02.881Z","maxStockLevel":500,"minStockLevel":100,"name":"Hemco Dairy Meal","price":4900,"stockQuantity":5,"supplier":"Totalese Ventures"},"level":"info","message":"Request: POST /api/products","params":{},"query":{},"timestamp":"2026-05-14T06:48:01.079Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T06:48:01.173Z"}
+{"body":{"buyingPrice":3150,"category":"Poultry Feed","lastRestockedAt":"2026-05-14T06:49:08.735Z","maxStockLevel":500,"minStockLevel":100,"name":"Fugo Layer Complete Meal 50kg","price":4500,"stockQuantity":75,"supplier":"Kihysoco"},"level":"info","message":"Request: POST /api/products","params":{},"query":{},"timestamp":"2026-05-14T06:49:06.734Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T06:49:07.035Z"}
+{"body":{"buyingPrice":2520,"category":"Poultry Feed","lastRestockedAt":"2026-05-14T06:50:18.786Z","maxStockLevel":500,"minStockLevel":100,"name":"BellFeeds Pig Starter Feed 70kg","price":3600,"stockQuantity":450,"supplier":"BellFeeds"},"level":"info","message":"Request: POST /api/products","params":{},"query":{},"timestamp":"2026-05-14T06:50:16.744Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T06:50:17.204Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T06:50:56.964Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T06:50:56.995Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-14T06:50:57.020Z"}
+{"level":"info","message":"Request: GET /api/business/59","params":{},"query":{},"timestamp":"2026-05-14T06:51:04.332Z"}
+{"level":"info","message":"Request: GET /api/credit/trust-preview","params":{},"query":{"language":"en"},"timestamp":"2026-05-14T06:51:07.620Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-14T06:51:44.359Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T06:51:44.379Z"}
+{"level":"info","message":"Request: GET /api/orders","params":{},"query":{},"timestamp":"2026-05-14T06:51:44.385Z"}
+{"level":"info","message":"Request: GET /api/customers","params":{},"query":{},"timestamp":"2026-05-14T06:51:44.390Z"}
+{"body":{"email":"nathan.test@gmail.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T06:56:52.249Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T06:56:53.068Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T06:56:53.145Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T06:56:53.152Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T06:56:53.160Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T06:57:14.189Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-14T06:57:29.452Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T06:57:31.881Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T06:57:33.493Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T06:57:57.896Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T06:57:59.309Z"}
+{"level":"info","message":"Request: GET /api/business/59","params":{},"query":{},"timestamp":"2026-05-14T06:58:07.708Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T06:58:16.361Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-14T06:58:17.617Z"}
+{"level":"info","message":"Request: GET /api/orders","params":{},"query":{},"timestamp":"2026-05-14T06:58:17.621Z"}
+{"level":"info","message":"Request: GET /api/customers","params":{},"query":{},"timestamp":"2026-05-14T06:58:17.623Z"}
+{"level":"info","message":"Primary 9688 forking 4 workers","timestamp":"2026-05-14T07:19:07.633Z"}
+{"level":"info","message":"Process 14040 started web server on port 3000","timestamp":"2026-05-14T07:19:21.239Z"}
+{"level":"info","message":"Process 24848 started web server on port 3000","timestamp":"2026-05-14T07:19:21.355Z"}
+{"level":"info","message":"Process 19360 started web server on port 3000","timestamp":"2026-05-14T07:19:21.679Z"}
+{"level":"info","message":"Process 18444 started web server on port 3000","timestamp":"2026-05-14T07:19:21.869Z"}
+{"body":{"email":"nathan.test@gmail.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T07:26:49.944Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T07:26:51.305Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T07:26:51.401Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T07:26:51.413Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T07:26:51.428Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-14T07:26:59.322Z"}
+{"level":"info","message":"Request: GET /api/business/59","params":{},"query":{},"timestamp":"2026-05-14T07:27:04.472Z"}
+{"body":{"history":[{"content":"Habari! I'm your AI business coach. I can help you in English or Kiswahili. How can I assist your business today?","role":"assistant"}],"language":"sw","message":"Habari, biashara yangu inaendeleaje?"},"level":"info","message":"Request: POST /api/chatbot/chat","params":{},"query":{},"timestamp":"2026-05-14T07:27:39.070Z"}
+{"body":{"history":[{"content":"Habari! I'm your AI business coach. I can help you in English or Kiswahili. How can I assist your business today?","role":"assistant"},{"content":"Habari, biashara yangu inaendeleaje?","role":"user"},{"content":"Habari! 👋  \nKwa kuzingatia biashara yako, tunaweza kutatua hali hii kwa hatua rahisi:\n\n1. **Angalia ratiba ya mchakato** – Pakua data za mapato, punguzo la gharama na roo.  \n2. **Jisikia tabia ya majirani** – Je, unafika mahitaji ya wateja au haina ushindani?  \n3. **Angalia uzalishaji** – Ni kiasi gani cha bidhaa ambacho unapokauka zaidi au ndani ya mizani?  \n4. **Panga malengo thabiti** – Tumia data hii kufanya mipango ya mabadiliko yanayoweza kufanya mabadiliko taa.\n\nNinaweza kusaidia kwa kunywa mifumo hii au kufanya mchakato wa kuhakisha taarifa. Unaweza kuelezea zaidi kuhusu aina ya data unayotaka kutatua, au kipindi cha mwisho unaona kufikia?  \n\n**Natumai ni nini unahitaji?** 🙌","role":"assistant"}],"language":"en","message":"How can I increase my sales?"},"level":"info","message":"Request: POST /api/chatbot/chat","params":{},"query":{},"timestamp":"2026-05-14T07:28:29.709Z"}
+{"level":"info","message":"Primary 6856 forking 4 workers","timestamp":"2026-05-14T07:35:35.862Z"}
+{"level":"info","message":"Process 10120 started web server on port 3000","timestamp":"2026-05-14T07:35:44.885Z"}
+{"level":"info","message":"Process 20896 started web server on port 3000","timestamp":"2026-05-14T07:35:44.971Z"}
+{"level":"info","message":"Process 6716 started web server on port 3000","timestamp":"2026-05-14T07:35:45.066Z"}
+{"level":"info","message":"Process 26000 started web server on port 3000","timestamp":"2026-05-14T07:35:45.432Z"}
+{"body":{"email":"nathan.test@gmail.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T07:43:24.328Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T07:43:25.353Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T07:43:25.397Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T07:43:25.402Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T07:43:25.417Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T07:45:59.151Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T07:45:59.173Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T07:45:59.180Z"}
+{"body":{"email":"nathan.test@gmail.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T07:51:42.626Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T07:51:43.922Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T07:51:43.955Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T07:51:43.963Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T07:51:43.986Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-14T07:51:59.981Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T07:52:09.032Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T07:52:13.343Z"}
+{"level":"info","message":"Request: GET /api/business/59","params":{},"query":{},"timestamp":"2026-05-14T07:57:55.707Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T07:58:03.685Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-14T07:58:21.754Z"}
+{"level":"info","message":"Request: GET /api/orders","params":{},"query":{},"timestamp":"2026-05-14T07:58:21.768Z"}
+{"level":"info","message":"Request: GET /api/customers","params":{},"query":{},"timestamp":"2026-05-14T07:58:21.777Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-14T07:58:24.554Z"}
+{"body":{"email":"nathan.test@gmail.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T09:38:03.345Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T09:38:05.420Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T09:38:05.494Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T09:38:05.498Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T09:38:05.502Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-14T09:38:28.147Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T09:38:32.510Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T09:38:35.930Z"}
+{"level":"info","message":"Request: GET /api/business/59","params":{},"query":{},"timestamp":"2026-05-14T09:38:45.408Z"}
+{"level":"info","message":"Request: GET /api/credit/trust-preview","params":{},"query":{"language":"en"},"timestamp":"2026-05-14T09:38:51.395Z"}
+{"body":{"email":"nathan.test@gmail.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T09:59:13.177Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T09:59:14.382Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T09:59:14.419Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T09:59:14.429Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T09:59:14.432Z"}
+{"level":"info","message":"Request: GET /api/business/59","params":{},"query":{},"timestamp":"2026-05-14T09:59:17.398Z"}
+{"body":{"email":"nathan.test@gmail.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T12:11:54.938Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T12:11:56.360Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T12:11:56.430Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T12:11:56.440Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T12:11:56.449Z"}
+{"body":{"email":"nathan.test@gmail.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T14:22:25.626Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T14:23:54.692Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T14:23:54.906Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T14:23:54.947Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T14:23:54.958Z"}
+{"body":{"email":"nathan.test@gmail.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T16:29:39.909Z"}
+{"isOperational":false,"level":"error","message":"Error at /api/auth/login: \nInvalid `prisma.business.findUnique()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\business-service.ts:75:28\n\n  72 }\n  73 \n  74 async getBusinessByEmail(email: string) {\n→ 75   return prisma.business.findUnique(\nCan't reach database server at `localhost:5432`\n\nPlease make sure your database server is running at `localhost:5432`.","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.business.findUnique()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\business-service.ts:75:28\n\n  72 }\n  73 \n  74 async getBusinessByEmail(email: string) {\n→ 75   return prisma.business.findUnique(\nCan't reach database server at `localhost:5432`\n\nPlease make sure your database server is running at `localhost:5432`.\n    at handleRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:7272)\n    at handleAndLogRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6593)\n    at request (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6300)\n    at processTicksAndRejections (native:7:39)","statusCode":500,"timestamp":"2026-05-14T16:29:48.032Z"}
+{"body":{"email":"nathan.test@gmail.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T16:42:29.068Z"}
+{"level":"info","message":"Request: GET /api/analytics/expenses","params":{},"query":{"timeframe":"week"},"timestamp":"2026-05-14T16:42:47.667Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T16:42:47.839Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T16:42:47.853Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T16:42:47.883Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T16:42:47.945Z"}
+{"level":"info","message":"Request: GET /api/analytics/profit","params":{},"query":{"timeframe":"week"},"timestamp":"2026-05-14T16:42:48.301Z"}
+{"body":{"email":"nathan.test@gmail.com","password":"password123"},"level":"info","message":"Request: POST /api/auth/login","params":{},"query":{},"timestamp":"2026-05-14T16:48:51.543Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T16:49:50.388Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T16:49:50.589Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T16:49:50.748Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T16:49:50.889Z"}
+{"level":"info","message":"Request: GET /api/analytics/expenses","params":{},"query":{"timeframe":"week"},"timestamp":"2026-05-14T16:49:51.150Z"}
+{"isOperational":false,"level":"error","message":"Error at /api/analytics/overview: \nInvalid `prisma.sales.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\analytics-service.ts:27:38\n\n  24 async getSalesAnalytics(businessId: number, timeframe: Timeframe) {\n  25   const { start, end } = this.getDateRange(timeframe);\n  26 \n→ 27   const sales = await prisma.sales.findMany(\nCan't reach database server at `localhost:5432`\n\nPlease make sure your database server is running at `localhost:5432`.","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.sales.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\analytics-service.ts:27:38\n\n  24 async getSalesAnalytics(businessId: number, timeframe: Timeframe) {\n  25   const { start, end } = this.getDateRange(timeframe);\n  26 \n→ 27   const sales = await prisma.sales.findMany(\nCan't reach database server at `localhost:5432`\n\nPlease make sure your database server is running at `localhost:5432`.\n    at handleRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:7272)\n    at handleAndLogRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6593)\n    at request (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6300)\n    at processTicksAndRejections (native:7:39)","statusCode":500,"timestamp":"2026-05-14T16:50:20.459Z"}
+{"isOperational":false,"level":"error","message":"Error at /api/products: \nInvalid `prisma.product.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\products-service.ts:108:33\n\n  105 }\n  106 \n  107 async getAllProducts(businessId?: number) {\n→ 108   return await prisma.product.findMany(\nCan't reach database server at `localhost:5432`\n\nPlease make sure your database server is running at `localhost:5432`.","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.product.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\products-service.ts:108:33\n\n  105 }\n  106 \n  107 async getAllProducts(businessId?: number) {\n→ 108   return await prisma.product.findMany(\nCan't reach database server at `localhost:5432`\n\nPlease make sure your database server is running at `localhost:5432`.\n    at handleRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:7272)\n    at handleAndLogRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6593)\n    at request (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6300)\n    at processTicksAndRejections (native:7:39)","statusCode":500,"timestamp":"2026-05-14T16:50:21.462Z"}
+{"isOperational":false,"level":"error","message":"Error at /api/analytics/expenses: \nInvalid `prisma.expenses.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\analytics-service.ts:59:44\n\n  56 async getExpenseAnalytics(businessId: number, timeframe: Timeframe) {\n  57   const { start, end } = this.getDateRange(timeframe);\n  58 \n→ 59   const expenses = await prisma.expenses.findMany(\nCan't reach database server at `localhost:5432`\n\nPlease make sure your database server is running at `localhost:5432`.","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.expenses.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\analytics-service.ts:59:44\n\n  56 async getExpenseAnalytics(businessId: number, timeframe: Timeframe) {\n  57   const { start, end } = this.getDateRange(timeframe);\n  58 \n→ 59   const expenses = await prisma.expenses.findMany(\nCan't reach database server at `localhost:5432`\n\nPlease make sure your database server is running at `localhost:5432`.\n    at handleRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:7272)\n    at handleAndLogRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6593)\n    at request (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6300)\n    at processTicksAndRejections (native:7:39)","statusCode":500,"timestamp":"2026-05-14T16:50:21.558Z"}
+{"isOperational":false,"level":"error","message":"Error at /api/analytics/ai-insights: \nInvalid `prisma.sales.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\analytics-service.ts:89:38\n\n  86 \n  87 async getCategoryPerformance(businessId: number) {\n  88   // Sales by Category (using Product Category or Name as fallback)\n→ 89   const sales = await prisma.sales.findMany(\nCan't reach database server at `localhost:5432`\n\nPlease make sure your database server is running at `localhost:5432`.","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.sales.findMany()` invocation in\nC:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\services\\analytics-service.ts:89:38\n\n  86 \n  87 async getCategoryPerformance(businessId: number) {\n  88   // Sales by Category (using Product Category or Name as fallback)\n→ 89   const sales = await prisma.sales.findMany(\nCan't reach database server at `localhost:5432`\n\nPlease make sure your database server is running at `localhost:5432`.\n    at handleRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:7272)\n    at handleAndLogRequestError (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6593)\n    at request (C:\\Users\\pc\\Documents\\PROJECTS\\BizSawa\\FinAI\\backend\\generated\\prisma\\runtime\\library.js:124:6300)\n    at processTicksAndRejections (native:7:39)","statusCode":500,"timestamp":"2026-05-14T16:50:21.978Z"}
+{"level":"info","message":"Request: GET /api/analytics/profit","params":{},"query":{"timeframe":"week"},"timestamp":"2026-05-14T16:50:47.646Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T16:52:17.044Z"}
+{"level":"info","message":"Request: GET /api/analytics/expenses","params":{},"query":{"timeframe":"week"},"timestamp":"2026-05-14T16:52:17.075Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T16:52:18.242Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T16:52:19.594Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T16:52:19.677Z"}
+{"level":"info","message":"Request: GET /api/products","params":{},"query":{},"timestamp":"2026-05-14T17:10:24.198Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-14T17:10:48.219Z"}
+{"level":"info","message":"Request: GET /api/orders","params":{},"query":{},"timestamp":"2026-05-14T17:10:48.517Z"}
+{"level":"info","message":"Request: GET /api/customers","params":{},"query":{},"timestamp":"2026-05-14T17:10:48.546Z"}
+{"level":"info","message":"Request: GET /api/analytics/categories","params":{},"query":{},"timestamp":"2026-05-14T17:10:54.226Z"}
+{"level":"info","message":"Request: GET /api/analytics/overview","params":{},"query":{},"timestamp":"2026-05-14T17:10:54.299Z"}
+{"level":"info","message":"Request: GET /api/analytics/ai-insights","params":{},"query":{},"timestamp":"2026-05-14T17:10:54.391Z"}
+{"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-14T17:10:54.494Z"}
+{"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-14T17:11:00.195Z"}
+{"level":"info","message":"Request: GET /api/business/59","params":{},"query":{},"timestamp":"2026-05-14T17:11:13.496Z"}

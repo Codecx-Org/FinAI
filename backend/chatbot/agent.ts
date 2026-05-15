@@ -191,27 +191,37 @@ export class ChatbotAgent {
     }
 
     const prompt = `
-      Analyze the following business analytics data for Business ID: ${businessId}.
+      Perform a deep strategic analysis for Business ID: ${businessId}.
       
-      Data: ${JSON.stringify(analyticsData)}
+      Business Context: ${JSON.stringify(analyticsData.businessContext)}
+      Inventory Snapshot: ${JSON.stringify(analyticsData.inventorySummary)}
+      Recent Sales Trends: ${JSON.stringify(analyticsData.recentSalesPerformance)}
+      Performance Metrics: ${JSON.stringify({
+        weekly: analyticsData.weeklyOverview,
+        categories: analyticsData.categoryPerformance,
+        profitTrends: analyticsData.monthlyProfitTrends
+      })}
       
-      Provide a strategic analysis in JSON format.
+      Based on the business type and the data provided:
+      1. Analyze if the current inventory levels are optimized for the recent sales volume.
+      2. Identify which product categories are the most/least profitable.
+      3. Provide growth strategies specific to a business of this type and tenure.
       
       You MUST respond with ONLY a valid JSON object.
       The JSON structure MUST be:
       {
-        "summary": "A concise executive summary of the performance (1-2 sentences).",
+        "summary": "A deep-dive executive summary (2-3 sentences).",
         "trends": [
           {
             "title": "Trend Title",
-            "description": "Description of the trend observed",
+            "description": "Evidence-based description from the sales/inventory data",
             "sentiment": "positive" | "negative" | "neutral"
           }
         ],
         "recommendations": [
           {
             "action": "Specific action to take",
-            "reason": "Why this action is recommended based on data",
+            "reason": "Data-driven rationale",
             "priority": "High" | "Medium" | "Low"
           }
         ]

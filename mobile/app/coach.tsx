@@ -25,7 +25,7 @@ import {
 import { router } from "expo-router";
 import { useAuth } from "../contexts/AuthContext";
 import { useChat, type ChatMessage } from "../hooks/api/useChat";
-import { Card, CardContent } from "../components/ui/Card";
+import { CoachMessageMarkdown } from "../components/CoachMessageMarkdown";
 import Toast from "react-native-toast-message";
 
 interface Message {
@@ -248,11 +248,11 @@ export default function AICoachModal() {
               <View
                 className={`p-3 rounded-2xl max-w-[80%] ${msg.isBot ? "bg-white border border-gray-200 rounded-tl-none" : "bg-purple-600 rounded-tr-none"}`}
               >
-                <Text
-                  className={`text-sm ${msg.isBot ? "text-gray-800" : "text-white"}`}
-                >
-                  {msg.content}
-                </Text>
+                {msg.isBot ? (
+                  <CoachMessageMarkdown content={msg.content} />
+                ) : (
+                  <Text className="text-sm text-white">{msg.content}</Text>
+                )}
                 <Text
                   className={`text-[10px] mt-1 ${msg.isBot ? "text-gray-400" : "text-purple-200 text-right"}`}
                 >

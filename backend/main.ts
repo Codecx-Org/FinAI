@@ -3,36 +3,38 @@
 // Features: Clustering for scalability, Winston logging, BullMQ dashboard, graceful shutdown.
 // Dependencies: npm install express body-parser dotenv winston @bull-board/express @bull-board/api bullmq ioredis @prisma/client mpesa-node-library fs-extra csv-writer node-cron
 
-import express from 'express';
-import type { Request, Response, NextFunction } from 'express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import prisma from './utils/prisma.js';
-import winston from 'winston';
-import cluster from 'cluster';
-import os from 'os';
-import { createBullBoard } from '@bull-board/api';
-import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
-import { ExpressAdapter } from '@bull-board/express';
-import { orderQueue } from './workflows/order-completion-workflow.js';
-import { redisService } from './services/redis-service.js';
-import { startPaymentSubscriber } from './subscribers/payment-subscriber.js';
+import express from "express";
+import type { Request, Response, NextFunction } from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
+import dotenv from "dotenv";
+import prisma from "./utils/prisma.js";
+import winston from "winston";
+import cluster from "cluster";
+import os from "os";
+import { createBullBoard } from "@bull-board/api";
+import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
+import { ExpressAdapter } from "@bull-board/express";
+import { orderQueue } from "./workflows/order-completion-workflow.js";
+import { redisService } from "./services/redis-service.js";
+import { startPaymentSubscriber } from "./subscribers/payment-subscriber.js";
 
 // Routes
-import authRoutes from './routes/auth-route.js';
-import customerRoutes from './routes/customer-route.js';
-import businessRoutes from './routes/business-route.js';
-import expenseRoutes from './routes/expenses-route.js';
-import productRoutes from './routes/product-route.js';
-import orderRoutes from './routes/orders-route.js';
-import salesRoutes from './routes/sales-route.js';
-import orderItemRoutes from './routes/order-items-route.js';
-import webhookRoutes from './routes/payment-route.js';
-import chatbotRoutes from './routes/chatbot-route.js';
-import contentGenerationRoutes from './routes/content-generation-route.js';
-import analyticsRoutes from './routes/analytics-route.js';
-import { authenticate } from './utils/auth-middleware.js';
+import authRoutes from "./routes/auth-route.js";
+import customerRoutes from "./routes/customer-route.js";
+import businessRoutes from "./routes/business-route.js";
+import expenseRoutes from "./routes/expenses-route.js";
+import productRoutes from "./routes/product-route.js";
+import orderRoutes from "./routes/orders-route.js";
+import salesRoutes from "./routes/sales-route.js";
+import orderItemRoutes from "./routes/order-items-route.js";
+import webhookRoutes from "./routes/payment-route.js";
+import chatbotRoutes from "./routes/chatbot-route.js";
+import contentGenerationRoutes from "./routes/content-generation-route.js";
+import analyticsRoutes from "./routes/analytics-route.js";
+import creditRoutes from "./routes/credit-route.js";
+import achievementRoutes from "./routes/achievement-route.js";
+import { authenticate } from "./utils/auth-middleware.js";
 
 // Load environment variables
 dotenv.config();
@@ -41,35 +43,41 @@ dotenv.config();
 
 // Logger setup
 export const logger = winston.createLogger({
-  level: 'info',
+  level: "info",
   format: winston.format.combine(
     winston.format.timestamp(),
-    winston.format.json()
+    winston.format.json(),
   ),
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/combined.log' }),
+    new winston.transports.File({ filename: "logs/error.log", level: "error" }),
+    new winston.transports.File({ filename: "logs/combined.log" }),
   ],
 });
 
 // Error handler middleware: User-friendly messages
-const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+const errorHandler = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const statusCode = err.statusCode || 500;
   const isOperational = err.isOperational || false;
 
-  logger.error(`Error at ${req.path}: ${err.message}`, { 
+  logger.error(`Error at ${req.path}: ${err.message}`, {
     stack: err.stack,
     statusCode,
-    isOperational 
+    isOperational,
   });
 
   const response = {
-    status: 'error',
-    message: (process.env.NODE_ENV === 'production' && !isOperational)
-      ? 'An unexpected error occurred. Please try again later.'
-      : err.message || 'Internal server error',
-    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
+    status: "error",
+    message:
+      process.env.NODE_ENV === "production" && !isOperational
+        ? "An unexpected error occurred. Please try again later."
+        : err.message || "Internal server error",
+    ...(process.env.NODE_ENV !== "production" && { stack: err.stack }),
   };
 
   res.status(statusCode).json(response);
@@ -77,41 +85,76 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
 
 // Express app setup
 const app = express();
-app.use(cors());
+const STATIC_CORS_ORIGINS = [
+  "http://localhost:19006",
+  "http://127.0.0.1:19006",
+  "http://10.0.2.2:3000",
+  "http://192.168.0.101:3000",
+  "exp://192.168.0.101:19000",
+];
+
+/** Dev-only: allow common private LAN origins when PC IP changes (DHCP). Not applied in production. */
+const DEV_LAN_ORIGIN_RE =
+  /^(https?:\/\/(localhost|127\.0\.0\.1|10\.0\.2\.2|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3})(:\d+)?|exp:\/\/192\.168\.\d{1,3}\.\d{1,3}(:\d+)?)$/;
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+      if (STATIC_CORS_ORIGINS.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+      if (process.env.NODE_ENV !== "production" && DEV_LAN_ORIGIN_RE.test(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(null, false);
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 app.use(bodyParser.json());
-app.use(bodyParser.raw({ type: 'application/json' })); // For MPESA webhook
+app.use(bodyParser.raw({ type: "application/json" })); // For MPESA webhook
 
 // Request logging middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
-  logger.info(`Request: ${req.method} ${req.path}`, { 
+  logger.info(`Request: ${req.method} ${req.path}`, {
     query: req.query,
     params: req.params,
-    body: req.method !== 'GET' ? req.body : undefined 
+    body: req.method !== "GET" ? req.body : undefined,
   });
   next();
 });
 
 // API routes
-app.use('/api', authRoutes);
+app.use("/api", authRoutes);
 
 // Protected routes
-app.use('/api', authenticate);
+app.use("/api", authenticate);
 
-app.use('/api', customerRoutes);
-app.use('/api', businessRoutes);
-app.use('/api', expenseRoutes);
-app.use('/api', productRoutes);
-app.use('/api', orderRoutes);
-app.use('/api', salesRoutes);
-app.use('/api', orderItemRoutes);
-app.use('/api', chatbotRoutes);
-app.use('/api', contentGenerationRoutes);
-app.use('/api', analyticsRoutes);
-app.use('/api', webhookRoutes);
+app.use("/api", customerRoutes);
+app.use("/api", businessRoutes);
+app.use("/api", expenseRoutes);
+app.use("/api", productRoutes);
+app.use("/api", orderRoutes);
+app.use("/api", salesRoutes);
+app.use("/api", orderItemRoutes);
+app.use("/api", chatbotRoutes);
+app.use("/api", contentGenerationRoutes);
+app.use("/api", analyticsRoutes);
+app.use("/api", creditRoutes);
+app.use("/api", achievementRoutes);
+app.use("/api", webhookRoutes);
 
 // Health check endpoint
-app.get('/health', (req: Request, res: Response) => {
-  res.json({ status: 'OK', timestamp: new Date(), pid: process.pid });
+app.get("/health", (req: Request, res: Response) => {
+  res.json({ status: "OK", timestamp: new Date(), pid: process.pid });
 });
 
 // BullMQ dashboard (optional, for monitoring jobs)
@@ -121,7 +164,7 @@ createBullBoard({
   serverAdapter: serverAdapter,
 });
 
-app.use('/admin/queues', serverAdapter.getRouter());
+app.use("/admin/queues", serverAdapter.getRouter());
 
 // Error handler (must be last)
 app.use(errorHandler);
@@ -136,16 +179,18 @@ const shutdown = async () => {
     logger.info(`Worker ${process.pid} closed all connections`);
     process.exit(0);
   } catch (error: any) {
-    logger.error(`Worker ${process.pid} shutdown error: ${error.message}`, { stack: error.stack });
+    logger.error(`Worker ${process.pid} shutdown error: ${error.message}`, {
+      stack: error.stack,
+    });
     process.exit(1);
   }
 };
 
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
+process.on("SIGTERM", shutdown);
+process.on("SIGINT", shutdown);
 
 // Cluster setup for non-blocking workers and web server
-if (cluster.isPrimary && process.env.NODE_ENV !== 'test') {
+if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
   const numCPUs = os.cpus().length;
   logger.info(`Primary ${process.pid} forking ${numCPUs} workers`);
 
@@ -153,11 +198,13 @@ if (cluster.isPrimary && process.env.NODE_ENV !== 'test') {
     cluster.fork();
   }
 
-  cluster.on('exit', (worker, code, signal) => {
-    logger.warn(`Worker ${worker.process.pid} died with code ${code}, signal ${signal}. Forking new worker.`);
+  cluster.on("exit", (worker, code, signal) => {
+    logger.warn(
+      `Worker ${worker.process.pid} died with code ${code}, signal ${signal}. Forking new worker.`,
+    );
     cluster.fork();
   });
-} else if (!cluster.isPrimary || process.env.NODE_ENV === 'test') {
+} else if (!cluster.isPrimary || process.env.NODE_ENV === "test") {
   // Worker process or test environment: Start Express server and background tasks
   const PORT = process.env.PORT || 3000;
   const server = app.listen(PORT, () => {
@@ -165,11 +212,13 @@ if (cluster.isPrimary && process.env.NODE_ENV !== 'test') {
   });
 
   // Handle server errors
-  server.on('error', (error: any) => {
-    logger.error(`Process ${process.pid} server error: ${error.message}`, { stack: error.stack });
+  server.on("error", (error: any) => {
+    logger.error(`Process ${process.pid} server error: ${error.message}`, {
+      stack: error.stack,
+    });
   });
 
-  if (process.env.NODE_ENV !== 'test') {
+  if (process.env.NODE_ENV !== "test") {
     // Start Redis subscribers (non-blocking)
     startPaymentSubscriber();
   }

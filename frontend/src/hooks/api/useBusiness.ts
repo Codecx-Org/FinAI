@@ -4,10 +4,16 @@ import { api } from '../../lib/axios';
 export interface Business {
   id: number;
   name: string;
-  mpesaShortcode?: string;
+  mpesaShortcode?: string | null;
   ownerName: string;
   ownerEmail: string;
+  ownerPhone?: string | null;
+  whatsappNumber?: string | null;
+  businessType?: string | null;
+  yearsInBusiness?: string | null;
   metadata?: any;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export const useCreateBusiness = () => {

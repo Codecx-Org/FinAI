@@ -10,8 +10,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Share,
 } from "react-native";
-import { ArrowLeft, Sparkles, AlertCircle, Share } from "lucide-react-native";
+import { ArrowLeft, Sparkles, AlertCircle, Share as ShareIcon } from "lucide-react-native";
 import { router } from "expo-router";
 // import { useAuth } from "../contexts/AuthContext";
 // import { api } from "../lib/api";
@@ -263,7 +264,13 @@ export default function SocialMediaModal() {
   const handleShare = async () => {
     if (!generatedContent) return;
     const shareText = `${generatedContent.content}\n\n${generatedContent.hashtags.join(" ")}`;
-    Alert.alert("Share", `Sharing functionality will export:\n\n${shareText}`);
+    try {
+      await Share.share({
+        message: shareText,
+      });
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+    }
   };
 
   return (
@@ -406,7 +413,7 @@ export default function SocialMediaModal() {
                       <Text className="text-white text-xs font-bold">NM</Text>
                     </View>
                     <Text className="font-medium text-sm">
-                      numeraai_official
+                      bizsawa_official
                     </Text>
                   </View>
                   <Text className="text-[10px] text-gray-400 bg-gray-100 px-2 py-1 rounded-sm">
@@ -434,7 +441,7 @@ export default function SocialMediaModal() {
                 className="mt-4 bg-gray-900 py-4 rounded-xl items-center flex-row justify-center shadow-md"
               >
                 <View className="mr-2">
-                  <Share size={18} color="white" />
+                  <ShareIcon size={18} color="white" />
                 </View>
                 <Text className="text-white font-bold text-lg">Share Now</Text>
               </TouchableOpacity>
