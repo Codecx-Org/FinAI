@@ -18,6 +18,7 @@ import { ExpressAdapter } from "@bull-board/express";
 import { orderQueue } from "./workflows/order-completion-workflow.js";
 import { redisService } from "./services/redis-service.js";
 import { startPaymentSubscriber } from "./subscribers/payment-subscriber.js";
+import { rateLimit } from 'express-rate-limit';
 
 // Routes
 import authRoutes from "./routes/auth-route.js";
@@ -35,6 +36,10 @@ import analyticsRoutes from "./routes/analytics-route.js";
 import creditRoutes from "./routes/credit-route.js";
 import achievementRoutes from "./routes/achievement-route.js";
 import { authenticate } from "./utils/auth-middleware.js";
+import { validateEnv } from "./utils/env-validator.js";
+
+// Validate environment variables on startup
+validateEnv();
 
 // Load environment variables
 dotenv.config();
@@ -119,24 +124,61 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
-app.use(bodyParser.json());
-app.use(bodyParser.raw({ type: "application/json" })); // For MPESA webhook
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.raw({ type: "application/json", limit: "10mb" })); // For MPESA webhook
+
+// Rate limiting
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again after 15 minutes',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const authLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // Limit each IP to 5 login/register attempts per hour
+  message: 'Too many authentication attempts, please try again after an hour',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(generalLimiter);
+app.use('/api/auth/', authLimiter);
 
 // Request logging middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
+  const sanitizedBody = req.body ? { ...req.body } : undefined;
+  if (sanitizedBody) {
+    ['password', 'token', 'secret', 'mpesa_password'].forEach(key => {
+      if (key in sanitizedBody) sanitizedBody[key] = '***';
+    });
+  }
+
   logger.info(`Request: ${req.method} ${req.path}`, {
     query: req.query,
     params: req.params,
-    body: req.method !== "GET" ? req.body : undefined,
+    body: req.method !== "GET" ? sanitizedBody : undefined,
   });
   next();
+});
+
+// BullMQ dashboard (optional, for monitoring jobs)
+const serverAdapter = new ExpressAdapter();
+createBullBoard({
+  queues: [new BullMQAdapter(orderQueue)],
+  serverAdapter: serverAdapter,
 });
 
 // API routes
 app.use("/api", authRoutes);
 
+app.use("/api", webhookRoutes);
+
 // Protected routes
 app.use("/api", authenticate);
+app.use("/admin/queues", serverAdapter.getRouter());
 
 app.use("/api", customerRoutes);
 app.use("/api", businessRoutes);
@@ -150,21 +192,12 @@ app.use("/api", contentGenerationRoutes);
 app.use("/api", analyticsRoutes);
 app.use("/api", creditRoutes);
 app.use("/api", achievementRoutes);
-app.use("/api", webhookRoutes);
 
 // Health check endpoint
 app.get("/health", (req: Request, res: Response) => {
   res.json({ status: "OK", timestamp: new Date(), pid: process.pid });
 });
 
-// BullMQ dashboard (optional, for monitoring jobs)
-const serverAdapter = new ExpressAdapter();
-createBullBoard({
-  queues: [new BullMQAdapter(orderQueue)],
-  serverAdapter: serverAdapter,
-});
-
-app.use("/admin/queues", serverAdapter.getRouter());
 
 // Error handler (must be last)
 app.use(errorHandler);

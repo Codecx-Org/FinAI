@@ -31,7 +31,7 @@ model Business {
   ownerEmail     String     @unique
   whatsappNumber String?    @unique 
   ownerPhone     String?
-  password       String     @default("owner@business")
+  password       String
   businessType   String?
   yearsInBusiness String?
   metadata       Json?

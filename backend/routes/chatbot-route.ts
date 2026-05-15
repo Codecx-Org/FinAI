@@ -20,7 +20,7 @@ router.post('/chatbot/chat', authenticate, asyncHandler(async (req: Authenticate
   const { message, history = [], language = 'en' } = req.body;
   const businessId = req.user?.id;
 
-  // Validate request
+  // Validate and sanitize request
   if (!message || typeof message !== 'string' || message.trim().length === 0) {
     return res.status(400).json({ 
       success: false,
@@ -28,6 +28,9 @@ router.post('/chatbot/chat', authenticate, asyncHandler(async (req: Authenticate
       details: 'Please provide a non-empty message string'
     });
   }
+
+  // Basic sanitization
+  const sanitizedMessage = message.trim().substring(0, 1000); // Limit length
 
   if (!businessId) {
     return res.status(401).json({ 
@@ -47,7 +50,7 @@ router.post('/chatbot/chat', authenticate, asyncHandler(async (req: Authenticate
 
   try {
     const agent = await getAgentForBusiness(businessId);
-    const response = await agent.chat(message, history, businessId, language);
+    const response = await agent.chat(sanitizedMessage, history, businessId, language);
     
     return res.json({
       success: true,
