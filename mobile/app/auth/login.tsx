@@ -24,7 +24,7 @@ export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const router = useRouter();
 
   const validateForm = () => {
@@ -56,6 +56,18 @@ export default function LoginScreen() {
       router.replace('/(tabs)');
     } catch (error: any) {
       Alert.alert('Login Failed', error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSubmit = async () => {
+    setIsLoading(true);
+    try {
+      await loginWithGoogle();
+      router.replace('/(tabs)');
+    } catch (error: any) {
+      Alert.alert('Google Login Failed', error.message);
     } finally {
       setIsLoading(false);
     }
@@ -163,6 +175,24 @@ export default function LoginScreen() {
                     <ArrowRight size={20} color="white" />
                   </View>
                 )}
+              </TouchableOpacity>
+
+              {/* Divider */}
+              <View className="flex-row items-center my-6">
+                <View className="flex-1 h-[1px] bg-gray-200" />
+                <Text className="mx-4 text-gray-500 font-medium">OR</Text>
+                <View className="flex-1 h-[1px] bg-gray-200" />
+              </View>
+
+              {/* Google Login Button */}
+              <TouchableOpacity
+                onPress={handleGoogleSubmit}
+                disabled={isLoading}
+                className="flex-row items-center justify-center border border-gray-300 rounded-lg py-4 bg-white"
+              >
+                <Text className="text-gray-700 font-semibold text-lg">
+                  Continue with Google
+                </Text>
               </TouchableOpacity>
 
               {/* Register Link */}
