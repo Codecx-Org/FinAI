@@ -6,6 +6,7 @@ import React, {
   ReactNode,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 import { api } from "../lib/api";
 
 interface UserData {
@@ -20,6 +21,7 @@ interface AuthContextType {
   userData: UserData | null;
   isLoading: boolean;
   login: (credentials: { email: string; password: string }) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   register: (data: {
     ownerName: string;
     ownerEmail: string;
@@ -52,8 +54,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    configureGoogle();
     checkAuthStatus();
   }, []);
+
+  const configureGoogle = () => {
+    GoogleSignin.configure({
+      webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+      iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+      offlineAccess: true,
+    });
+  };
 
   const checkAuthStatus = async () => {
     try {
@@ -74,21 +85,45 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (credentials: { email: string; password: string }) => {
     try {
       console.log("Login attempt:", credentials);
-      console.log("API Base URL:", api.defaults.baseURL);
-
       const response = await api.post("/auth/login", credentials);
-      console.log("Login response:", response.data);
-
-      const { token, business } = response.data;
-
-      await AsyncStorage.setItem("bizsawa_token", token);
-      await AsyncStorage.setItem("bizsawa_userdata", JSON.stringify(business));
-
-      setUserData(business);
-      setIsAuthenticated(true);
+      handleAuthResponse(response.data);
     } catch (error: any) {
       throw new Error(error.friendlyMessage || "Login failed. Please check your credentials.");
     }
+  };
+
+  const loginWithGoogle = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      const idToken = userInfo.data?.idToken;
+
+      if (!idToken) {
+        throw new Error("Google Sign-In failed: No ID Token received.");
+      }
+
+      const response = await api.post("/auth/google", { idToken });
+      await handleAuthResponse(response.data);
+    } catch (error: any) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        return; // User cancelled the login flow
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        throw new Error("Login is already in progress.");
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        throw new Error("Google Play Services not available.");
+      } else {
+        console.error("Google Sign-In Error:", error);
+        throw new Error(error.friendlyMessage || "Google login failed. Please try again.");
+      }
+    }
+  };
+
+  const handleAuthResponse = async (data: { token: string; business: any }) => {
+    const { token, business } = data;
+    await AsyncStorage.setItem("bizsawa_token", token);
+    await AsyncStorage.setItem("bizsawa_userdata", JSON.stringify(business));
+    setUserData(business);
+    setIsAuthenticated(true);
   };
 
   const register = async (data: {
@@ -109,6 +144,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
+      await GoogleSignin.signOut();
       await AsyncStorage.removeItem("bizsawa_token");
       await AsyncStorage.removeItem("bizsawa_userdata");
       setIsAuthenticated(false);
@@ -123,6 +159,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     userData,
     isLoading,
     login,
+    loginWithGoogle,
     register,
     logout,
   };

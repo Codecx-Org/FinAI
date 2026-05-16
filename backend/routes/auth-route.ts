@@ -38,4 +38,18 @@ router.post('/auth/login', asyncHandler(async (req: Request, res: Response) => {
   res.json(result);
 }));
 
+/**
+ * @route POST /api/auth/google
+ * @desc Login with Google
+ */
+router.post('/auth/google', asyncHandler(async (req: Request, res: Response) => {
+  const { idToken } = req.body;
+  if (!idToken) {
+    throw new BadRequestError('ID Token is required');
+  }
+
+  const result = await authService.googleLogin(idToken);
+  res.json(result);
+}));
+
 export default router;

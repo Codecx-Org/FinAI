@@ -29,9 +29,10 @@ model Business {
   mpesaShortcode String?    @unique
   ownerName      String
   ownerEmail     String     @unique
+  googleId       String?    @unique
   whatsappNumber String?    @unique 
   ownerPhone     String?
-  password       String
+  password       String?
   businessType   String?
   yearsInBusiness String?
   metadata       Json?
