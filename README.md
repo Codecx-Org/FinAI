@@ -1,206 +1,137 @@
-# FinAI Backend API Documentation
+# FinAI - All-in-One Business Management & AI Assistant
 
-Welcome to the FinAI Backend. This document serves as a comprehensive guide for frontend developers to integrate with our multi-tenant business management and AI-powered financial assistant platform.
-
-## 🚀 Architecture Overview
-
-The backend is built with a modern, event-driven, and scalable architecture:
-
-- **Core:** Node.js & Express (TypeScript)
-- **Database:** PostgreSQL with Prisma ORM
-- **Authentication/Multi-tenancy:** All core entities are linked to a `Business`. Ensure you include `businessId` in relevant requests.
-- **Asynchronous Workflows:** Uses **Redis** and **BullMQ** for long-running tasks like inventory updates and CSV generation.
-- **AI Engine:** Integrated Chatbot using LangChain and Model Context Protocol (MCP) to analyze financial data.
-- **Integrations:** 
-  - **M-Pesa:** Automated STK Push payments linked to orders.
-  - **WhatsApp (Twilio):** Automated order capture via WhatsApp messages.
+FinAI is a comprehensive, multi-tenant platform designed to empower micro-entrepreneurs with AI-driven financial insights, automated order management, and seamless payment integrations.
 
 ---
 
-## 📁 Project Directory Structure
+## Key Features
+
+- **AI Financial Coach**: Get real-time insights into your business health using our LangChain-powered assistant with Model Context Protocol (MCP) integration.
+- **Automated Payments**: Seamless M-Pesa STK Push integration for instant, verifiable sales and automated reconciliation.
+- **WhatsApp Order Capture**: Automatically capture orders from WhatsApp messages using Twilio and AI-driven keyword extraction.
+- **Inventory & Sales Tracking**: Real-time stock management with background inventory updates and comprehensive sales logging.
+- **AI Marketing Tools**: Generate stunning product images and social media content directly within the app using Pollinations AI.
+- **Business Insights**: Detailed analytics on sales trends, expenses, and overall financial health.
+- **Multi-Tenancy**: Secure, isolated data management for multiple businesses on a single platform.
+
+---
+
+## Tech Stack
+
+| Component | Technologies |
+| :--- | :--- |
+| **Backend** | Node.js, Express, TypeScript, Prisma ORM, PostgreSQL |
+| **Mobile** | React Native, Expo, NativeWind (Tailwind), TanStack Query |
+| **Frontend** | React, Vite, Tailwind CSS |
+| **Infrastructure** | Redis, BullMQ (Background Workers), Docker |
+| **AI/LLM** | LangChain, Model Context Protocol (MCP), Pollinations AI |
+
+---
+
+## Project Structure
 
 ```text
-├── chatbot/                # AI Agent logic, MCP server, and prompts
-├── generated/prisma        # Auto-generated Prisma Client
-├── prisma/                 # Database schema and migrations
-│   └── seed.ts             # Script to populate dummy data
-├── routes/                 # Express API routes (Endpoint definitions)
-├── services/               # Business logic layer (Service classes)
-├── subscribers/            # Redis event listeners (Event-driven logic)
-├── utils/                  # Shared utilities (Types, Error handlers, Prisma client)
-├── workflows/              # BullMQ background workers and task flows
-├── main.ts                 # Entry point: Server setup and route registration
-└── package.json            # Scripts and dependencies
+├── backend/                # Express API, Database logic, and AI Agent
+│   ├── chatbot/            # AI Agent logic, MCP server, and prompts
+│   ├── prisma/             # Database schema and migrations
+│   ├── services/           # Business logic layer
+│   ├── workflows/          # BullMQ background workers
+│   └── main.ts             # Backend entry point
+├── mobile/                 # React Native (Expo) Mobile Application
+│   ├── app/                # Expo Router screens (Dashboard, Sales, AI Coach)
+│   ├── components/         # Reusable UI components
+│   └── contexts/           # Global state (Auth, Business context)
+├── frontend/               # React (Vite) Web Management Dashboard
+└── ...
+```
+
+---
+
+## Setup & Installation
+
+### Prerequisites
+- **Node.js** (v18+)
+- **Bun** (Recommended for backend performance)
+- **PostgreSQL** (Running instance)
+- **Redis** (Required for background workers)
+
+### 1. Environment Configuration
+Navigate to both `backend/` and `mobile/` directories and set up your environment files:
+```bash
+# In backend/
+cp .env.example .env
+# Update DATABASE_URL, JWT_SECRET, and REDIS_URL
+
+# In mobile/
+cp .env.example .env
+# Set EXPO_PUBLIC_API_URL to your machine's LAN IP
+```
+
+### 2. Database Initialization
+In the `backend/` directory:
+```bash
+npm install
+npx prisma migrate dev --name init
+npx prisma db seed
+```
+
+### 3. Running Services
+
+#### **Redis (Required)**
+```bash
+# Using Docker (Recommended)
+docker run --name final-redis -p 6379:6379 -d redis
+```
+
+#### **Backend**
+```bash
+# In backend/
+bun run start  # or npm start
+```
+
+#### **Mobile App**
+```bash
+# In mobile/
+npx expo start
+```
+
+#### **Frontend**
+```bash
+# In frontend/
+npm install
+npm run dev
 ```
 
 ---
 
 ## 🛠 Core API Modules
 
-All base URLs are prefixed with `/api`.
+All backend API requests should be prefixed with `/api`. Ensure `businessId` is included in relevant requests for multi-tenancy.
 
-### 1. Business Module
-Manages business registration and M-Pesa configuration.
-
-| Method | Endpoint | Description |
+| Module | Endpoints | Description |
 | :--- | :--- | :--- |
-| `POST` | `/api/business` | Register a new business |
-| `GET` | `/api/business` | List all businesses |
-| `GET` | `/api/business/:id` | Get specific business details |
-| `PUT` | `/api/business/:id` | Update business metadata or shortcode |
-
-**Schema (Create):**
-```json
-{
-  "name": "My Shop",
-  "mpesaShortcode": "174379",
-  "ownerName": "John Doe",
-  "ownerEmail": "john@myshop.com",
-  "metadata": { "location": "Nairobi" }
-}
-```
-
----
-
-### 2. Customers
-Manage customers associated with a specific business.
-
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `POST` | `/api/customers` | Create a customer |
-| `GET` | `/api/customers?businessId=1` | List customers for a business |
-
-**Schema (Create):**
-```json
-{
-  "name": "Alice Smith",
-  "email": "alice@gmail.com",
-  "phone": "254712345678",
-  "businessId": 1
-}
-```
-
----
-
-### 3. Products
-Manage inventory and pricing.
-
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `POST` | `/api/products` | Add a new product |
-| `GET` | `/api/products?businessId=1` | List business products |
-
-**Schema (Create):**
-```json
-{
-  "name": "Smartphone X",
-  "stockQuantity": 50,
-  "price": 25000,
-  "buyingPrice": 18000,
-  "businessId": 1
-}
-```
-
----
-
-### 4. Orders & Payments
-Handles sales transactions and triggers M-Pesa STK Push.
-
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `POST` | `/api/orders` | Create an order (Draft/Created) |
-| `GET` | `/api/orders?businessId=1` | Fetch order history |
-| `POST` | `/api/webhook/mpesa` | Callback for payment status (Internal) |
-
-**Schema (Create Order):**
-```json
-{
-  "customerId": 1,
-  "businessId": 1,
-  "totalAmount": 5000,
-  "status": "created",
-  "orderItems": [
-    { "productId": 2, "quantity": 1 }
-  ]
-}
-```
-
-**Order Lifecycle:**
-1. `created`: Order is initialized.
-2. `pending`: M-Pesa STK Push has been sent to the customer.
-3. `paid`: Payment received; triggers background **Inventory Update** and **Sales Logging**.
-4. `failed`: Payment was declined or timed out.
-
----
-
-### 5. Expenses
-Track business operational costs.
-
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `POST` | `/api/expenses` | Log an expense |
-| `GET` | `/api/expenses?businessId=1` | List expenses |
-
-**Schema (Create):**
-```json
-{
-  "type": "Rent",
-  "amount": 15000,
-  "description": "Monthly shop rent",
-  "isRecurring": true,
-  "frequency": "monthly",
-  "nextDueDate": "2026-04-01T00:00:00Z",
-  "businessId": 1
-}
-```
-
----
-
-## 🤖 AI Chatbot Integration
-
-The FinAI assistant can answer questions about sales trends, inventory, and financial health.
-
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `POST` | `/api/chatbot/chat` | Chat with the AI assistant |
-
-**Request Body:**
-```json
-{
-  "message": "What were my top selling products in March?",
-  "history": [
-    { "role": "user", "content": "Hi" },
-    { "role": "assistant", "content": "Hello! How can I help you today?" }
-  ]
-}
-```
-
-**Response Body:**
-```json
-{
-  "response": "Your top selling products were...",
-  "history": [...]
-}
-```
-
----
-
-## 📱 WhatsApp Order Capture (Webhook)
-
-Integrated with Twilio. When a message is sent to the business WhatsApp number, the system attempts to capture an order automatically based on product keywords.
-
-**Endpoint:** `POST /api/twilio-callback` (Configured in Twilio Console).
+| **Business** | `/api/business` | Manage business registration and M-Pesa config. |
+| **Customers** | `/api/customers` | Manage customer records per business. |
+| **Products** | `/api/products` | Inventory management and AI image generation. |
+| **Orders** | `/api/orders` | Sales transactions and M-Pesa STK Push. |
+| **Expenses** | `/api/expenses` | Track operational costs and recurring bills. |
+| **Chatbot** | `/api/chatbot/chat` | AI-powered financial assistant interface. |
 
 ---
 
 ## 🛠 Development Commands
 
-- **Install Dependencies:** `npm install`
-- **Database Migration:** `npx prisma migrate dev`
-- **Seed Data (100+ records):** `npx prisma db seed`
-- **Start Server:** `npm start`
+| Task | Command |
+| :--- | :--- |
+| **Backend Test** | `npm test` |
+| **Database Studio** | `npx prisma studio` |
+| **Chatbot CLI** | `bun run chatbot` |
+| **Seed Data** | `npx prisma db seed` |
+| **Mobile Web** | `npx expo start --web` |
 
-## ⚠️ Important Notes
-- **Multi-tenancy:** Always pass `businessId` when creating or fetching resources to ensure data isolation.
-- **Asynchronous Updates:** Inventory and Sales records are processed via background workers. If an order is marked `paid`, wait a few seconds before refreshing inventory to see updates.
-- **Error Handling:** Errors return a standard JSON: `{ "status": "error", "message": "Reason for failure" }`.
+---
+
+## Important Notes
+- **Asynchronous Processing**: Inventory updates and sales logging are handled by background workers. Allow a few seconds for data to reflect after a successful payment.
+- **Error Handling**: The API returns standard JSON errors: `{ "status": "error", "message": "..." }`.
+- **Branding**: All components should align with the **FinAI** brand identity.
