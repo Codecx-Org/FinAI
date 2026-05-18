@@ -5225,3 +5225,18 @@
 {"level":"info","message":"Request: GET /api/expenses","params":{},"query":{},"timestamp":"2026-05-14T17:10:54.494Z"}
 {"level":"info","message":"Request: GET /api/sales","params":{},"query":{},"timestamp":"2026-05-14T17:11:00.195Z"}
 {"level":"info","message":"Request: GET /api/business/59","params":{},"query":{},"timestamp":"2026-05-14T17:11:13.496Z"}
+{"level":"info","message":"Primary 11044 forking 4 workers","timestamp":"2026-05-16T16:31:05.535Z"}
+{"level":"info","message":"Process 20972 started web server on port 3000","timestamp":"2026-05-16T16:31:14.130Z"}
+{"level":"info","message":"Process 15480 started web server on port 3000","timestamp":"2026-05-16T16:31:14.279Z"}
+{"level":"info","message":"Process 19240 started web server on port 3000","timestamp":"2026-05-16T16:31:14.670Z"}
+{"level":"info","message":"Process 18308 started web server on port 3000","timestamp":"2026-05-16T16:31:14.787Z"}
+{"level":"info","message":"Primary 2200 forking 4 workers","timestamp":"2026-05-17T05:19:49.298Z"}
+{"level":"info","message":"Process 9088 started web server on port 3000","timestamp":"2026-05-17T05:19:57.429Z"}
+{"level":"info","message":"Process 16056 started web server on port 3000","timestamp":"2026-05-17T05:19:58.222Z"}
+{"level":"info","message":"Process 17048 started web server on port 3000","timestamp":"2026-05-17T05:19:58.251Z"}
+{"level":"info","message":"Process 21036 started web server on port 3000","timestamp":"2026-05-17T05:19:58.616Z"}
+{"level":"info","message":"Primary 21412 forking 4 workers","timestamp":"2026-05-17T05:56:08.351Z"}
+{"level":"info","message":"Process 1636 started web server on port 3000","timestamp":"2026-05-17T05:56:14.347Z"}
+{"level":"info","message":"Process 11952 started web server on port 3000","timestamp":"2026-05-17T05:56:14.418Z"}
+{"level":"info","message":"Process 22424 started web server on port 3000","timestamp":"2026-05-17T05:56:14.504Z"}
+{"level":"info","message":"Process 14500 started web server on port 3000","timestamp":"2026-05-17T05:56:14.616Z"}
