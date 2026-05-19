@@ -223,7 +223,9 @@ process.on("SIGTERM", shutdown);
 process.on("SIGINT", shutdown);
 
 // Cluster setup for non-blocking workers and web server
-if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
+const USE_CLUSTER = process.env.USE_CLUSTER === "true";
+
+if (USE_CLUSTER && cluster.isPrimary && process.env.NODE_ENV !== "test") {
   const numCPUs = os.cpus().length;
   logger.info(`Primary ${process.pid} forking ${numCPUs} workers`);
 
@@ -237,10 +239,10 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
     );
     cluster.fork();
   });
-} else if (!cluster.isPrimary || process.env.NODE_ENV === "test") {
+} else if (!USE_CLUSTER || !cluster.isPrimary || process.env.NODE_ENV === "test") {
   // Worker process or test environment: Start Express server and background tasks
-  const PORT = process.env.PORT || 3000;
-  const server = app.listen(PORT, () => {
+  const PORT = parseInt(process.env.PORT || "3000", 10);
+  const server = app.listen(PORT, "0.0.0.0", () => {
     logger.info(`Process ${process.pid} started web server on port ${PORT}`);
   });
 
