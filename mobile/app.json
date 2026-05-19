@@ -4,13 +4,13 @@
     "slug": "bizsawa-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon-light.png",
     "userInterfaceStyle": "light",
     "scheme": "bizsawa",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#F4F9F7"
     },
     "ios": {
       "bundleIdentifier": "com.bizsawa.mobile",
@@ -27,7 +27,7 @@
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#F4F9F7"
       }
     },
     "web": {
@@ -35,8 +35,14 @@
     },
     "plugins": [
       "expo-router",
-      "@react-native-google-signin/google-signin",
-      "@react-native-firebase/app"
+      "@react-native-google-signin/google-signin/app.plugin.js",
+      "@react-native-firebase/app/app.plugin.js",
+      [
+        "expo-system-ui",
+        {
+          "backgroundColor": "#F4F9F7"
+        }
+      ]
     ]
   }
 }
