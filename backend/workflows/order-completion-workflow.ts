@@ -7,19 +7,24 @@ import { createObjectCsvWriter } from "csv-writer";
 import { redisService } from "../services/redis-service.js";
 import prisma from "../utils/prisma.js";
 
+const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
+const isTls = redisUrl.startsWith("rediss://");
+
 // Redis connection (shared with redisService)
 const connection =
   process.env.NODE_ENV === "test"
     ? ({} as any)
-    : new Redis("redis://localhost:6379", {
+    : new Redis(redisUrl, {
         maxRetriesPerRequest: 3,
         retryStrategy: (times: number) => Math.min(times * 1000, 30000),
+        ...(isTls ? { tls: { rejectUnauthorized: false } } : {}),
       });
 const workerConnection =
   process.env.NODE_ENV === "test"
     ? ({} as any)
-    : new Redis("redis://localhost:6379", {
+    : new Redis(redisUrl, {
         maxRetriesPerRequest: null,
+        ...(isTls ? { tls: { rejectUnauthorized: false } } : {}),
       });
 
 // Queue for the workflow

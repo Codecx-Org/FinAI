@@ -5,7 +5,7 @@ export const validateEnv = () => {
   const requiredEnv = [
     'DATABASE_URL',
     'JWT_SECRET',
-    'PORT',
+    // 'PORT',
     'REDIS_URL'
   ];
 

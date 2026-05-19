@@ -15,11 +15,13 @@ export class RedisService {
   private client: Redis;
   private subscribers: Map<string, Redis>; // Track subscribers for cleanup
 
-  constructor(config: RedisConfig = { url: 'redis://localhost:6379', retryAttempts: 3, retryDelay: 1000 }) {
+  constructor(config: RedisConfig = { url: process.env.REDIS_URL || 'redis://localhost:6379', retryAttempts: 3, retryDelay: 1000 }) {
     // Initialize main client for publishing
+    const isTls = config.url.startsWith("rediss://");
     this.client = new Redis(config.url, {
       maxRetriesPerRequest: 3,
       retryStrategy: (times) => Math.min(times * config.retryDelay!, 30000),
+      ...(isTls ? { tls: { rejectUnauthorized: false } } : {}),
     });
 
     this.subscribers = new Map();
