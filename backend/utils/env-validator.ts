@@ -6,7 +6,7 @@ export const validateEnv = () => {
     'DATABASE_URL',
     'JWT_SECRET',
     // 'PORT',
-    // 'REDIS_URL'
+    'REDIS_URL'
   ];
 
   const missing = requiredEnv.filter(env => !process.env[env]);
