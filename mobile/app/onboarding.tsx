@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,59 +6,55 @@ import {
   TouchableOpacity,
   FlatList,
   Dimensions,
-  SafeAreaView,
   Animated,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ChevronRight } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ArrowRight, HelpCircle, LineChart, Package, BrainCircuit } from 'lucide-react-native';
+import LottieView from 'lottie-react-native';
 
 const { width } = Dimensions.get('window');
 
 const ONBOARDING_DATA = [
   {
     id: '1',
-    title: 'No More Paperwork',
-    description: 'Track all your sales and business transactions digitally in one place. Fast, easy, and secure.',
-    image: require('../assets/designs/onboarding1.png'),
-    backgroundColor: '#faf8ff',
+    badge: 'The Problem',
+    title: 'Tired of Running Your Business Blind?',
+    description: 'Bookkeeping fatigue, stock blind spots, and loan denials. The struggle is real, but it doesn\'t have to be your reality.',
+    featureTitle: 'The Struggle',
+    featureDescription: 'Manual tracking is slow, error-prone, and costs you money. You need a system that works as hard as you do.',
+    icon: Package,
+    animation: require('../assets/designs/man-in-business.json'),
   },
   {
     id: '2',
-    title: 'Smart Inventory',
-    description: 'Manage your stock levels in real-time. Get alerts before you run out and know what sells best.',
-    image: require('../assets/designs/onboarding2.png'),
-    backgroundColor: '#faf8ff',
+    badge: 'Efficiency Redefined',
+    title: 'Your AI Business Companion',
+    description: 'Everything you need to scale your enterprise, simplified through professional intelligence and precise data.',
+    featureTitle: 'Smart Sales & Inventory',
+    featureDescription: 'Real-time revenue tracking and predictive analytics. Never run out of stock with automated alerts.',
+    icon: LineChart,
+    animation: require('../assets/designs/phone-animation.json'),
   },
   {
     id: '3',
-    title: 'Grow With AI',
-    description: 'Your AI Powered Business Companion helps you make better decisions with deep-dive analytics.',
-    image: require('../assets/designs/onboarding3.png'),
-    backgroundColor: '#faf8ff',
+    badge: 'Call To Action',
+    title: 'Ready to Grow Your Business?',
+    description: 'Join thousands of successful merchants who have transformed their operations with BizSawa.',
+    featureTitle: 'Instant Setup',
+    featureDescription: 'Get started in minutes. No credit card required. Experience the future of business management today.',
+    icon: BrainCircuit,
+    animation: require('../assets/designs/finance.json'),
   },
 ];
 
 export default function OnboardingScreen() {
-  useEffect(() => {
-    console.log("OnboardingScreen Mounted");
-  }, []);
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollX = useRef(new Animated.Value(0)).current;
-  const fadeAnim = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef<FlatList>(null);
   const router = useRouter();
-
-  useEffect(() => {
-    // Reset and trigger fade in when index changes
-    fadeAnim.setValue(0);
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 800,
-      useNativeDriver: true,
-    }).start();
-  }, [currentIndex]);
+  const insets = useSafeAreaInsets();
 
   const handleNext = async () => {
     if (currentIndex < ONBOARDING_DATA.length - 1) {
@@ -76,55 +72,8 @@ export default function OnboardingScreen() {
       await AsyncStorage.setItem('HAS_FINISHED_ONBOARDING', 'true');
       router.replace('/auth/login');
     } catch (error) {
-      console.error('Error saving onboarding status:', error);
       router.replace('/auth/login');
     }
-  };
-
-  const renderItem = ({ item }: { item: typeof ONBOARDING_DATA[0] }) => {
-    return (
-      <View style={{ width }} className="flex-1 items-center justify-center px-8">
-        <Animated.View 
-          style={{ 
-            opacity: fadeAnim, 
-            transform: [{ translateY: fadeAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [20, 0]
-            })}] 
-          }}
-          className="w-full aspect-square mb-12 items-center justify-center"
-        >
-          <View 
-            className="w-[85%] h-[85%] bg-white border border-[#c3c7cb]/20 rounded-[32px] overflow-hidden shadow-xl"
-            style={{
-              shadowColor: "#006b5f",
-              shadowOffset: { width: 8, height: 8 },
-              shadowOpacity: 0.15,
-              shadowRadius: 0,
-              elevation: 5,
-            }}
-          >
-            <Image
-              source={item.image}
-              style={{ width: '100%', height: '100%' }}
-              resizeMode="cover"
-            />
-          </View>
-        </Animated.View>
-
-        <Animated.View 
-          style={{ opacity: fadeAnim }}
-          className="items-center px-4"
-        >
-          <Text className="text-[32px] font-bold text-[#131b2e] text-center mb-4 tracking-tighter leading-tight">
-            {item.title}
-          </Text>
-          <Text className="text-base text-[#5c5f61] text-center leading-relaxed font-medium">
-            {item.description}
-          </Text>
-        </Animated.View>
-      </View>
-    );
   };
 
   const updateCurrentIndex = (e: any) => {
@@ -133,41 +82,95 @@ export default function OnboardingScreen() {
     setCurrentIndex(index);
   };
 
-  return (
-    <SafeAreaView className="flex-1 bg-[#faf8ff]">
-      {/* Architectural Grid Background (Dots) */}
-      <View className="absolute inset-0 opacity-10" pointerEvents="none">
-        {[...Array(20)].map((_, i) => (
-          <View key={i} className="flex-row justify-around w-full py-4">
-            {[...Array(10)].map((_, j) => (
-              <View key={j} className="w-1 h-1 bg-[#c3c7cb] rounded-full" />
-            ))}
+  const renderItem = ({ item }: { item: typeof ONBOARDING_DATA[0] }) => {
+    const IconComponent = item.icon;
+    
+    return (
+      <View style={{ width }} className="flex-1 px-6 pt-6">
+        {/* Header Section */}
+        <View className="mb-8 max-w-sm">
+          <View className="flex-row items-center bg-[#50616b]/5 self-start px-3 py-1.5 rounded-full mb-4 border border-[#73787b]/20">
+            <View className="w-1.5 h-1.5 bg-[#006b5f] rounded-full mr-2" />
+            <Text className="text-[10px] font-bold text-[#43474b] tracking-widest uppercase">{item.badge}</Text>
           </View>
-        ))}
+          <Text className="text-3xl font-bold text-[#131b2e] mb-3 leading-tight">{item.title}</Text>
+          <Text className="text-[#43474b] text-base leading-relaxed">{item.description}</Text>
+        </View>
+
+        {/* Feature Card */}
+        <View 
+          className="bg-white rounded-2xl p-6 border border-[#73787b]/10"
+          style={{
+            shadowColor: "#006b5f",
+            shadowOffset: { width: 0, height: 12 },
+            shadowOpacity: 0.05,
+            shadowRadius: 24,
+            elevation: 2,
+          }}
+        >
+          <View className="flex-col gap-6">
+            <View className="flex-1">
+              <View className="w-12 h-12 bg-[#006b5f]/5 rounded-xl items-center justify-center mb-4">
+                <IconComponent size={24} color="#006b5f" />
+              </View>
+              <Text className="text-xl font-bold text-[#131b2e] mb-2">{item.featureTitle}</Text>
+              <Text className="text-[#43474b] text-sm leading-relaxed mb-6">{item.featureDescription}</Text>
+            </View>
+            
+            <View className="rounded-xl overflow-hidden border border-[#c3c7cb]/20 w-full aspect-[4/3] bg-[#f8f9fa] items-center justify-center">
+              <LottieView
+                source={item.animation}
+                autoPlay
+                loop
+                style={{ width: '100%', height: '100%' }}
+                resizeMode="contain"
+              />
+            </View>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  return (
+    <View style={{ flex: 1, backgroundColor: '#faf8ff', paddingTop: insets.top }}>
+      {/* Top Navigation Bar */}
+      <View className="flex-row items-center justify-between px-6 py-4 z-50">
+        <View className="flex-row items-center">
+          <Image 
+            source={require('../assets/adaptive-icon.png')} 
+            style={{ width: 32, height: 32 }} 
+            resizeMode="contain" 
+          />
+          <Text className="ml-2 font-bold text-2xl text-[#131b2e] tracking-tight">BizSawa</Text>
+        </View>
+        <TouchableOpacity className="p-2">
+          <HelpCircle size={24} color="#5c5f61" />
+        </TouchableOpacity>
       </View>
 
-      <View className="flex-1">
-        <FlatList
-          ref={flatListRef}
-          data={ONBOARDING_DATA}
-          renderItem={renderItem}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          onMomentumScrollEnd={updateCurrentIndex}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-            { useNativeDriver: false }
-          )}
-          scrollEventThrottle={32}
-          keyExtractor={(item) => item.id}
-        />
-      </View>
+      <FlatList
+        ref={flatListRef}
+        data={ONBOARDING_DATA}
+        renderItem={renderItem}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={updateCurrentIndex}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={32}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ paddingBottom: 160 }}
+      />
 
-      {/* Pagination / Controls */}
-      <View className="px-8 pb-8 flex-row items-center justify-between">
-        {/* Indicators */}
-        <View className="flex-row space-x-2">
+      {/* Fixed Bottom Action Bar */}
+      <View className="absolute bottom-0 left-0 w-full px-6 pb-8 pt-6 border-t border-[#c3c7cb]/10" style={{ backgroundColor: '#faf8ff' }}>
+        
+        {/* Centered Pagination Dots */}
+        <View className="flex-row justify-center items-center mb-6 space-x-2">
           {ONBOARDING_DATA.map((_, index) => {
             const opacity = scrollX.interpolate({
               inputRange: [(index - 1) * width, index * width, (index + 1) * width],
@@ -194,68 +197,55 @@ export default function OnboardingScreen() {
             );
           })}
         </View>
-      </View>
 
-      {/* Buttons */}
-      <View className="px-8 pb-12">
-        {currentIndex === 0 ? (
-          <View className="space-y-4">
-            <TouchableOpacity
-              onPress={handleNext}
-              className="bg-[#006b5f] h-16 rounded-2xl flex-row items-center justify-center"
-              style={{
-                shadowColor: "#006b5f",
-                shadowOffset: { width: 4, height: 4 },
-                shadowOpacity: 0.2,
-                shadowRadius: 0,
-                elevation: 4,
-              }}
-              activeOpacity={0.8}
-            >
-              <Text className="text-white font-bold text-lg mr-2 tracking-tight">Explore BizSawa</Text>
-              <ChevronRight size={20} color="white" />
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              onPress={() => router.push('/auth/login')}
-              className="h-14 rounded-2xl border border-[#006b5f]/30 items-center justify-center bg-white/50"
-              activeOpacity={0.7}
-            >
-              <Text className="text-[#006b5f] font-bold text-base">Already have an account? Sign In</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity
-            onPress={handleNext}
-            className="bg-[#006b5f] h-16 rounded-2xl flex-row items-center justify-center"
-            style={{
-              shadowColor: "#006b5f",
-              shadowOffset: { width: 4, height: 4 },
-              shadowOpacity: 0.2,
-              shadowRadius: 0,
-              elevation: 4,
-            }}
-            activeOpacity={0.8}
-          >
-            <Text className="text-white font-bold text-lg mr-2 tracking-tight">
-              {currentIndex === ONBOARDING_DATA.length - 1 ? 'Join BizSawa' : 'Next'}
-            </Text>
-            {currentIndex !== ONBOARDING_DATA.length - 1 && (
-              <ChevronRight size={20} color="white" />
-            )}
-          </TouchableOpacity>
-        )}
+        {/* Buttons: Conditional rendering based on the slide index */}
+        <View className="flex-row items-center justify-between gap-4">
+          {currentIndex === ONBOARDING_DATA.length - 1 ? (
+             <TouchableOpacity 
+               onPress={finishOnboarding}
+               className="flex-1 bg-[#006b5f] py-4 rounded-full flex-row items-center justify-center shadow-lg"
+               style={{
+                 shadowColor: "#006b5f",
+                 shadowOffset: { width: 0, height: 4 },
+                 shadowOpacity: 0.2,
+                 shadowRadius: 8,
+                 elevation: 4,
+               }}
+             >
+               <Text className="text-white font-bold text-lg mr-2">
+                 Get Started
+               </Text>
+               <ArrowRight size={20} color="white" />
+             </TouchableOpacity>
+          ) : (
+            <>
+              <TouchableOpacity 
+                onPress={finishOnboarding}
+                className="w-1/3 py-4 items-center justify-center rounded-full border border-[#c3c7cb]/50 bg-white"
+              >
+                <Text className="text-[#43474b] font-bold text-base">Skip</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                onPress={handleNext}
+                className="flex-1 bg-[#006b5f] py-4 rounded-full flex-row items-center justify-center shadow-lg"
+                style={{
+                  shadowColor: "#006b5f",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 8,
+                  elevation: 4,
+                }}
+              >
+                <Text className="text-white font-bold text-lg mr-2">
+                  Next
+                </Text>
+                <ArrowRight size={20} color="white" />
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
       </View>
-
-      {/* Skip Button */}
-      {currentIndex < ONBOARDING_DATA.length - 1 && (
-        <TouchableOpacity 
-          onPress={finishOnboarding}
-          className="absolute top-16 right-8 bg-white/80 px-4 py-2 rounded-full border border-[#c3c7cb]/20"
-        >
-          <Text className="text-[#5c5f61] font-bold text-xs uppercase tracking-widest">Skip</Text>
-        </TouchableOpacity>
-      )}
-    </SafeAreaView>
+    </View>
   );
 }
