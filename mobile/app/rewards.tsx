@@ -82,7 +82,7 @@ export default function RewardsScreen() {
         contentContainerStyle={{ padding: 16, paddingBottom: TAB_BAR_SCROLL_PADDING }}
       >
         {/* Stats Card */}
-        <Card className="mb-6 bg-purple-700 border-0">
+        <Card className="mb-6 bg-primary-700 border-0">
           <CardContent className="p-6 flex-row items-center">
             <View className="bg-white/20 p-3 rounded-full mr-4">
               <Trophy size={32} color="white" />
@@ -91,7 +91,7 @@ export default function RewardsScreen() {
               <Text className="text-white text-lg font-bold">
                 {achievements.filter((a) => a.earned).length} of {achievements.length}
               </Text>
-              <Text className="text-purple-100 text-xs">Achievements Unlocked</Text>
+              <Text className="text-primary-100 text-xs">Achievements Unlocked</Text>
             </View>
           </CardContent>
         </Card>
@@ -100,13 +100,13 @@ export default function RewardsScreen() {
         {!isAdding ? (
           <TouchableOpacity
             onPress={() => setIsAdding(true)}
-            className="flex-row items-center justify-center p-4 border-2 border-dashed border-purple-300 rounded-xl mb-6"
+            className="flex-row items-center justify-center p-4 border-2 border-dashed border-primary-300 rounded-xl mb-6"
           >
-            <Plus size={20} color="#7c3aed" />
-            <Text className="ml-2 text-purple-700 font-bold">Add New Achievement</Text>
+            <Plus size={20} color="#006b5f" />
+            <Text className="ml-2 text-primary-700 font-bold">Add New Achievement</Text>
           </TouchableOpacity>
         ) : (
-          <Card className="mb-6 border-purple-200">
+          <Card className="mb-6 border-primary-200">
             <CardContent className="p-4">
               <Text className="font-bold mb-2">New Achievement</Text>
               <TextInput
@@ -131,7 +131,7 @@ export default function RewardsScreen() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleAdd}
-                  className="flex-1 p-3 bg-purple-600 rounded-lg items-center"
+                  className="flex-1 p-3 bg-primary-600 rounded-lg items-center"
                 >
                   <Text className="font-bold text-white">Save</Text>
                 </TouchableOpacity>
@@ -142,7 +142,7 @@ export default function RewardsScreen() {
 
         {/* List */}
         {isLoading ? (
-          <ActivityIndicator size="large" color="#7c3aed" className="mt-8" />
+          <ActivityIndicator size="large" color="#006b5f" className="mt-8" />
         ) : (
           <View>
             {achievements.length === 0 ? (

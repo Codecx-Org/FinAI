@@ -83,8 +83,8 @@ export default function ProfileTab() {
             <Text className="font-bold text-gray-600">Credit</Text>
           </TouchableOpacity>
           
-          <View className="flex-[1.3] z-10 -mx-4 shadow-xl shadow-purple-900/40">
-            <View className="bg-purple-600 rounded-2xl py-5 items-center border-4 border-white">
+          <View className="flex-[1.3] z-10 -mx-4 shadow-xl shadow-primary-900/40">
+            <View className="bg-primary-600 rounded-2xl py-5 items-center border-4 border-white">
               <Text className="font-black text-white text-lg tracking-wider">PROFILE</Text>
             </View>
           </View>
@@ -107,7 +107,7 @@ export default function ProfileTab() {
         <View>
           {isLoading && (
             <View className="py-8 items-center">
-              <ActivityIndicator size="small" color="#7c3aed" />
+              <ActivityIndicator size="small" color="#006b5f" />
               <Text className="text-gray-500 text-sm mt-2">Loading business profile…</Text>
             </View>
           )}

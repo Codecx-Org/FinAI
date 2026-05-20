@@ -83,7 +83,7 @@ export default function LoginScreen() {
           <View className="flex-1 justify-center py-12">
             {/* Header */}
             <View className="items-center mb-8">
-              <View className="w-20 h-20 bg-purple-600 rounded-full items-center justify-center mb-4">
+              <View className="w-20 h-20 bg-primary-600 rounded-full items-center justify-center mb-4">
                 <Text className="text-white text-2xl font-bold">BS</Text>
               </View>
               <Text className="text-3xl font-bold text-gray-900 mb-2">BizSawa</Text>
@@ -161,7 +161,7 @@ export default function LoginScreen() {
               <TouchableOpacity
                 onPress={handleSubmit}
                 disabled={isLoading}
-                className={`bg-purple-600 rounded-lg mt-6 py-4 items-center ${
+                className={`bg-primary-600 rounded-lg mt-6 py-4 items-center ${
                   isLoading ? 'opacity-50' : ''
                 }`}
               >
@@ -199,7 +199,7 @@ export default function LoginScreen() {
               <View className="flex-row justify-center mt-6">
                 <Text className="text-gray-600">Don't have an account? </Text>
                 <TouchableOpacity onPress={() => router.push('/auth/register')}>
-                  <Text className="text-purple-600 font-semibold">Sign Up</Text>
+                  <Text className="text-primary-600 font-semibold">Sign Up</Text>
                 </TouchableOpacity>
               </View>
             </View>

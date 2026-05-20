@@ -173,7 +173,7 @@ export default function AICoachModal() {
       <View className="flex-1 bg-gray-50">
         <View className="flex-row items-center justify-between p-4 bg-white border-b border-gray-200">
           <View className="flex-row items-center">
-            <View className="w-10 h-10 bg-purple-600 rounded-full items-center justify-center mr-3">
+            <View className="w-10 h-10 bg-primary-600 rounded-full items-center justify-center mr-3">
               <Bot size={20} color="white" />
             </View>
             <View>
@@ -194,7 +194,7 @@ export default function AICoachModal() {
         <View className="flex-row justify-center py-2 bg-white border-b border-gray-100 space-x-2">
           <TouchableOpacity
             onPress={toggleLanguage}
-            className={`px-4 py-1.5 rounded-full ${language === "en" ? "bg-purple-600" : "bg-gray-100"}`}
+            className={`px-4 py-1.5 rounded-full ${language === "en" ? "bg-primary-600" : "bg-gray-100"}`}
           >
             <Text
               className={`font-medium text-xs ${language === "en" ? "text-white" : "text-gray-900"}`}
@@ -204,7 +204,7 @@ export default function AICoachModal() {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={toggleLanguage}
-            className={`px-4 py-1.5 rounded-full ${language === "sw" ? "bg-purple-600" : "bg-gray-100"}`}
+            className={`px-4 py-1.5 rounded-full ${language === "sw" ? "bg-primary-600" : "bg-gray-100"}`}
           >
             <Text
               className={`font-medium text-xs ${language === "sw" ? "text-white" : "text-gray-900"}`}
@@ -241,12 +241,12 @@ export default function AICoachModal() {
               className={`flex-row mb-4 ${msg.isBot ? "justify-start" : "justify-end"}`}
             >
               {msg.isBot && (
-                <View className="w-8 h-8 rounded-full bg-purple-600 items-center justify-center mr-2">
+                <View className="w-8 h-8 rounded-full bg-primary-600 items-center justify-center mr-2">
                   <Bot size={16} color="white" />
                 </View>
               )}
               <View
-                className={`p-3 rounded-2xl max-w-[80%] ${msg.isBot ? "bg-white border border-gray-200 rounded-tl-none" : "bg-purple-600 rounded-tr-none"}`}
+                className={`p-3 rounded-2xl max-w-[80%] ${msg.isBot ? "bg-white border border-gray-200 rounded-tl-none" : "bg-primary-600 rounded-tr-none"}`}
               >
                 {msg.isBot ? (
                   <CoachMessageMarkdown content={msg.content} />
@@ -254,7 +254,7 @@ export default function AICoachModal() {
                   <Text className="text-sm text-white">{msg.content}</Text>
                 )}
                 <Text
-                  className={`text-[10px] mt-1 ${msg.isBot ? "text-gray-400" : "text-purple-200 text-right"}`}
+                  className={`text-[10px] mt-1 ${msg.isBot ? "text-gray-400" : "text-primary-200 text-right"}`}
                 >
                   {formatTime(msg.timestamp)}
                 </Text>
@@ -268,7 +268,7 @@ export default function AICoachModal() {
           ))}
           {isTyping && (
             <View className="flex-row justify-start mb-4">
-              <View className="w-8 h-8 rounded-full bg-purple-600 items-center justify-center mr-2">
+              <View className="w-8 h-8 rounded-full bg-primary-600 items-center justify-center mr-2">
                 <Bot size={16} color="white" />
               </View>
               <View className="p-4 bg-white border border-gray-200 rounded-2xl rounded-tl-none">
@@ -303,7 +303,7 @@ export default function AICoachModal() {
           />
           <TouchableOpacity
             onPress={handleSend}
-            className="w-12 h-12 bg-purple-600 rounded-full items-center justify-center shadow-md"
+            className="w-12 h-12 bg-primary-600 rounded-full items-center justify-center shadow-md"
           >
             <Send size={18} color="white" />
           </TouchableOpacity>

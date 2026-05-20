@@ -7,7 +7,7 @@ const COLORS = {
   surface: "#f8f9fa",
   secondary: "#555f6d",
   primary: "#630ed4",
-  homeActiveBg: "#7c3aed",
+  homeActiveBg: "#006b5f",
   homeIdleBg: "#e7e8e9",
   onPrimary: "#ffffff",
   borderCutout: "#f8f9fa",
