@@ -38,7 +38,7 @@ export default function CreditPreviewScreen() {
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 48 }}>
           {creditQuery.isLoading && (
             <View style={{ paddingVertical: 32, alignItems: "center" }}>
-              <ActivityIndicator size="small" color="#7c3aed" />
+              <ActivityIndicator size="small" color="#006b5f" />
               <Text style={{ marginTop: 8, fontSize: 14, color: "#6b7280" }}>Loading trust preview…</Text>
             </View>
           )}
@@ -198,7 +198,7 @@ export default function CreditPreviewScreen() {
                             className="mt-2 self-start"
                             onPress={() => Linking.openURL(loan.applyUrl).catch(() => {})}
                           >
-                            <Text className="text-xs font-bold text-purple-700">Open link</Text>
+                            <Text className="text-xs font-bold text-primary-700">Open link</Text>
                           </TouchableOpacity>
                         ) : null}
                       </View>

@@ -273,12 +273,12 @@ export default function InsightsTab() {
                       setShowPricingModal(true);
                       fetchAIInsights();
                     }}
-                    className="flex-1 ml-2 p-3 border border-purple-200 rounded-lg bg-purple-50 items-center justify-center"
+                    className="flex-1 ml-2 p-3 border border-primary-200 rounded-lg bg-primary-50 items-center justify-center"
                   >
                     <View className="mb-2">
-                      <Lightbulb size={24} color="#9333ea" />
+                      <Lightbulb size={24} color="#006b5f" />
                     </View>
-                    <Text className="text-purple-700 font-bold text-center text-sm">
+                    <Text className="text-primary-700 font-bold text-center text-sm">
                       Smart Advice
                     </Text>
                   </TouchableOpacity>
@@ -642,7 +642,7 @@ export default function InsightsTab() {
       >
         <View className="flex-1 bg-gray-50">
           <View className="flex-row justify-between items-center p-4 bg-white border-b border-gray-200 shadow-sm">
-            <Text className="text-lg font-bold text-purple-800">
+            <Text className="text-lg font-bold text-primary-800">
               AI Recommendations
             </Text>
             <TouchableOpacity onPress={() => setShowPricingModal(false)}>
@@ -653,7 +653,7 @@ export default function InsightsTab() {
             <View className="min-h-[200px]">
               {isAIInsightsLoading ? (
                 <View className="items-center py-8">
-                  <ActivityIndicator size="small" color="#9333ea" />
+                  <ActivityIndicator size="small" color="#006b5f" />
                   <Text className="text-gray-500 mt-2">
                     Generating actionable advice...
                   </Text>
@@ -664,7 +664,7 @@ export default function InsightsTab() {
                     {aiInsightsError}
                   </Text>
                   <TouchableOpacity
-                    className="bg-purple-600 py-3 rounded-lg items-center"
+                    className="bg-primary-600 py-3 rounded-lg items-center"
                     onPress={() => fetchAIInsights()}
                   >
                     <Text className="text-white font-bold">Try Again</Text>
@@ -676,10 +676,10 @@ export default function InsightsTab() {
                   {aiInsights.recommendations.map((rec, i) => (
                     <View
                       key={i}
-                      className="p-4 bg-purple-50 border border-purple-200 rounded-lg mb-3"
+                      className="p-4 bg-primary-50 border border-primary-200 rounded-lg mb-3"
                     >
                       <View className="flex-row justify-between items-center mb-2">
-                        <Text className="font-bold text-purple-800 flex-1 mr-2">
+                        <Text className="font-bold text-primary-800 flex-1 mr-2">
                           {rec.action}
                         </Text>
                         <Badge className={`${
@@ -689,7 +689,7 @@ export default function InsightsTab() {
                           <Text className="text-[10px]">{rec.priority}</Text>
                         </Badge>
                       </View>
-                      <Text className="text-sm text-purple-700">
+                      <Text className="text-sm text-primary-700">
                         {rec.reason}
                       </Text>
                     </View>
@@ -701,7 +701,7 @@ export default function InsightsTab() {
                     No recommendations yet.
                   </Text>
                   <TouchableOpacity
-                    className="bg-purple-600 py-3 rounded-lg items-center"
+                    className="bg-primary-600 py-3 rounded-lg items-center"
                     onPress={() => fetchAIInsights()}
                   >
                     <Text className="text-white font-bold">Retry</Text>

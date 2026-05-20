@@ -127,7 +127,7 @@ export default function Dashboard() {
   if (isOverviewLoading || productsLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#7c3aed" />
+        <ActivityIndicator size="large" color="#006b5f" />
       </View>
     );
   }

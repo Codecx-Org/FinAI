@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
+import { router } from "expo-router";
 import { api } from "../lib/api";
 
 interface UserData {
@@ -147,8 +148,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await GoogleSignin.signOut();
       await AsyncStorage.removeItem("bizsawa_token");
       await AsyncStorage.removeItem("bizsawa_userdata");
+      await AsyncStorage.removeItem("HAS_FINISHED_ONBOARDING");
       setIsAuthenticated(false);
       setUserData(null);
+      router.replace("/onboarding");
     } catch (error) {
       console.error("Error during logout:", error);
     }

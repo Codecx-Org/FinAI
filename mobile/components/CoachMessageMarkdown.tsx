@@ -35,7 +35,7 @@ const coachBubbleMarkdownStyles = {
   ordered_list_icon: { marginLeft: 0, marginRight: 8 },
   ordered_list_content: { flex: 1 },
   link: {
-    color: "#7c3aed",
+    color: "#006b5f",
     textDecorationLine: "underline" as const,
   },
   code_inline: {
@@ -65,7 +65,7 @@ const coachBubbleMarkdownStyles = {
   },
   blockquote: {
     backgroundColor: "#f9fafb",
-    borderLeftColor: "#7c3aed",
+    borderLeftColor: "#006b5f",
     borderLeftWidth: 3,
     paddingHorizontal: 10,
     marginVertical: 6,

@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   aiFab: {
-    backgroundColor: '#7c3aed',
+    backgroundColor: '#006b5f',
     bottom: TAB_BAR_SCROLL_PADDING,
     right: 20,
   },

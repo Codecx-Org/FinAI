@@ -464,8 +464,8 @@ export default function SalesTab() {
               </Card>
               <Card className="w-[31%]">
                 <CardContent className="p-3 items-center">
-                  <View className="w-8 h-8 bg-purple-100 rounded-lg items-center justify-center mb-2">
-                    <TrendingUp size={16} color="#9333ea" />
+                  <View className="w-8 h-8 bg-primary-100 rounded-lg items-center justify-center mb-2">
+                    <TrendingUp size={16} color="#006b5f" />
                   </View>
                   <Text className="text-sm font-bold text-gray-900">
                     {formatCurrency(avgTransactionValue)}

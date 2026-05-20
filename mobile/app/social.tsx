@@ -97,7 +97,7 @@ export default function SocialMediaModal() {
       id: "attract",
       label: "Attract Customers",
       sublabel: "Bring in fresh leads",
-      color: "border-purple-500",
+      color: "border-primary-500",
     },
     {
       id: "launch",
