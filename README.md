@@ -104,7 +104,52 @@ npm run dev
 
 ---
 
-## 🛠 Core API Modules
+## Production (Render)
+
+### Render environment variables
+
+| Variable | Purpose |
+| :--- | :--- |
+| `DATABASE_URL` | Supabase **transaction pooler** (port 6543) for runtime app queries |
+| `DIRECT_URL` | Direct Postgres (`db.<ref>.supabase.co:5432`) for `prisma migrate deploy` only |
+| `JWT_SECRET` | Auth token signing |
+| `REDIS_URL` | BullMQ / Redis subscriber |
+| `PORT` | Set by Render (usually `10000`) |
+
+Start command (recommended): `bunx prisma migrate deploy && bun start`
+
+### Expo mobile (production builds)
+
+Set in EAS secrets or a local `.env` file (gitignored), not in tracked files:
+
+```bash
+EXPO_PUBLIC_API_URL=https://your-render-service.onrender.com
+```
+
+See [`mobile/.env.example`](mobile/.env.example). Rebuild the app after changing this value.
+
+### Post-deploy smoke checks
+
+Replace `YOUR_API_HOST` with the host from your Render service URL:
+
+```bash
+export API_HOST=https://your-render-service.onrender.com
+
+# Public uptime ping (no auth) — use for Render/cron keep-alive
+curl -s "$API_HOST/api/public/health"
+curl -s "$API_HOST/health"
+curl -s -X POST "$API_HOST/api/auth/login" \
+  -H "Content-Type: application/json" -d '{}'
+# Expect HTTP 400 with a validation message, not 500
+```
+
+### Bun postinstall (build logs)
+
+If Render logs `Blocked 1 postinstall`, run `bun pm untrusted` locally, review the package, and trust only if required for your deployment.
+
+---
+
+## Core API Modules
 
 All backend API requests should be prefixed with `/api`. Ensure `businessId` is included in relevant requests for multi-tenancy.
 
@@ -119,7 +164,7 @@ All backend API requests should be prefixed with `/api`. Ensure `businessId` is 
 
 ---
 
-## 🛠 Development Commands
+## Development Commands
 
 | Task | Command |
 | :--- | :--- |

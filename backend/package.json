@@ -37,9 +37,6 @@
     "whatsapp": "bun chatbot/whatsapp-service.ts",
     "seed": "bun prisma/seed.ts"
   },
-  "prisma": {
-    "seed": "bun prisma/seed.ts"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",

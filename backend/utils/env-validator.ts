@@ -2,8 +2,13 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const validateEnv = () => {
+  if (!process.env.DIRECT_URL && process.env.DATABASE_URL) {
+    process.env.DIRECT_URL = process.env.DATABASE_URL;
+  }
+
   const requiredEnv = [
     'DATABASE_URL',
+    'DIRECT_URL',
     'JWT_SECRET',
     // 'PORT',
     'REDIS_URL'
