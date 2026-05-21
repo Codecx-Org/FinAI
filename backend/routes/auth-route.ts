@@ -3,6 +3,7 @@ import { authService } from '../services/auth-service.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import { registerSchema, loginSchema } from '../utils/validators.js';
 import { BadRequestError } from '../utils/types/errors.js';
+import { getFirstZodMessage } from '../utils/zod-errors.js';
 
 const router = Router();
 
@@ -13,7 +14,7 @@ const router = Router();
 router.post('/auth/register', asyncHandler(async (req: Request, res: Response) => {
   const validation = registerSchema.safeParse(req.body);
   if (!validation.success) {
-    throw new BadRequestError(validation.error.errors[0].message);
+    throw new BadRequestError(getFirstZodMessage(validation.error));
   }
 
   const business = await authService.register(validation.data);
@@ -30,7 +31,7 @@ router.post('/auth/register', asyncHandler(async (req: Request, res: Response) =
 router.post('/auth/login', asyncHandler(async (req: Request, res: Response) => {
   const validation = loginSchema.safeParse(req.body);
   if (!validation.success) {
-    throw new BadRequestError(validation.error.errors[0].message);
+    throw new BadRequestError(getFirstZodMessage(validation.error));
   }
 
   const { email, password } = validation.data;

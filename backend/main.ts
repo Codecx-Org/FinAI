@@ -19,6 +19,9 @@ import { orderQueue } from "./workflows/order-completion-workflow.js";
 import { redisService } from "./services/redis-service.js";
 import { startPaymentSubscriber } from "./subscribers/payment-subscriber.js";
 import { rateLimit } from 'express-rate-limit';
+import { ZodError } from 'zod';
+import { AppError } from './utils/types/errors.js';
+import { getFirstZodMessage } from './utils/zod-errors.js';
 
 // Routes
 import authRoutes from "./routes/auth-route.js";
@@ -29,7 +32,8 @@ import productRoutes from "./routes/product-route.js";
 import orderRoutes from "./routes/orders-route.js";
 import salesRoutes from "./routes/sales-route.js";
 import orderItemRoutes from "./routes/order-items-route.js";
-import webhookRoutes from "./routes/payment-route.js";
+import paymentRoutes from "./routes/payment-route.js";
+import mpesaWebhookRoutes from "./routes/webhook-route.js";
 import chatbotRoutes from "./routes/chatbot-route.js";
 import contentGenerationRoutes from "./routes/content-generation-route.js";
 import analyticsRoutes from "./routes/analytics-route.js";
@@ -62,16 +66,29 @@ export const logger = winston.createLogger({
 
 // Error handler middleware: User-friendly messages
 const errorHandler = (
-  err: any,
+  err: unknown,
   req: Request,
   res: Response,
-  next: NextFunction,
+  _next: NextFunction,
 ) => {
-  const statusCode = err.statusCode || 500;
-  const isOperational = err.isOperational || false;
+  let statusCode = 500;
+  let isOperational = false;
+  let message = "Internal server error";
 
-  logger.error(`Error at ${req.path}: ${err.message}`, {
-    stack: err.stack,
+  if (err instanceof ZodError) {
+    statusCode = 400;
+    isOperational = true;
+    message = getFirstZodMessage(err);
+  } else if (err instanceof AppError) {
+    statusCode = err.statusCode;
+    isOperational = err.isOperational;
+    message = err.message;
+  } else if (err instanceof Error) {
+    message = err.message;
+  }
+
+  logger.error(`Error at ${req.path}: ${message}`, {
+    stack: err instanceof Error ? err.stack : undefined,
     statusCode,
     isOperational,
   });
@@ -81,8 +98,9 @@ const errorHandler = (
     message:
       process.env.NODE_ENV === "production" && !isOperational
         ? "An unexpected error occurred. Please try again later."
-        : err.message || "Internal server error",
-    ...(process.env.NODE_ENV !== "production" && { stack: err.stack }),
+        : message,
+    ...(process.env.NODE_ENV !== "production" &&
+      err instanceof Error && { stack: err.stack }),
   };
 
   res.status(statusCode).json(response);
@@ -90,6 +108,7 @@ const errorHandler = (
 
 // Express app setup
 const app = express();
+app.set("trust proxy", 1);
 const STATIC_CORS_ORIGINS = [
   "http://localhost:19006",
   "http://127.0.0.1:19006",
@@ -127,25 +146,55 @@ app.use(
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.raw({ type: "application/json", limit: "10mb" })); // For MPESA webhook
 
+const rateLimitJsonHandler: Parameters<typeof rateLimit>[0]["handler"] = (
+  _req,
+  res,
+  _next,
+  options,
+) => {
+  res.status(options.statusCode).json({
+    status: "error",
+    message:
+      typeof options.message === "string"
+        ? options.message
+        : "Too many requests, please try again later.",
+  });
+};
+
 // Rate limiting
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again after 15 minutes',
+  message: "Too many requests from this IP, please try again after 15 minutes",
   standardHeaders: true,
   legacyHeaders: false,
+  handler: rateLimitJsonHandler,
 });
 
-const authLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // Limit each IP to 5 login/register attempts per hour
-  message: 'Too many authentication attempts, please try again after an hour',
+const loginLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 15,
+  message: "Too many login attempts, please try again after an hour",
   standardHeaders: true,
   legacyHeaders: false,
+  skipSuccessfulRequests: true,
+  handler: rateLimitJsonHandler,
+});
+
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 30,
+  message: "Too many registration attempts, please try again after an hour",
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true,
+  handler: rateLimitJsonHandler,
 });
 
 app.use(generalLimiter);
-app.use('/api/auth/', authLimiter);
+app.use("/api/auth/login", loginLimiter);
+app.use("/api/auth/google", loginLimiter);
+app.use("/api/auth/register", registerLimiter);
 
 // Request logging middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -164,21 +213,31 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// BullMQ dashboard (optional, for monitoring jobs)
+// BullMQ dashboard (optional, for monitoring jobs; skipped in tests)
 const serverAdapter = new ExpressAdapter();
-createBullBoard({
-  queues: [new BullMQAdapter(orderQueue)],
-  serverAdapter: serverAdapter,
-});
+if (process.env.NODE_ENV !== "test") {
+  createBullBoard({
+    queues: [new BullMQAdapter(orderQueue)],
+    serverAdapter: serverAdapter,
+  });
+}
 
 // API routes
 app.use("/api", authRoutes);
 
-app.use("/api", webhookRoutes);
+app.use("/api", paymentRoutes);
+app.use("/api", mpesaWebhookRoutes);
+
+// Public health check for uptime cron (no auth)
+app.get("/api/public/health", (_req: Request, res: Response) => {
+  res.json({ status: "OK", timestamp: new Date(), pid: process.pid });
+});
 
 // Protected routes
 app.use("/api", authenticate);
-app.use("/admin/queues", serverAdapter.getRouter());
+if (process.env.NODE_ENV !== "test") {
+  app.use("/admin/queues", serverAdapter.getRouter());
+}
 
 app.use("/api", customerRoutes);
 app.use("/api", businessRoutes);
@@ -240,21 +299,18 @@ if (USE_CLUSTER && cluster.isPrimary && process.env.NODE_ENV !== "test") {
     cluster.fork();
   });
 } else if (!USE_CLUSTER || !cluster.isPrimary || process.env.NODE_ENV === "test") {
-  // Worker process or test environment: Start Express server and background tasks
-  const PORT = parseInt(process.env.PORT || "3000", 10);
-  const server = app.listen(PORT, "0.0.0.0", () => {
-    logger.info(`Process ${process.pid} started web server on port ${PORT}`);
-  });
-
-  // Handle server errors
-  server.on("error", (error: any) => {
-    logger.error(`Process ${process.pid} server error: ${error.message}`, {
-      stack: error.stack,
-    });
-  });
-
   if (process.env.NODE_ENV !== "test") {
-    // Start Redis subscribers (non-blocking)
+    const PORT = parseInt(process.env.PORT || "3000", 10);
+    const server = app.listen(PORT, "0.0.0.0", () => {
+      logger.info(`Process ${process.pid} started web server on port ${PORT}`);
+    });
+
+    server.on("error", (error: any) => {
+      logger.error(`Process ${process.pid} server error: ${error.message}`, {
+        stack: error.stack,
+      });
+    });
+
     startPaymentSubscriber();
   }
 }
