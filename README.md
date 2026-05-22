@@ -1,4 +1,4 @@
-# FinAI - All-in-One Business Management & AI Assistant
+# FinAI - All-in-One Mobile Business Management & AI Assistant
 
 FinAI is a comprehensive, multi-tenant platform designed to empower micro-entrepreneurs with AI-driven financial insights, automated order management, and seamless payment integrations.
 
