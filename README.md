@@ -106,17 +106,46 @@ npm run dev
 
 ## Production (Render)
 
+Set your live backend URL only in the **Render dashboard** and **EAS secrets** — do not commit production URLs or credentials to this repository.
+
+### Render build and start commands
+
+**Root directory:** `backend`
+
+**Build command** (use `&&`, not spaces — avoid `bun install bunx prisma generate`, which installs Prisma 7):
+
+```bash
+bun install && bunx prisma@6.16.3 generate
+```
+
+**Start command:**
+
+```bash
+bunx prisma@6.16.3 migrate deploy && bun start
+```
+
+Alternative using locked `node_modules` Prisma (see [`backend/package.json`](backend/package.json) scripts):
+
+```bash
+# Build: bun install
+# Start: bun run db:migrate:deploy && bun start
+```
+
+Optional: apply [`render.yaml`](render.yaml) as a Render Blueprint for the same commands.
+
 ### Render environment variables
 
 | Variable | Purpose |
 | :--- | :--- |
-| `DATABASE_URL` | Supabase **transaction pooler** (port 6543) for runtime app queries |
-| `DIRECT_URL` | Direct Postgres (`db.<ref>.supabase.co:5432`) for `prisma migrate deploy` only |
+| `DATABASE_URL` | Postgres connection for the running app |
+| `DIRECT_URL` | Same **external** Postgres URL for `prisma migrate deploy` (required by schema) |
 | `JWT_SECRET` | Auth token signing |
 | `REDIS_URL` | BullMQ / Redis subscriber |
 | `PORT` | Set by Render (usually `10000`) |
 
-Start command (recommended): `bunx prisma migrate deploy && bun start`
+**Render Postgres:** use the **External** connection string (hostname like `dpg-....frankfurt-postgres.render.com`) for both `DATABASE_URL` and `DIRECT_URL`. Do not use the internal `dpg-...-a` host outside Render’s private network.
+
+**Supabase:** use the pooler URL for `DATABASE_URL` and `db.<ref>.supabase.co:5432` for `DIRECT_URL`.
 
 ### Expo mobile (production builds)
 

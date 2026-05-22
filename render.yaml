@@ -1,0 +1,21 @@
+# Render Blueprint — set Root Directory to backend/ if not using rootDir below.
+# Pin Prisma 6 CLI; do NOT use "bun install bunx prisma generate" (installs Prisma 7).
+
+services:
+  - type: web
+    name: bizsawa-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: bun install && bunx prisma@6.16.3 generate
+    startCommand: bunx prisma@6.16.3 migrate deploy && bun start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: REDIS_URL
+        sync: false
