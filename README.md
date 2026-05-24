@@ -149,28 +149,42 @@ Optional: apply [`render.yaml`](render.yaml) as a Render Blueprint for the same 
 
 ### Expo mobile (production builds)
 
-Set in EAS secrets or a local `.env` file (gitignored), not in tracked files:
+**Pre-APK checklist:** [`docs/PRE_APK_CHECKLIST.md`](docs/PRE_APK_CHECKLIST.md)
+
+EAS profiles are in [`mobile/eas.json`](mobile/eas.json). Set secrets in the [Expo dashboard](https://expo.dev) (preview + production), or use a gitignored `mobile/.env` before building:
 
 ```bash
 EXPO_PUBLIC_API_URL=https://your-render-service.onrender.com
+EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=...
+EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID=...
+EXPO_PUBLIC_GEMINI_KEY=...
 ```
 
-See [`mobile/.env.example`](mobile/.env.example). Rebuild the app after changing this value.
+See [`mobile/.env.example`](mobile/.env.example). Rebuild after any `EXPO_PUBLIC_*` change.
+
+**Build test APK:**
+
+```bash
+cd mobile
+npm install
+eas login
+eas build --platform android --profile preview
+```
 
 ### Post-deploy smoke checks
 
-Replace `YOUR_API_HOST` with the host from your Render service URL:
-
-```bash
-export API_HOST=https://your-render-service.onrender.com
-
-# Public uptime ping (no auth) — use for Render/cron keep-alive
-curl -s "$API_HOST/api/public/health"
-curl -s "$API_HOST/health"
-curl -s -X POST "$API_HOST/api/auth/login" \
-  -H "Content-Type: application/json" -d '{}'
-# Expect HTTP 400 with a validation message, not 500
+```powershell
+$env:API_HOST = "https://your-render-service.onrender.com"
+$env:SMOKE_EMAIL = "demo1@bizsawa.com"
+$env:SMOKE_PASSWORD = "password123"
+.\scripts\smoke-production.ps1
 ```
+
+Or bash: `API_HOST=... SMOKE_EMAIL=... SMOKE_PASSWORD=... ./scripts/smoke-production.sh`
+
+### Render cron (cold start)
+
+Set `KEEPALIVE_URL` to `https://your-render-service.onrender.com/api/public/health` on the cron service in [`render.yaml`](render.yaml), or create a Cron Job in the Render dashboard with the same URL every 5–10 minutes.
 
 ### Bun postinstall (build logs)
 
