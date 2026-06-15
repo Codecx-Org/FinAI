@@ -2,16 +2,63 @@ import prisma from '../utils/prisma.js';
 import { NotFoundError, InternalServerError, BadRequestError } from '../utils/types/errors.js';
 import { pollinationsService } from './pollinations-service.js';
 
+const productSelect = {
+  id: true,
+  name: true,
+  category: true,
+  stockQuantity: true,
+  price: true,
+  buyingPrice: true,
+  businessId: true,
+  imageUrl: true,
+  supplier: true,
+  minStockLevel: true,
+  maxStockLevel: true,
+  lastRestockedAt: true,
+  createdAt: true,
+} as const;
+
+export type CreateProductPayload = {
+  name: string;
+  stockQuantity: number;
+  price: number;
+  buyingPrice: number;
+  businessId: number;
+  imageUrl?: string;
+  category?: string | null;
+  supplier?: string | null;
+  minStockLevel?: number | null;
+  maxStockLevel?: number | null;
+  lastRestockedAt?: string | Date | null;
+};
+
 export class ProductService {
-  async createProduct(data: { name: string; stockQuantity: number; price: number; buyingPrice: number; businessId: number; imageUrl?: string }) {
+  async createProduct(data: CreateProductPayload) {
     if (data.price < 0 || data.buyingPrice < 0) {
       throw new BadRequestError('Price and buying price must be non-negative');
     }
-    
+
+    const lastRestocked =
+      data.lastRestockedAt === undefined || data.lastRestockedAt === null
+        ? undefined
+        : new Date(data.lastRestockedAt);
+
     try {
       return await prisma.product.create({
-        data,
-        select: { id: true, name: true, stockQuantity: true, price: true, buyingPrice: true, businessId: true, imageUrl: true },
+        data: {
+          name: data.name,
+          stockQuantity: data.stockQuantity,
+          price: data.price,
+          buyingPrice: data.buyingPrice,
+          businessId: data.businessId,
+          imageUrl: data.imageUrl,
+          category: data.category ?? undefined,
+          supplier: data.supplier ?? undefined,
+          minStockLevel: data.minStockLevel ?? undefined,
+          maxStockLevel: data.maxStockLevel ?? undefined,
+          lastRestockedAt: lastRestocked,
+        },
+        select: productSelect,
       });
     } catch (error: any) {
       throw new InternalServerError('Could not create product');
@@ -20,7 +67,7 @@ export class ProductService {
 
   /**
    * Automatically generates and updates a product image using AI.
-   * 
+   *
    * @param id - The ID of the product.
    * @param businessId - The ID of the business.
    * @param options - Generation options.
@@ -31,17 +78,17 @@ export class ProductService {
     if (!product) throw new NotFoundError('Product not found');
 
     const imageUrl = pollinationsService.generateImageUrl(product.name, options);
-    
+
     return await prisma.product.update({
       where: { id, businessId },
       data: { imageUrl },
-      select: { id: true, name: true, stockQuantity: true, price: true, buyingPrice: true, businessId: true, imageUrl: true }
+      select: productSelect,
     });
   }
 
-  async getProduct(id: number,businessId: number) {
+  async getProduct(id: number, businessId: number) {
     const product = await prisma.product.findUnique({
-      where: { id ,businessId},
+      where: { id, businessId },
       include: { orderItems: true, sales: true },
     });
 
@@ -51,7 +98,7 @@ export class ProductService {
     return product;
   }
 
-  async getProductFilter(filters: any,businessId: number) {
+  async getProductFilter(filters: any, businessId: number) {
     return await prisma.product.findMany({
       where: { ...filters, businessId },
     });
@@ -60,21 +107,42 @@ export class ProductService {
   async getAllProducts(businessId?: number) {
     return await prisma.product.findMany({
       where: businessId ? { businessId } : {},
-      select: { id: true, name: true, stockQuantity: true, price: true, buyingPrice: true, businessId: true, imageUrl: true },
+      select: productSelect,
     });
   }
 
-  async updateProduct(id: number, businessId: number, data: { name?: string; stockQuantity?: number; price?: number; buyingPrice?: number; imageUrl?: string }) {
-    // Verify ownership first
+  async updateProduct(
+    id: number,
+    businessId: number,
+    data: {
+      name?: string;
+      category?: string | null;
+      stockQuantity?: number;
+      price?: number;
+      buyingPrice?: number;
+      imageUrl?: string | null;
+      supplier?: string | null;
+      minStockLevel?: number | null;
+      maxStockLevel?: number | null;
+      lastRestockedAt?: string | Date | null;
+    },
+  ) {
     const product = await prisma.product.findUnique({ where: { id }, select: { businessId: true } });
     if (!product || product.businessId !== businessId) {
       throw new NotFoundError('Product not found or not accessible');
     }
+
+    const updateData: Record<string, unknown> = { ...data };
+    if (data.lastRestockedAt !== undefined) {
+      updateData.lastRestockedAt =
+        data.lastRestockedAt === null ? null : new Date(data.lastRestockedAt);
+    }
+
     try {
       return await prisma.product.update({
         where: { id },
-        data,
-        select: { id: true, name: true, stockQuantity: true, price: true, buyingPrice: true, businessId: true, imageUrl: true },
+        data: updateData,
+        select: productSelect,
       });
     } catch (error: any) {
       if (error.code === 'P2025') {
@@ -89,7 +157,7 @@ export class ProductService {
     if (!product || product.businessId !== businessId) {
       throw new NotFoundError('Product not found or not accessible');
     }
-     try {
+    try {
       return await prisma.product.delete({
         where: { id },
       });

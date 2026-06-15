@@ -1,8 +1,10 @@
 node_modules
-# Keep environment variables out of version control
+keystore/*
 .env
 
 /generated/prisma
 backend/generated/prisma
 
 /backend/tokens
+
+/NOTES/*
