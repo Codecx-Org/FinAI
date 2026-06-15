@@ -13,7 +13,7 @@ export const authenticate = (req: AuthenticatedRequest, res: Response, next: Nex
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    throw new UnauthorizedError('No token provided');
+    return next(new UnauthorizedError('No token provided'));
   }
 
   const token = authHeader.split(' ')[1];
@@ -23,6 +23,6 @@ export const authenticate = (req: AuthenticatedRequest, res: Response, next: Nex
     req.user = decoded;
     next();
   } catch (error) {
-    throw new UnauthorizedError('Invalid or expired token');
+    next(new UnauthorizedError('Invalid or expired token'));
   }
 };

@@ -10,8 +10,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum OrderStatus {
@@ -29,9 +30,10 @@ model Business {
   mpesaShortcode String?    @unique
   ownerName      String
   ownerEmail     String     @unique
+  googleId       String?    @unique
   whatsappNumber String?    @unique 
   ownerPhone     String?
-  password       String     @default("owner@business")
+  password       String?
   businessType   String?
   yearsInBusiness String?
   metadata       Json?
@@ -43,6 +45,7 @@ model Business {
   products       Product[]
   expenses       Expenses[]
   sales          Sales[]
+  achievements   BusinessAchievement[]
 }
 
 model Customer {
@@ -97,7 +100,11 @@ model Product {
   stockQuantity Int
   price         Float
   buyingPrice   Float
-  
+  supplier      String?
+  minStockLevel Int?
+  maxStockLevel Int?
+  lastRestockedAt DateTime?
+
   businessId    Int
   business      Business    @relation(fields: [businessId], references: [id])
   
@@ -130,4 +137,17 @@ model OrderItem {
   quantity  Int
   order     Order   @relation(fields: [orderId], references: [id])
   product   Product @relation(fields: [productId], references: [id])
+}
+
+model BusinessAchievement {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  earned      Boolean   @default(false)
+  earnedAt    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  businessId  Int
+  business    Business  @relation(fields: [businessId], references: [id])
 }

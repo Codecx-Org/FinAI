@@ -2,6 +2,15 @@ import prisma from '../utils/prisma.js';
 import { BadRequestError, NotFoundError } from '../utils/types/errors.js';
 import bcrypt from 'bcryptjs';
 
+/** Remove secrets before sending Business over HTTP. */
+export function toPublicBusiness<T extends { password?: string } | null | undefined>(
+  business: T,
+): Omit<NonNullable<T>, 'password'> | null | undefined {
+  if (business == null) return business as null | undefined;
+  const { password: _p, ...rest } = business as { password?: string } & Record<string, unknown>;
+  return rest as Omit<NonNullable<T>, 'password'>;
+}
+
 export class BusinessService {
   async createBusiness(data: {
     name: string;
@@ -86,9 +95,10 @@ export class BusinessService {
       throw new NotFoundError('Business not found');
     }
 
+    const { password: _ignore, ...safeData } = data || {};
     return prisma.business.update({
       where: { id },
-      data,
+      data: safeData,
     });
   }
 

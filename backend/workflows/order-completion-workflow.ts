@@ -1,40 +1,55 @@
-import { FlowProducer, Queue, Worker } from 'bullmq';
-import type { Job } from 'bullmq';
-import { Redis } from 'ioredis';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { createObjectCsvWriter } from 'csv-writer';
-import { redisService } from '../services/redis-service.js';
-import prisma from '../utils/prisma.js';
+import { FlowProducer, Queue, Worker } from "bullmq";
+import type { Job } from "bullmq";
+import { Redis } from "ioredis";
+import * as fs from "fs-extra";
+import * as path from "path";
+import { createObjectCsvWriter } from "csv-writer";
+import { redisService } from "../services/redis-service.js";
+import prisma from "../utils/prisma.js";
+
+const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
+const isTls = redisUrl.startsWith("rediss://");
 
 // Redis connection (shared with redisService)
-const connection = (process.env.NODE_ENV === 'test') ? {} as any : new Redis('redis://localhost:6379', {
-  maxRetriesPerRequest: 3,
-  retryStrategy: (times: number) => Math.min(times * 1000, 30000),
-});
-const workerConnection = (process.env.NODE_ENV === 'test') ? {} as any : new Redis("redis://localhost:6379", {
-  maxRetriesPerRequest: null
-})
+const connection =
+  process.env.NODE_ENV === "test"
+    ? ({} as any)
+    : new Redis(redisUrl, {
+        maxRetriesPerRequest: 3,
+        retryStrategy: (times: number) => Math.min(times * 1000, 30000),
+        ...(isTls ? { tls: { rejectUnauthorized: false } } : {}),
+      });
+const workerConnection =
+  process.env.NODE_ENV === "test"
+    ? ({} as any)
+    : new Redis(redisUrl, {
+        maxRetriesPerRequest: null,
+        ...(isTls ? { tls: { rejectUnauthorized: false } } : {}),
+      });
 
 // Queue for the workflow
-export const orderQueue = (process.env.NODE_ENV === 'test') ? { close: () => {} } as any : new Queue('order-completion-queue', { connection });
-
+export const orderQueue =
+  process.env.NODE_ENV === "test"
+    ? ({ close: () => {} } as any)
+    : new Queue("order-completion-queue", {
+        connection,
+      });
 
 // Directories for CSV files
-const SALES_DIR = path.join(process.cwd(), 'logs/Model/Sales');
-const INVENTORY_TRENDS_DIR = path.join(process.cwd(), 'logs/Models/Inventory');
-if (process.env.NODE_ENV !== 'test') {
+const SALES_DIR = path.join(process.cwd(), "logs/Model/Sales");
+const INVENTORY_TRENDS_DIR = path.join(process.cwd(), "logs/Models/Inventory");
+if (process.env.NODE_ENV !== "test") {
   fs.ensureDirSync(SALES_DIR);
   fs.ensureDirSync(INVENTORY_TRENDS_DIR);
 }
 
 // Job processors (workers)
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== "test") {
   // Step 1: Store sales
   new Worker(
-    'order-completion-queue',
+    "order-completion-queue",
     async (job: Job) => {
-      if (job.name === 'store-sale') {
+      if (job.name === "store-sale") {
         const { orderId } = job.data;
         console.log(`Processing store-sale for order ${orderId}`);
 
@@ -44,7 +59,7 @@ if (process.env.NODE_ENV !== 'test') {
         });
 
         if (!order || !order.orderItems.length) {
-          throw new Error('Order or items not found');
+          throw new Error("Order or items not found");
         }
 
         const sales = [];
@@ -65,15 +80,15 @@ if (process.env.NODE_ENV !== 'test') {
       }
     },
     {
-      connection: workerConnection
-    }
+      connection: workerConnection,
+    },
   );
 
   // Step 2: Append sales to CSV
   new Worker(
-    'order-completion-queue',
+    "order-completion-queue",
     async (job: Job) => {
-      if (job.name === 'append-sales-csv') {
+      if (job.name === "append-sales-csv") {
         const { orderId } = job.data;
         console.log(`Processing append-sales-csv for order ${orderId}`);
 
@@ -83,19 +98,22 @@ if (process.env.NODE_ENV !== 'test') {
         });
 
         if (!order || !order.orderItems.length) {
-          throw new Error('Order or items not found');
+          throw new Error("Order or items not found");
         }
 
         for (const item of order.orderItems) {
           const product = item.product;
-          const csvPath = path.join(SALES_DIR, `${product.id}_${product.name.replace(/\s/g, '_')}.csv`);
+          const csvPath = path.join(
+            SALES_DIR,
+            `${product.id}_${product.name.replace(/\s/g, "_")}.csv`,
+          );
 
           const csvWriter = createObjectCsvWriter({
             path: csvPath,
             header: [
-              { id: 'date', title: 'Date' },
-              { id: 'quantity', title: 'Quantity' },
-              { id: 'total_amount', title: 'Total Amount' },
+              { id: "date", title: "Date" },
+              { id: "quantity", title: "Quantity" },
+              { id: "total_amount", title: "Total Amount" },
             ],
             append: fs.existsSync(csvPath),
           });
@@ -109,19 +127,19 @@ if (process.env.NODE_ENV !== 'test') {
           await csvWriter.writeRecords([record]);
         }
 
-        return { message: 'Sales data appended to CSVs' };
+        return { message: "Sales data appended to CSVs" };
       }
     },
     {
-      connection: workerConnection
-    }
+      connection: workerConnection,
+    },
   );
 
   // Step 3: Update inventory
   new Worker(
-    'order-completion-queue',
+    "order-completion-queue",
     async (job: Job) => {
-      if (job.name === 'update-inventory') {
+      if (job.name === "update-inventory") {
         const { orderId } = job.data;
         console.log(`Processing update-inventory for order ${orderId}`);
 
@@ -131,12 +149,14 @@ if (process.env.NODE_ENV !== 'test') {
         });
 
         if (!order || !order.orderItems.length) {
-          throw new Error('Order or items not found');
+          throw new Error("Order or items not found");
         }
 
         const updates = [];
         for (const item of order.orderItems) {
-          const product = await prisma.product.findUnique({ where: { id: item.productId } });
+          const product = await prisma.product.findUnique({
+            where: { id: item.productId },
+          });
           if (!product) continue;
 
           const preQty = product.stockQuantity;
@@ -151,36 +171,44 @@ if (process.env.NODE_ENV !== 'test') {
             data: { stockQuantity: newQty },
           });
 
-          updates.push({ productId: product.id, name: product.name, preQty, newQty });
+          updates.push({
+            productId: product.id,
+            name: product.name,
+            preQty,
+            newQty,
+          });
         }
 
         return updates; // Pass to child job
       }
     },
     {
-      connection: workerConnection
-    }
+      connection: workerConnection,
+    },
   );
 
   // Step 4: Append inventory trends to CSV
   new Worker(
-    'order-completion-queue',
+    "order-completion-queue",
     async (job: Job) => {
-      if (job.name === 'append-inventory-trends-csv') {
+      if (job.name === "append-inventory-trends-csv") {
         const { updates } = job.data; // From parent job (update-inventory)
         console.log(`Processing append-inventory-trends-csv`);
 
         for (const update of updates) {
-          const csvPath = path.join(INVENTORY_TRENDS_DIR, `${update.productId}_${update.name.replace(/\s/g, '_')}.csv`);
+          const csvPath = path.join(
+            INVENTORY_TRENDS_DIR,
+            `${update.productId}_${update.name.replace(/\s/g, "_")}.csv`,
+          );
 
           const csvWriter = createObjectCsvWriter({
             path: csvPath,
             header: [
-              { id: 'date', title: 'Date' },
-              { id: 'product_id', title: 'Product ID' },
-              { id: 'product_name', title: 'Product Name' },
-              { id: 'pre_qty', title: 'Pre Quantity' },
-              { id: 'new_qty', title: 'New Quantity' },
+              { id: "date", title: "Date" },
+              { id: "product_id", title: "Product ID" },
+              { id: "product_name", title: "Product Name" },
+              { id: "pre_qty", title: "Pre Quantity" },
+              { id: "new_qty", title: "New Quantity" },
             ],
             append: fs.existsSync(csvPath),
           });
@@ -196,14 +224,13 @@ if (process.env.NODE_ENV !== 'test') {
           await csvWriter.writeRecords([record]);
         }
 
-        return { message: 'Inventory trends appended to CSVs' };
+        return { message: "Inventory trends appended to CSVs" };
       }
     },
     {
-      connection: workerConnection
-    }
+      connection: workerConnection,
+    },
   );
-
 }
 // Workflow: Add jobs to queue using FlowProducer
 export async function runOrderCompletionWorkflow(orderId: number) {
@@ -212,23 +239,23 @@ export async function runOrderCompletionWorkflow(orderId: number) {
   try {
     // Define flow: Sequential execution (each job waits for parent completion)
     await flowProducer.add({
-      name: 'store-sale',
-      queueName: 'order-completion-queue',
+      name: "store-sale",
+      queueName: "order-completion-queue",
       data: { orderId },
       children: [
         {
-          name: 'append-sales-csv',
-          queueName: 'order-completion-queue',
+          name: "append-sales-csv",
+          queueName: "order-completion-queue",
           data: { orderId },
           children: [
             {
-              name: 'update-inventory',
-              queueName: 'order-completion-queue',
+              name: "update-inventory",
+              queueName: "order-completion-queue",
               data: { orderId },
               children: [
                 {
-                  name: 'append-inventory-trends-csv',
-                  queueName: 'order-completion-queue',
+                  name: "append-inventory-trends-csv",
+                  queueName: "order-completion-queue",
                   data: { orderId }, // Updates passed dynamically below
                 },
               ],
@@ -241,9 +268,10 @@ export async function runOrderCompletionWorkflow(orderId: number) {
     console.log(`Workflow enqueued for order ${orderId}`);
   } catch (error: any) {
     console.error(`Failed to enqueue workflow for order ${orderId}:`, error);
-    await redisService.publish('workflow:failed', JSON.stringify({ orderId, error: error.message }));
+    await redisService.publish(
+      "workflow:failed",
+      JSON.stringify({ orderId, error: error.message }),
+    );
     throw error;
   }
 }
-
-
