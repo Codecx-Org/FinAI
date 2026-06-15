@@ -1,58 +1,36 @@
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-  # NumeraAI MVP Development
+## Getting Started
 
-  This is a code bundle for NumeraAI MVP Development. The original project is available at https://www.figma.com/design/rz3P8HX3Bp7WYvq75QZoGc/NumeraAI-MVP-Development.
+First, run the development server:
 
- NumerAI — MVP Development
-
-NumerAI is an AI-powered application built to provide intelligent insights and automation for businesses. This MVP demonstrates the project’s front-end and backend setup, powered by Vite, React, Express, and Node.js.
-
-🚀 Features
-
-Fast, modular, and scalable architecture
-
-Vite-powered React front-end for instant reloads
-
-Node.js + Express backend for API services
-
-Ready for integration with AI or data-driven endpoints
-
-Developer-friendly structure and scripts
-
-🛠️ Tech Stack
-Layer	Technology
-Frontend	React + Vite + Tailwind CSS
-Backend	Node.js + Express
-Package Manager	npm
-Version Control	Git & GitHub
-Environment	Local development with .env support
-📦 Installation & Setup (Run Locally)
-
-Follow these steps to set up and run the project on your local machine 👇
-
-1. Clone the repository
-git clone https://github.com/Codecx-Org/NumerAI.git
-
-2. Navigate to the project folder
-cd NumerAI
-
-3. Install dependencies
-npm install
-
-
-If you see warnings or vulnerabilities, you can safely run:
-
-npm audit fix
-
-4. Run the development server
+```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-This will start your Vite dev server.
-Once it runs successfully, you’ll see an output similar to:
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-VITE v5.0  ready in 500ms
-Local: http://localhost:5173/
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Learn More
 
-Open that URL in your browser.
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
