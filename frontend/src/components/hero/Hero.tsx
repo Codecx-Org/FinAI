@@ -66,19 +66,7 @@ export const Hero = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="max-w-2xl"
         >
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="inline-flex items-center px-3 py-1 rounded-full bg-primary-green-dim border border-primary-green/20 text-primary-green text-sm font-medium mb-6"
-          >
-            <span className="relative flex h-2 w-2 mr-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-green opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-green"></span>
-            </span>
-            AI-Powered Business Intelligence
-          </motion.div>
-          
+              
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-[0.95]">
             Your business,<br />
             <span className="text-primary-green">finally understood.</span>
@@ -135,6 +123,7 @@ export const Hero = () => {
                     alt={`Screen ${idx}`}
                     fill
                     className="object-contain"
+                    sizes="md"
                   />
                 </motion.div>
               ))}
