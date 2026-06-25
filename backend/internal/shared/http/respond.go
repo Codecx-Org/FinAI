@@ -31,3 +31,8 @@ func Error(w http.ResponseWriter, err error) {
 		},
 	})
 }
+
+func Decode(r *http.Request, dst any) error {
+	defer r.Body.Close()
+	return json.NewDecoder(r.Body).Decode(dst)
+}

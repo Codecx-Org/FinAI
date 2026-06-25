@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-//Keeps track of who, what, where a specific action occured
+// Keeps track of who, what, where a specific action occured
 type Entry struct {
 	ID         uuid.UUID       `gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
 	TenantID   uuid.UUID       `gorm:"type:uuid;not null;index"`

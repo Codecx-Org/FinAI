@@ -4,17 +4,31 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Codecx-Org/FinAI/backend/internal/auth"
+	"github.com/Codecx-Org/FinAI/backend/internal/business"
+	"github.com/Codecx-Org/FinAI/backend/internal/customers"
+	"github.com/Codecx-Org/FinAI/backend/internal/products"
+	"github.com/Codecx-Org/FinAI/backend/internal/shared/authz"
 	"github.com/Codecx-Org/FinAI/backend/internal/shared/config"
 	sharedhttp "github.com/Codecx-Org/FinAI/backend/internal/shared/http"
 	"github.com/Codecx-Org/FinAI/backend/internal/shared/middleware"
+	"github.com/Codecx-Org/FinAI/backend/internal/tenancy"
+	"github.com/Codecx-Org/FinAI/backend/internal/users"
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 )
 
 type Dependencies struct {
-	Config config.Config
-	Ready  func(*http.Request) error
+	Config    config.Config
+	Ready     func(*http.Request) error
+	Auth      *auth.Module
+	Tenancy   *tenancy.Module
+	Business  *business.Module
+	Users     *users.Module
+	Products  *products.Module
+	Customers *customers.Module
+	Authz     *authz.Enforcer
 }
 
 func NewRouter(deps Dependencies) http.Handler {
@@ -51,10 +65,47 @@ func NewRouter(deps Dependencies) http.Handler {
 
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/status", func(w http.ResponseWriter, r *http.Request) {
-			sharedhttp.JSON(w, http.StatusOK, sharedhttp.Envelope{
-				"service": "bizsawa-api",
-				"phase":   "foundation",
-			})
+			sharedhttp.JSON(w, http.StatusOK, sharedhttp.Envelope{"service": "bizsawa-api", "phase": "catalogue-crm"})
+		})
+
+		if deps.Auth != nil {
+			r.Route("/auth", deps.Auth.RegisterRoutes)
+		}
+		if deps.Tenancy != nil {
+			r.Route("/public", deps.Tenancy.RegisterPublicRoutes)
+		}
+
+		r.Group(func(r chi.Router) {
+			if deps.Auth != nil {
+				r.Use(deps.Auth.Middleware)
+			}
+			if deps.Tenancy != nil {
+				r.Route("/subscriptions", deps.Tenancy.RegisterRoutes)
+			}
+			if deps.Users != nil {
+				r.Route("/profile", deps.Users.RegisterProfileRoutes)
+			}
+			if deps.Business != nil {
+				r.Route("/businesses", deps.Business.RegisterRoutes)
+			}
+		})
+
+		r.Group(func(r chi.Router) {
+			if deps.Auth != nil {
+				r.Use(deps.Auth.Middleware)
+			}
+			if deps.Authz != nil {
+				r.Use(deps.Authz.Middleware)
+			}
+			if deps.Users != nil {
+				r.Route("/businesses/{businessID}/members", deps.Users.RegisterRoutes)
+			}
+			if deps.Products != nil {
+				r.Route("/products", deps.Products.RegisterRoutes)
+			}
+			if deps.Customers != nil {
+				r.Route("/customers", deps.Customers.RegisterRoutes)
+			}
 		})
 	})
 

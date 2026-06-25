@@ -16,6 +16,7 @@ type Config struct {
 	CORS            CORSConfig
 	JWT             JWTConfig
 	WhatsApp        WhatsAppConfig
+	Crypto          CryptoConfig
 }
 
 type DatabaseConfig struct {
@@ -45,6 +46,11 @@ type WhatsAppConfig struct {
 	WAHASession string
 }
 
+type CryptoConfig struct {
+	MasterKey   string
+	IndexSecret string
+}
+
 func Load() Config {
 	return Config{
 		Env:             env("APP_ENV", "development"),
@@ -71,6 +77,10 @@ func Load() Config {
 			Driver:      env("WHATSAPP_DRIVER", "waha"),
 			WAHABase:    env("WAHA_BASE_URL", "http://localhost:3000"),
 			WAHASession: env("WAHA_SESSION_ID", "bizsawa-dev"),
+		},
+		Crypto: CryptoConfig{
+			MasterKey:   env("CRYPTO_MASTER_KEY", "0123456789abcdef0123456789abcdef"),
+			IndexSecret: env("CRYPTO_INDEX_SECRET", "fedcba9876543210fedcba9876543210"),
 		},
 	}
 }

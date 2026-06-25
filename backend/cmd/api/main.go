@@ -8,10 +8,19 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
+	"github.com/Codecx-Org/FinAI/backend/internal/auth"
+	"github.com/Codecx-Org/FinAI/backend/internal/business"
+	"github.com/Codecx-Org/FinAI/backend/internal/customers"
+	"github.com/Codecx-Org/FinAI/backend/internal/products"
+	"github.com/Codecx-Org/FinAI/backend/internal/shared/authz"
 	"github.com/Codecx-Org/FinAI/backend/internal/shared/cache"
 	"github.com/Codecx-Org/FinAI/backend/internal/shared/config"
+	sharedcrypto "github.com/Codecx-Org/FinAI/backend/internal/shared/crypto"
 	shareddb "github.com/Codecx-Org/FinAI/backend/internal/shared/db"
+	"github.com/Codecx-Org/FinAI/backend/internal/tenancy"
+	"github.com/Codecx-Org/FinAI/backend/internal/users"
 )
 
 func main() {
@@ -27,6 +36,20 @@ func main() {
 	redisClient := cache.NewRedis(cfg.Redis)
 	defer redisClient.Close()
 
+	cryptoManager, err := sharedcrypto.NewManager([]byte(cfg.Crypto.MasterKey), []byte(cfg.Crypto.IndexSecret))
+	if err != nil {
+		logger.Error("crypto manager initialization failed", "err", err)
+		os.Exit(1)
+	}
+
+	tenancyModule := tenancy.New(gormDB)
+	usersModule := users.New(gormDB)
+	authModule := auth.New(gormDB, auth.Config{SigningKey: cfg.JWT.SigningKey, Issuer: cfg.JWT.Issuer, AccessTTL: 15 * time.Minute, RefreshTTL: 30 * 24 * time.Hour}, auth.WithMembershipResolver(usersModule), auth.WithSubscriptionProvisioner(tenancyModule))
+	businessModule := business.New(gormDB, tenancyModule, usersModule, cryptoManager)
+	productsModule := products.New(gormDB)
+	customersModule := customers.New(gormDB)
+	authzEnforcer := authz.NewEnforcer(usersModule)
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
@@ -40,6 +63,13 @@ func main() {
 				}
 				return redisClient.Ping(r.Context())
 			},
+			Auth: authModule, 
+			Tenancy: tenancyModule, 
+			Business: businessModule, 
+			Users: usersModule, 
+			Products: productsModule, 
+			Customers: customersModule, 
+			Authz: authzEnforcer,
 		}),
 	}
 
