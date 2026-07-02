@@ -7,11 +7,18 @@ import (
 	"github.com/Codecx-Org/FinAI/backend/internal/auth"
 	"github.com/Codecx-Org/FinAI/backend/internal/business"
 	"github.com/Codecx-Org/FinAI/backend/internal/customers"
+	"github.com/Codecx-Org/FinAI/backend/internal/expenses"
+	"github.com/Codecx-Org/FinAI/backend/internal/inventory"
+	"github.com/Codecx-Org/FinAI/backend/internal/invoices"
+	"github.com/Codecx-Org/FinAI/backend/internal/orders"
+	"github.com/Codecx-Org/FinAI/backend/internal/payments"
 	"github.com/Codecx-Org/FinAI/backend/internal/products"
+	"github.com/Codecx-Org/FinAI/backend/internal/sales"
 	"github.com/Codecx-Org/FinAI/backend/internal/shared/authz"
 	"github.com/Codecx-Org/FinAI/backend/internal/shared/config"
 	sharedhttp "github.com/Codecx-Org/FinAI/backend/internal/shared/http"
 	"github.com/Codecx-Org/FinAI/backend/internal/shared/middleware"
+	"github.com/Codecx-Org/FinAI/backend/internal/taxes"
 	"github.com/Codecx-Org/FinAI/backend/internal/tenancy"
 	"github.com/Codecx-Org/FinAI/backend/internal/users"
 	"github.com/go-chi/chi/v5"
@@ -28,6 +35,13 @@ type Dependencies struct {
 	Users     *users.Module
 	Products  *products.Module
 	Customers *customers.Module
+	Taxes     *taxes.Module
+	Inventory *inventory.Module
+	Orders    *orders.Module
+	Sales     *sales.Module
+	Expenses  *expenses.Module
+	Invoices  *invoices.Module
+	Payments  *payments.Module
 	Authz     *authz.Enforcer
 }
 
@@ -65,7 +79,7 @@ func NewRouter(deps Dependencies) http.Handler {
 
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/status", func(w http.ResponseWriter, r *http.Request) {
-			sharedhttp.JSON(w, http.StatusOK, sharedhttp.Envelope{"service": "bizsawa-api", "phase": "catalogue-crm"})
+			sharedhttp.JSON(w, http.StatusOK, sharedhttp.Envelope{"service": "bizsawa-api", "phase": "invoices-payments"})
 		})
 
 		if deps.Auth != nil {
@@ -105,6 +119,27 @@ func NewRouter(deps Dependencies) http.Handler {
 			}
 			if deps.Customers != nil {
 				r.Route("/customers", deps.Customers.RegisterRoutes)
+			}
+			if deps.Taxes != nil {
+				r.Route("/taxes", deps.Taxes.RegisterRoutes)
+			}
+			if deps.Inventory != nil {
+				r.Route("/inventory", deps.Inventory.RegisterRoutes)
+			}
+			if deps.Orders != nil {
+				r.Route("/orders", deps.Orders.RegisterRoutes)
+			}
+			if deps.Sales != nil {
+				r.Route("/sales", deps.Sales.RegisterRoutes)
+			}
+			if deps.Expenses != nil {
+				r.Route("/expenses", deps.Expenses.RegisterRoutes)
+			}
+			if deps.Invoices != nil {
+				r.Route("/invoices", deps.Invoices.RegisterRoutes)
+			}
+			if deps.Payments != nil {
+				r.Route("/payments", deps.Payments.RegisterRoutes)
 			}
 		})
 	})

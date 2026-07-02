@@ -5,6 +5,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"log"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -51,10 +54,11 @@ type CryptoConfig struct {
 	IndexSecret string
 }
 
+
 func Load() Config {
 	return Config{
 		Env:             env("APP_ENV", "development"),
-		Addr:            env("APP_ADDR", ":8080"),
+		Addr:            env("APP_ADDR", ":5564"),
 		ShutdownTimeout: durationEnv("APP_SHUTDOWN_TIMEOUT", 30*time.Second),
 		Database: DatabaseConfig{
 			DSN:          env("DATABASE_DSN", ""),
@@ -86,6 +90,11 @@ func Load() Config {
 }
 
 func env(key, fallback string) string {
+	err := godotenv.Load(".env.development")
+
+	if err != nil {
+		log.Fatalf("Could not load up the environment variables")
+	}
 	if value := strings.TrimSpace(os.Getenv(key)); value != "" {
 		return value
 	}

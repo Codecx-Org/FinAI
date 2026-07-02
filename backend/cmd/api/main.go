@@ -13,12 +13,20 @@ import (
 	"github.com/Codecx-Org/FinAI/backend/internal/auth"
 	"github.com/Codecx-Org/FinAI/backend/internal/business"
 	"github.com/Codecx-Org/FinAI/backend/internal/customers"
+	"github.com/Codecx-Org/FinAI/backend/internal/expenses"
+	"github.com/Codecx-Org/FinAI/backend/internal/inventory"
+	"github.com/Codecx-Org/FinAI/backend/internal/invoices"
+	"github.com/Codecx-Org/FinAI/backend/internal/orders"
+	"github.com/Codecx-Org/FinAI/backend/internal/payments"
 	"github.com/Codecx-Org/FinAI/backend/internal/products"
+	"github.com/Codecx-Org/FinAI/backend/internal/sales"
 	"github.com/Codecx-Org/FinAI/backend/internal/shared/authz"
 	"github.com/Codecx-Org/FinAI/backend/internal/shared/cache"
 	"github.com/Codecx-Org/FinAI/backend/internal/shared/config"
 	sharedcrypto "github.com/Codecx-Org/FinAI/backend/internal/shared/crypto"
 	shareddb "github.com/Codecx-Org/FinAI/backend/internal/shared/db"
+	"github.com/Codecx-Org/FinAI/backend/internal/shared/outbox"
+	"github.com/Codecx-Org/FinAI/backend/internal/taxes"
 	"github.com/Codecx-Org/FinAI/backend/internal/tenancy"
 	"github.com/Codecx-Org/FinAI/backend/internal/users"
 )
@@ -48,6 +56,14 @@ func main() {
 	businessModule := business.New(gormDB, tenancyModule, usersModule, cryptoManager)
 	productsModule := products.New(gormDB)
 	customersModule := customers.New(gormDB)
+	outboxRepo := outbox.NewRepository(gormDB)
+	taxesModule := taxes.New(gormDB)
+	inventoryModule := inventory.New(gormDB)
+	salesModule := sales.New(gormDB, taxesModule.Service(), outboxRepo)
+	ordersModule := orders.New(gormDB, inventoryModule.Service(), salesModule.Service(), outboxRepo)
+	expensesModule := expenses.New(gormDB, taxesModule.Service())
+	invoicesModule := invoices.New(gormDB, outboxRepo)
+	paymentsModule := payments.New(gormDB, outboxRepo)
 	authzEnforcer := authz.NewEnforcer(usersModule)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -63,13 +79,20 @@ func main() {
 				}
 				return redisClient.Ping(r.Context())
 			},
-			Auth: authModule, 
-			Tenancy: tenancyModule, 
-			Business: businessModule, 
-			Users: usersModule, 
-			Products: productsModule, 
-			Customers: customersModule, 
-			Authz: authzEnforcer,
+			Auth:      authModule,
+			Tenancy:   tenancyModule,
+			Business:  businessModule,
+			Users:     usersModule,
+			Products:  productsModule,
+			Customers: customersModule,
+			Taxes:     taxesModule,
+			Inventory: inventoryModule,
+			Orders:    ordersModule,
+			Sales:     salesModule,
+			Expenses:  expensesModule,
+			Invoices:  invoicesModule,
+			Payments:  paymentsModule,
+			Authz:     authzEnforcer,
 		}),
 	}
 
