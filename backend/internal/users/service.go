@@ -42,7 +42,18 @@ func (s *Service) InviteMember(ctx context.Context, businessID, invitedBy uuid.U
 	if req.UserID == uuid.Nil || !validRole(req.Role) || req.Role == "OWNER" {
 		return nil, apperrors.ErrUnprocessable.WithMessage("invalid member invite")
 	}
-	member := &BusinessMember{BaseModel: shareddb.BaseModel{TenantID: businessID}, BusinessID: businessID, UserID: req.UserID, Role: req.Role, IsActive: true, InvitedBy: invitedBy, InvitedAt: time.Now().UTC()}
+	member := &BusinessMember{
+		BaseModel: shareddb.BaseModel{
+			TenantID: businessID,
+		}, 
+		BusinessID: businessID, 
+		UserID: req.UserID, 
+		Role: req.Role, 
+		IsActive: true, 
+		InvitedBy: invitedBy, 
+		InvitedAt: time.Now().UTC(),
+	}
+
 	if err := s.repo.CreateMember(ctx, member); err != nil {
 		return nil, err
 	}
@@ -52,6 +63,7 @@ func (s *Service) InviteMember(ctx context.Context, businessID, invitedBy uuid.U
 func (s *Service) ListMembers(ctx context.Context, businessID uuid.UUID) ([]BusinessMember, error) {
 	return s.repo.ListByBusiness(ctx, businessID)
 }
+
 func (s *Service) UpdateRole(ctx context.Context, businessID, memberID uuid.UUID, role string) error {
 	if !validRole(role) || role == "OWNER" {
 		return apperrors.ErrUnprocessable.WithMessage("invalid role")
@@ -70,7 +82,14 @@ func (s *Service) GetOrCreateProfile(ctx context.Context, userID uuid.UUID) (*Us
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
-	profile = &UserProfile{BaseModel: shareddb.BaseModel{TenantID: userID}, UserID: userID, Timezone: "Africa/Nairobi", Language: "en"}
+	profile = &UserProfile{
+		BaseModel: shareddb.BaseModel{
+			TenantID: userID,
+		}, 
+		UserID: userID, 
+		Timezone: "Africa/Nairobi", 
+		Language: "en",
+	}
 	if err := s.repo.CreateProfile(ctx, profile); err != nil {
 		return nil, err
 	}

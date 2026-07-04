@@ -26,7 +26,12 @@ type Service struct {
 }
 
 func NewService(repo *Repository, tokens *TokenService, memberships MembershipResolver, subscriptions SubscriptionProvisioner) *Service {
-	return &Service{repo: repo, tokens: tokens, memberships: memberships, subscriptions: subscriptions}
+	return &Service{
+		repo: repo, 
+		tokens: tokens, 
+		memberships: memberships, 
+		subscriptions: subscriptions,
+	}
 }
 
 type RegisterRequest struct {
@@ -121,6 +126,11 @@ func (s *Service) issue(ctx context.Context, userID, tenantID, businessID uuid.U
 	if err != nil {
 		return nil, err
 	}
+
+	if roles == nil {
+		roles = []string{}
+	}
+
 	token := &RefreshToken{UserID: userID, TenantID: tenantID, BusinessID: businessID, Roles: roles, TokenHash: refreshHash, ExpiresAt: expiresAt}
 	if err := s.repo.CreateRefreshToken(ctx, token); err != nil {
 		return nil, err

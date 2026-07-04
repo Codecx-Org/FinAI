@@ -8,6 +8,7 @@ Current milestone:
 - API health/readiness endpoints.
 - Outbox relay worker.
 - Placeholder payment worker process.
+- OpenAPI contract for the backend is available at [`backend/docs/openapi.yaml`](/home/madrigal/Projects/Mini-Projects/FinAI_Golang/backend/docs/openapi.yaml) for learning, mocking, and test fixture generation.
 
 Run locally after dependencies are available:
 

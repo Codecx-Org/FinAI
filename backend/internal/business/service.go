@@ -108,13 +108,27 @@ func (s *Service) UpdateBusiness(ctx context.Context, businessID, userID uuid.UU
 	if strings.TrimSpace(req.Name) != "" {
 		biz.Name = strings.TrimSpace(req.Name)
 	}
-	biz.TaxPIN = req.TaxPIN
-	if err := s.applyMpesaSettings(biz, req.MpesaPaymentType, req.MpesaShortcode); err != nil {
-		return nil, err
+
+	if strings.TrimSpace(req.TaxPIN) != "" {
+		biz.Name = strings.TrimSpace(req.TaxPIN)
 	}
-	biz.Phone = req.Phone
-	biz.Email = req.Email
-	biz.Address = req.Address
+
+	if strings.TrimSpace(req.MpesaShortcode) != "" {
+		if err := s.applyMpesaSettings(biz, req.MpesaPaymentType, req.MpesaShortcode); err != nil {
+			return nil, err
+		}
+	}
+
+	if strings.TrimSpace(req.Phone) != "" {
+		biz.Phone = strings.TrimSpace(req.Phone)
+	}
+	if strings.TrimSpace(req.Email) != "" {
+		biz.Email = strings.TrimSpace(req.Email)
+	}
+	if strings.TrimSpace(req.Address) != "" {
+		biz.Address = strings.TrimSpace(req.Address)
+	}
+
 	if err := s.repo.Update(ctx, biz); err != nil {
 		return nil, err
 	}
