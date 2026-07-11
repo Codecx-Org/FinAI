@@ -64,6 +64,30 @@ func (h Handler) Get(w http.ResponseWriter, r *http.Request) {
 	sharedhttp.JSON(w, http.StatusOK, product)
 }
 
+func (h Handler) GetVariant(w http.ResponseWriter, r *http.Request) {
+	businessId, ok := middleware.BusinessIDFromCtx(r.Context())
+
+	if !ok {
+		sharedhttp.Error(w, errBusinessRequired())
+		return
+	}
+
+	productID, err := uuid.Parse(chi.URLParam(r, "id"))
+
+	if err != nil{
+		sharedhttp.Error(w, err)
+		return
+	}
+	product, err := h.svc.FindProductVariant(r.Context(), businessId,productID)
+	
+	if err != nil {
+   sharedhttp.Error(w, err)
+	 return
+	}
+
+	sharedhttp.JSON(w, http.StatusOK, product)
+}
+
 func (h Handler) Update(w http.ResponseWriter, r *http.Request) {
 	businessID, ok := middleware.BusinessIDFromCtx(r.Context())
 	if !ok {

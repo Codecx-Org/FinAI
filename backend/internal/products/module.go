@@ -23,4 +23,5 @@ func (m *Module) RegisterRoutes(r chi.Router) {
 	r.Put("/{id}", h.Update)
 	r.Delete("/{id}", h.Delete)
 	r.Post("/{id}/generate-description", h.GenerateDescription)
+	r.Get("/variant/{id}", h.GetVariant)
 }

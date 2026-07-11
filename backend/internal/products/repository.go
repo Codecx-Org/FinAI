@@ -26,6 +26,14 @@ func (r *Repository) List(ctx context.Context, businessID uuid.UUID, page pagina
 	return products, err
 }
 
+func (r *Repository) FindProductVariant(ctx context.Context, businessID uuid.UUID, prodVarId uuid.UUID) (*ProductVariant, error) {
+	var productVariant *ProductVariant
+
+	err := r.db.WithContext(ctx).Scopes(shareddb.BusinessScope(businessID)).Where("product_id = ?", prodVarId).First(&productVariant).Error
+
+	return productVariant, err
+}
+
 func (r *Repository) Find(ctx context.Context, businessID, productID uuid.UUID) (*Product, error) {
 	var product Product
 	err := r.db.WithContext(ctx).Scopes(shareddb.BusinessScope(businessID)).Preload("Variants").Where("id = ?", productID).First(&product).Error

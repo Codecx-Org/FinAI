@@ -227,6 +227,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserProfile"
+    post: 
+      tags: [Users]
+      summary: Create user's profile under the businessId context
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProfileRequest"
+      responses:
+        "200":
+          description: Created profile record
+          content:
+            application/json:
+              schema:
+                $ref: "$/components/schemas/UserProfile"
   /api/v1/businesses:
     get:
       tags: [Business]
@@ -1468,6 +1484,21 @@ components:
         language:
           type: string
     UpdateProfileRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        avatarUrl:
+          type: string
+        timezone:
+          type: string
+        language:
+          type: string
+    CreateProfileRequest:
       type: object
       properties:
         firstName:

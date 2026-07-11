@@ -2,6 +2,7 @@ package products
 
 import (
 	"context"
+	"errors"
 	"strings"
 
 	shareddb "github.com/Codecx-Org/FinAI/backend/internal/shared/db"
@@ -9,6 +10,7 @@ import (
 	"github.com/Codecx-Org/FinAI/backend/internal/shared/pagination"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
+	"gorm.io/gorm"
 )
 
 type Service struct{ repo *Repository }
@@ -58,11 +60,46 @@ func (s *Service) Create(ctx context.Context, businessID uuid.UUID, req ProductR
 }
 
 func (s *Service) List(ctx context.Context, businessID uuid.UUID, page pagination.Page) ([]Product, error) {
-	return s.repo.List(ctx, businessID, page)
+	products, err := s.repo.List(ctx, businessID, page)
+	if len(products) <= 0 {
+		return nil, apperrors.ErrNotFound	
+	}
+
+	if err != nil {
+		return nil, err
+	}	
+
+	return products, nil
 }
 
 func (s *Service) Get(ctx context.Context, businessID, productID uuid.UUID) (*Product, error) {
-	return s.repo.Find(ctx, businessID, productID)
+	product, err := s.repo.Find(ctx, businessID, productID)
+
+	if err != nil {
+		
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, apperrors.ErrNotFound
+		}
+
+		return nil, err
+	}
+
+	return product, nil
+}
+
+func (s *Service) FindProductVariant(ctx context.Context, businessId, productId uuid.UUID) (*ProductVariant, error) {
+	productVariant, err := s.repo.FindProductVariant(ctx, businessId, productId)
+
+	if err != nil {
+
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, apperrors.ErrNotFound
+		}
+
+		return nil, err
+	}
+
+	return productVariant, nil
 }
 
 func (s *Service) Update(ctx context.Context, businessID, productID uuid.UUID, req ProductRequest) (*Product, error) {
@@ -120,7 +157,23 @@ func productFromRequest(businessID, productID uuid.UUID, req ProductRequest) (*P
 	if req.IsActive != nil {
 		active = *req.IsActive
 	}
-	product := &Product{BaseModel: shareddb.BaseModel{ID: productID, TenantID: businessID}, BusinessID: businessID, Name: strings.TrimSpace(req.Name), Description: strings.TrimSpace(req.Description), SKU: normalizeSKU(req.SKU), Category: strings.TrimSpace(req.Category), Barcode: strings.TrimSpace(req.Barcode), ImageURL: strings.TrimSpace(req.ImageURL), TaxRuleID: req.TaxRuleID, Price: req.Price, Cost: req.Cost, IsActive: active}
+	product := &Product{
+		BaseModel: shareddb.BaseModel{
+			ID: productID, 
+			TenantID: businessID,
+		}, 
+		BusinessID: businessID, 
+		Name: strings.TrimSpace(req.Name), 
+		Description: strings.TrimSpace(req.Description), 
+		SKU: normalizeSKU(req.SKU), 
+		Category: strings.TrimSpace(req.Category), 
+		Barcode: strings.TrimSpace(req.Barcode), 
+		ImageURL: strings.TrimSpace(req.ImageURL), 
+		TaxRuleID: req.TaxRuleID, 
+		Price: req.Price, 
+		Cost: req.Cost, 
+		IsActive: active,
+	}
 	variants := make([]ProductVariant, 0, len(req.Variants))
 	for _, item := range req.Variants {
 		if strings.TrimSpace(item.Name) == "" {
@@ -130,7 +183,18 @@ func productFromRequest(businessID, productID uuid.UUID, req ProductRequest) (*P
 		if item.IsActive != nil {
 			variantActive = *item.IsActive
 		}
-		variants = append(variants, ProductVariant{BaseModel: shareddb.BaseModel{TenantID: businessID}, BusinessID: businessID, Name: strings.TrimSpace(item.Name), SKU: normalizeSKU(item.SKU), Barcode: strings.TrimSpace(item.Barcode), Price: item.Price, Cost: item.Cost, IsActive: variantActive})
+		variants = append(variants, ProductVariant{
+			BaseModel: shareddb.BaseModel{
+				TenantID: businessID,
+			}, 
+			BusinessID: businessID, 
+			Name: strings.TrimSpace(item.Name), 
+			SKU: normalizeSKU(item.SKU), 
+			Barcode: strings.TrimSpace(item.Barcode), 
+			Price: item.Price, 
+			Cost: item.Cost, 
+			IsActive: variantActive,
+		})
 	}
 	return product, variants, nil
 }

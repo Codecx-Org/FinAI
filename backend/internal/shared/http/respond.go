@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	apperrors "github.com/Codecx-Org/FinAI/backend/internal/shared/errors"
@@ -19,6 +20,7 @@ func JSON(w http.ResponseWriter, status int, payload any) {
 }
 
 func Error(w http.ResponseWriter, err error) {
+	log.Printf("error while making request: %v", err)
 	appErr := apperrors.FromError(err)
 	message := appErr.Message
 	if message == "" {

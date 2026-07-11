@@ -22,6 +22,7 @@ func New(db *gorm.DB) *Module {
 func (m *Module) RegisterProfileRoutes(r chi.Router) {
 	h := Handler{svc: m.svc}
 	r.Get("/", h.GetProfile)
+	r.Post("/", h.CreateProfile)
 	r.Put("/", h.UpdateProfile)
 }
 
