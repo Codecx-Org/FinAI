@@ -29,7 +29,7 @@ func (r *Repository) List(ctx context.Context, businessID uuid.UUID, page pagina
 func (r *Repository) FindProductVariant(ctx context.Context, businessID uuid.UUID, prodVarId uuid.UUID) (*ProductVariant, error) {
 	var productVariant *ProductVariant
 
-	err := r.db.WithContext(ctx).Scopes(shareddb.BusinessScope(businessID)).Where("product_id = ?", prodVarId).First(&productVariant).Error
+	err := r.db.WithContext(ctx).Scopes(shareddb.BusinessScope(businessID)).Where("id = ?", prodVarId).First(&productVariant).Error
 
 	return productVariant, err
 }
