@@ -13,8 +13,10 @@ import { OrderStatus } from '../generated/prisma/client.js';
 const MPESA_CONFIG = {
   consumerKey: process.env.MPESA_CONSUMER_KEY!,
   consumerSecret: process.env.MPESA_CONSUMER_SECRET!,
-  shortCode:process.env.MPESA_SHORTCODE, // e.g., 174379
-  callbackUrl: 'https://your-domain.com/api/webhook/mpesa', // Public webhook URL
+  shortCode: process.env.MPESA_SHORTCODE,
+  // Callback URL must be a public HTTPS URL. Set MPESA_CALLBACK_URL in .env
+  // For local dev, use: ngrok http 3000 → set ngrok URL here
+  callbackUrl: process.env.MPESA_CALLBACK_URL || 'https://your-domain.com/api/webhook/mpesa',
 };
 
 const mpesa = new Mpesa(MPESA_CONFIG);

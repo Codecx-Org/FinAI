@@ -95,7 +95,8 @@ router.post('/chatbot/chat', authenticate, asyncHandler(async (req: Authenticate
  * @desc Get AI-generated business insights and summaries
  */
 router.get('/chatbot/insights', authenticate, asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-  const businessId = Number(req.query.businessId) || req.user?.id;
+  // Always use the authenticated user's business ID — never trust query params
+  const businessId = req.user?.id;
   
   if (!businessId) {
     return res.status(401).json({ 
