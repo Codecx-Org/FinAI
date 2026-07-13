@@ -8,6 +8,7 @@ from langchain_core.messages import HumanMessage, AIMessage
 
 from app.agents.graph import build_agent
 from app.services.redis_history import conversation_history
+from app.services.language_detection import resolve_language
 
 router = APIRouter()
 
@@ -40,6 +41,9 @@ async def chat(req: ChatRequest):
         # Load history from Redis
         history = await conversation_history.get_history(req.business_id)
 
+        # Resolve language: respect explicit setting, auto-detect from message if not set
+        effective_language = resolve_language(req.language, req.message)
+
         # Build messages for the agent
         messages = []
         for entry in history:
@@ -50,8 +54,8 @@ async def chat(req: ChatRequest):
 
         messages.append(HumanMessage(content=req.message))
 
-        # Build and invoke the agent
-        agent = build_agent(req.business_id, req.language)
+        # Build and invoke the agent with effective (auto-detected) language
+        agent = build_agent(req.business_id, effective_language)
         result = await agent.ainvoke({"messages": messages})
 
         last_message = result["messages"][-1]
@@ -72,7 +76,7 @@ async def chat(req: ChatRequest):
             success=True,
             response=str(response_text),
             business_id=req.business_id,
-            language=req.language,
+            language=effective_language,  # Return the resolved language
         )
 
     except Exception as e:
