@@ -35,6 +35,8 @@ import { paymentRoutes, webhookRoutes } from './routes/payments/payments.routes.
 import { analyticsRoutes } from './routes/analytics/analytics.routes.js';
 import { creditRoutes } from './routes/credit/credit.routes.js';
 import { chatbotRoutes } from './routes/chatbot/chatbot.routes.js';
+import { businessRoutes } from './routes/business/business.routes.js';
+import errorHandlerPlugin from './plugins/error-handler.plugin.js';
 
 validateEnv();
 
@@ -53,6 +55,9 @@ export async function buildServer(): Promise<FastifyInstance> {
     },
     trustProxy: true,
   });
+
+  // ─── Error Handler Plugin ───────────────────────────────────────────────
+  await fastify.register(errorHandlerPlugin);
 
   // ─── Security ──────────────────────────────────────────────────────────────
   await fastify.register(helmet, {
@@ -162,6 +167,7 @@ export async function buildServer(): Promise<FastifyInstance> {
     await protectedFastify.register(analyticsRoutes, { prefix: '/api' });
     await protectedFastify.register(creditRoutes, { prefix: '/api' });
     await protectedFastify.register(chatbotRoutes, { prefix: '/api' });
+    await protectedFastify.register(businessRoutes, { prefix: '/api' });
   };
 
   await fastify.register(protectedPlugin);
