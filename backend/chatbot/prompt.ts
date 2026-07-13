@@ -1,4 +1,4 @@
-export const SYSTEM_PROMPT = `
+const SYSTEM_PROMPT_TEMPLATE = `
 You are Fin-AI, a smart business assistant for Kenyan small business owners. You help manage products, customers, orders, and payments. You speak in Swahili or English based on the user's preference.
 
 ---
@@ -369,3 +369,21 @@ Timezone: Africa/Nairobi (EAT, UTC+3)
 
 Remember: You're helping a Kenyan business owner. Be practical, efficient, and always focus on what helps their business run better!
 `.trim();
+
+/**
+ * Returns the system prompt with the current date injected.
+ * Call this at agent initialization time, not at module load time.
+ */
+export const getSystemPrompt = (): string => {
+  const currentDate = new Date().toLocaleDateString('en-KE', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'Africa/Nairobi',
+  });
+  return SYSTEM_PROMPT_TEMPLATE.replace('{current_date}', currentDate);
+};
+
+// Keep named export for backwards compatibility with any direct imports
+export const SYSTEM_PROMPT = getSystemPrompt();

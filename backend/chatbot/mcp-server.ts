@@ -60,9 +60,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         description: "List all products in the inventory",
         inputSchema: {
           type: "object",
-          properties: {businessId: { type: "number" },},
+          properties: { businessId: { type: "number" } },
+          required: ["businessId"],
         },
-        required: ["businessId"],
       },
       {
         name: "get_product",
@@ -100,8 +100,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             businessId: { type: "number" },
           },
+          required: ["businessId"],
         },
-        required: ["businessId"],
       },
       {
         name: "create_customer",
@@ -217,6 +217,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             businessId: { type: "number" },
           },
+          required: ["businessId"],
         },
       },
       {
@@ -334,7 +335,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
   try {
     switch (name) {
-      case "get_business_info":
+      case "getBusinessById":
         return { 
           content: [{ 
             type: "text", 

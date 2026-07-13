@@ -1,24 +1,31 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { ChatOpenAI } from "@langchain/openai";
-import {AIMessage, createAgent, HumanMessage, SystemMessage, tool} from 'langchain'
+import { AIMessage, HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { tool } from "@langchain/core/tools";
+import { createReactAgent } from "@langchain/langgraph/prebuilt";
+import { z } from "zod";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import { SYSTEM_PROMPT } from "./prompt.js";
+import { getSystemPrompt } from "./prompt.js";
 
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// Type for the compiled LangGraph agent
+type AgentExecutor = ReturnType<typeof createReactAgent>;
 
 /**
  * Chatbot Agent class.
+ * Uses LangGraph's createReactAgent with MCP tools via StdioClientTransport.
  */
 export class ChatbotAgent {
-  private executor: ReturnType<typeof createAgent> | null = null;
+  private executor: AgentExecutor | null = null;
   private client: Client;
   private businessId: number | null = null;
+
   constructor() {
     this.client = new Client(
       {
@@ -30,6 +37,7 @@ export class ChatbotAgent {
       }
     );
   }
+
   async setBusinessContext(businessId: number) {
     if (!businessId || isNaN(businessId)) {
       throw new Error("Invalid business ID");
@@ -37,94 +45,110 @@ export class ChatbotAgent {
     this.businessId = Number(businessId);
     console.log(`Business context set to ID: ${this.businessId}`);
   }
+
   async initialize() {
     if (!this.businessId) {
       throw new Error("Business context not set. Call setBusinessContext() before initialize()");
     }
-    
-    // Start the MCP server as a subprocess
-    // Using ts-node to run the server file
+
+    // Start the MCP server as a subprocess via bun
     const transport = new StdioClientTransport({
       command: "bun",
       args: [
         "run",
         path.join(__dirname, "mcp-server.ts"),
       ],
-      env: process.env as any,
-    });    
+      env: process.env as Record<string, string>,
+    });
+
     await this.client.connect(transport);
 
     // List tools from the MCP server
     const { tools: mcpTools } = await this.client.listTools();
 
-    // Wrap MCP tools for LangChain
+    // Wrap MCP tools for LangGraph — inject businessId on every call
     const langchainTools = mcpTools.map((t) =>
-  tool(
-    async (args: any) => {
-      if (!this.businessId) {
-        throw new Error("Business context not set. Please log in first.");
-      }
+      tool(
+        async (args: Record<string, unknown>) => {
+          if (!this.businessId) {
+            throw new Error("Business context not set. Please log in first.");
+          }
 
-      console.log(`[DEBUG] Calling tool: ${t.name} | businessId: ${this.businessId}`);
+          console.log(`[DEBUG] Calling tool: ${t.name} | businessId: ${this.businessId}`);
 
-      
-      const response = await this.client.callTool({
-        name: t.name,
-        arguments: {...args,
-    businessId: this.businessId,
-  }
-      
-      }) as any;
+          const response = await this.client.callTool({
+            name: t.name,
+            arguments: {
+              ...args,
+              businessId: this.businessId,
+            },
+          }) as any;
 
-      console.log(`[DEBUG] Tool ${t.name} response received`);
+          console.log(`[DEBUG] Tool ${t.name} response received`);
 
-      if (response.isError) {
-        throw new Error(response.content?.[0]?.text || "Tool failed");
-      }
-      return response.content.map((c: any) => c.text).join("\n");
-    },
-    { name: t.name, description: t.description || "", schema: t.inputSchema }
-  )
-);
-    // Initialize the LLM (OpenRouter)
+          if (response.isError) {
+            throw new Error(response.content?.[0]?.text || "Tool failed");
+          }
+          return response.content.map((c: any) => c.text).join("\n");
+        },
+        {
+          name: t.name,
+          description: t.description || "",
+          schema: z.object({}),  // MCP tools validated server-side; pass-through here
+        }
+      )
+    );
+
+    // Initialize the LLM — OpenRouter with Gemini 2.0 Flash as default
     const llm = new ChatOpenAI({
-      model: process.env.CHAT_MODEL || "google/gemini-flash-1.5",
+      model: process.env.CHAT_MODEL || "google/gemini-2.0-flash-exp",
       apiKey: process.env.OPENROUTER_API_KEY,
-      temperature: 0.5,
+      temperature: 0.3,
       configuration: {
         baseURL: "https://openrouter.ai/api/v1",
       },
     });
 
-    this.executor = createAgent({
-      model: llm,      
+    // createReactAgent from @langchain/langgraph/prebuilt — correct API
+    this.executor = createReactAgent({
+      llm,
       tools: langchainTools,
-      systemPrompt: SYSTEM_PROMPT,
+      prompt: getSystemPrompt(),
     });
-    console.log("Chatbot Agent initialized with MCP tools.");
+
+    console.log("[CHATBOT] Agent initialized with MCP tools via LangGraph.");
   }
 
-  async chat(input: string, chatHistory: any[] = [], businessId?: number, language: string = 'en') {
-    const messages = [
-      ...(businessId ? [new SystemMessage({ content: `The user is currently managing Business ID: ${businessId}. Always provide this businessId when calling tools that require it.` })] : []),
-      ...(language === 'sw' ? [new SystemMessage({ content: "Please respond in Kiswahili. Keep your response professional yet easy to understand in Kiswahili." })] : []),
-      ...chatHistory.map((entry) => {
-        return entry.role === "assistant" ? new AIMessage({
-          content: entry.content,
-        }) : new HumanMessage({
-          content: entry.content,
-        });
-      }),
-      new HumanMessage({content: input}),
-    ]
+  async chat(input: string, chatHistory: any[] = [], businessId?: number, language: string = "en") {
     if (!this.executor) {
       throw new Error("Agent not initialized. Call initialize() first.");
     }
 
-    const response = await this.executor.invoke({
-     messages 
-    });
+    const messages = [
+      // Inject businessId reminder as system message
+      ...(businessId
+        ? [new SystemMessage({
+            content: `The user is currently managing Business ID: ${businessId}. Always include this businessId when calling tools that require it.`,
+          })]
+        : []),
+      // Inject language instruction
+      ...(language === "sw"
+        ? [new SystemMessage({
+            content: "Please respond in Kiswahili. Keep your response professional yet easy to understand.",
+          })]
+        : []),
+      // Chat history
+      ...chatHistory.map((entry) =>
+        entry.role === "assistant"
+          ? new AIMessage({ content: entry.content })
+          : new HumanMessage({ content: entry.content })
+      ),
+      new HumanMessage({ content: input }),
+    ];
+
+    const response = await this.executor.invoke({ messages });
     const lastMessage = response.messages[response.messages.length - 1];
+
     if (!lastMessage) {
       throw new Error("No response from agent.");
     }
@@ -137,8 +161,6 @@ export class ChatbotAgent {
       throw new Error("Agent not initialized. Call initialize() first.");
     }
 
-    // First, get the business summary using the tool directly or via agent
-    // Since we want structured data, we'll prompt the agent to use the tool and return JSON
     const prompt = `
       Please provide a business insight report for Business ID: ${businessId}.
       Use the 'get_business_summary' tool to get the latest financial data.
@@ -166,15 +188,15 @@ export class ChatbotAgent {
     `;
 
     const response = await this.executor.invoke({
-      messages: [new HumanMessage({ content: prompt })]
+      messages: [new HumanMessage({ content: prompt })],
     });
 
     const lastMessage = response.messages[response.messages.length - 1];
     let content = lastMessage.content;
 
-    // Clean up content if it contains markdown code blocks
-    if (typeof content === 'string') {
-        content = content.replace(/```json\n?/, '').replace(/```\n?/, '').trim();
+    // Strip markdown code fences if present
+    if (typeof content === "string") {
+      content = content.replace(/```json\n?/, "").replace(/```\n?/, "").trim();
     }
 
     try {
@@ -199,7 +221,7 @@ export class ChatbotAgent {
       Performance Metrics: ${JSON.stringify({
         weekly: analyticsData.weeklyOverview,
         categories: analyticsData.categoryPerformance,
-        profitTrends: analyticsData.monthlyProfitTrends
+        profitTrends: analyticsData.monthlyProfitTrends,
       })}
       
       Based on the business type and the data provided:
@@ -229,14 +251,14 @@ export class ChatbotAgent {
     `;
 
     const response = await this.executor.invoke({
-      messages: [new HumanMessage({ content: prompt })]
+      messages: [new HumanMessage({ content: prompt })],
     });
 
     const lastMessage = response.messages[response.messages.length - 1];
     let content = lastMessage.content;
 
-    if (typeof content === 'string') {
-        content = content.replace(/```json\n?/, '').replace(/```\n?/, '').trim();
+    if (typeof content === "string") {
+      content = content.replace(/```json\n?/, "").replace(/```\n?/, "").trim();
     }
 
     try {
@@ -244,6 +266,18 @@ export class ChatbotAgent {
     } catch (error) {
       console.error("[CHATBOT] Failed to parse analytics insights JSON:", content);
       throw new Error("Failed to generate analytics insights");
+    }
+  }
+
+  /**
+   * Gracefully close the MCP client connection and subprocess.
+   */
+  async close() {
+    try {
+      await this.client.close();
+      console.log(`[CHATBOT] Agent connection closed for business ${this.businessId}`);
+    } catch (err) {
+      console.warn("[CHATBOT] Error closing agent client:", err);
     }
   }
 }

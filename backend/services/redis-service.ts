@@ -81,6 +81,19 @@ export class RedisService {
     }
   }
 
+  // Key-value operations
+  async set(key: string, value: string, ...args: any[]): Promise<void> {
+    await (this.client as any).set(key, value, ...args);
+  }
+
+  async get(key: string): Promise<string | null> {
+    return this.client.get(key);
+  }
+
+  async del(key: string): Promise<void> {
+    await this.client.del(key);
+  }
+
   // Cleanup: Disconnect all clients
   async quit(): Promise<void> {
     for (const subscriber of this.subscribers.values()) {

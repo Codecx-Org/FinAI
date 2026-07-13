@@ -1,0 +1,73 @@
+version: '3.9'
+
+# FinAI Local Development Stack
+# Usage: docker-compose up -d
+# This starts PostgreSQL and Redis with sensible dev defaults.
+# The Node.js and Python services run directly via bun/uvicorn (not in Docker for dev).
+
+services:
+  # ─── PostgreSQL ────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: finai-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: finai
+      POSTGRES_PASSWORD: finai_dev_password
+      POSTGRES_DB: finai
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U finai -d finai']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Redis ────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: finai-redis
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ─── Redis Commander (optional dev UI) ────────────────────────────────────
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: finai-redis-ui
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - '8081:8081'
+    depends_on:
+      redis:
+        condition: service_healthy
+    profiles:
+      - dev-tools  # Only starts with: docker-compose --profile dev-tools up
+
+volumes:
+  postgres_data:
+  redis_data:
+
+# ─── Usage Notes ─────────────────────────────────────────────────────────────
+# After starting, set these in backend/.env:
+#   DATABASE_URL="postgresql://finai:finai_dev_password@localhost:5432/finai?schema=public"
+#   DIRECT_URL="postgresql://finai:finai_dev_password@localhost:5432/finai?schema=public"
+#   REDIS_URL="redis://localhost:6379"
+#
+# Then run migrations:
+#   cd backend && bun run db:migrate:deploy
+#
+# To also start Redis Commander UI:
+#   docker-compose --profile dev-tools up -d

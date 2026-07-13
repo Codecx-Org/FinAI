@@ -1,211 +1,238 @@
-# FinAI - All-in-One Mobile Business Management & AI Assistant
+# FinAI — AI-Powered Business Assistant for Kenyan SMEs
 
-FinAI is a comprehensive, multi-tenant platform designed to empower micro-entrepreneurs with AI-driven financial insights, automated order management, and seamless payment integrations.
-
----
-
-## Key Features
-
-- **AI Financial Coach**: Get real-time insights into your business health using our LangChain-powered assistant with Model Context Protocol (MCP) integration.
-- **Automated Payments**: Seamless M-Pesa STK Push integration for instant, verifiable sales and automated reconciliation.
-- **WhatsApp Order Capture**: Automatically capture orders from WhatsApp messages using Twilio and AI-driven keyword extraction.
-- **Inventory & Sales Tracking**: Real-time stock management with background inventory updates and comprehensive sales logging.
-- **AI Marketing Tools**: Generate stunning product images and social media content directly within the app using Pollinations AI.
-- **Business Insights**: Detailed analytics on sales trends, expenses, and overall financial health.
-- **Multi-Tenancy**: Secure, isolated data management for multiple businesses on a single platform.
+FinAI helps small business owners in Kenya manage products, customers, orders, payments, and expenses through a conversational AI interface — available in English and Kiswahili.
 
 ---
 
-## Tech Stack
+## Architecture
 
-| Component | Technologies |
-| :--- | :--- |
-| **Backend** | Node.js, Express, TypeScript, Prisma ORM, PostgreSQL |
-| **Mobile** | React Native, Expo, NativeWind (Tailwind), TanStack Query |
-| **Frontend** | React, Vite, Tailwind CSS |
-| **Infrastructure** | Redis, BullMQ (Background Workers), Docker |
-| **AI/LLM** | LangChain, Model Context Protocol (MCP), Pollinations AI |
+```
+Mobile App (React Native / TypeScript)
+         │ HTTPS
+         ▼
+┌─────────────────────────────────────┐
+│    Core API  (Fastify / TypeScript) │  :3000
+│    /api/*  — all business routes    │
+└──────────────────┬──────────────────┘
+                   │ HTTP (internal)
+         ┌─────────▼──────────┐
+         │  AI Service        │  :8000
+         │  (FastAPI/Python)  │
+         │  LangGraph +       │
+         │  Gemini 2.0 Flash  │
+         └─────────┬──────────┘
+                   │
+    ┌──────────────┼──────────────┐
+    │              │              │
+PostgreSQL      Redis          WhatsApp
+(Prisma ORM)  (BullMQ +      Service :3001
+               History)
+```
+
+### Services
+| Service | Language | Framework | Port |
+|---|---|---|---|
+| Core API | TypeScript | Fastify 5 | 3000 |
+| AI Service | Python | FastAPI + LangGraph | 8000 |
+| WhatsApp | TypeScript | WPPConnect | 3001 |
+
+---
+
+## AI Model: Google Gemini 2.0 Flash
+
+**Why Gemini 2.0 Flash?**
+- Best Swahili support of any frontier model
+- 1M token context window
+- ~500ms median latency (critical for mobile)
+- 10x cheaper than GPT-4o
+
+---
+
+## Quick Start
+
+### Prerequisites
+- [Bun](https://bun.sh) ≥ 1.0
+- Python 3.12+
+- Docker (for local Postgres + Redis)
+- [PM2](https://pm2.keymetrics.io/) for process management
+
+### 1. Start Infrastructure
+```bash
+docker-compose up -d
+# Starts PostgreSQL :5432 and Redis :6379
+```
+
+### 2. Set Up Environment Variables
+```bash
+# Root reference
+cp .env.example .env  # then fill in values
+
+# Core API
+cp backend/.env.example backend/.env
+
+# AI Service
+cp ai-service/.env.example ai-service/.env
+```
+
+**Required keys:**
+| Key | Where to get |
+|---|---|
+| `GEMINI_API_KEY` | [aistudio.google.com](https://aistudio.google.com/app/apikey) (free tier) |
+| `JWT_SECRET` | `openssl rand -hex 64` |
+| `DATABASE_URL` | PostgreSQL connection string |
+| `REDIS_URL` | Redis connection string |
+| `MPESA_CONSUMER_KEY` | [developer.safaricom.co.ke](https://developer.safaricom.co.ke) |
+| `MPESA_CALLBACK_URL` | Public HTTPS URL for M-Pesa webhooks |
+| `LANGSMITH_API_KEY` | [smith.langchain.com](https://smith.langchain.com) (optional) |
+
+### 3. Set Up the Database
+```bash
+cd backend
+bun run db:migrate:deploy
+bun run seed  # optional test data
+```
+
+### 4. Set Up Python AI Service
+```bash
+cd ai-service
+python -m venv .venv
+.venv/Scripts/activate  # Windows
+source .venv/bin/activate  # Mac/Linux
+pip install -r requirements.txt
+```
+
+### 5. Start All Services
+```bash
+# Option A: PM2 (recommended — auto-restart on crash)
+npm install -g pm2
+pm2 start ecosystem.config.js
+pm2 logs
+
+# Option B: Manual (3 separate terminals)
+# Terminal 1:
+cd backend && bun run src/server.ts
+
+# Terminal 2:
+cd ai-service && .venv/Scripts/activate && uvicorn app.main:app --reload
+
+# Terminal 3 (optional — WhatsApp integration):
+cd backend && bun run chatbot/whatsapp-service.ts
+```
+
+---
+
+## API Reference
+
+### Core API (`:3000`)
+
+#### Auth (Public)
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/auth/register` | Register new business |
+| `POST` | `/api/auth/login` | Login |
+| `POST` | `/api/auth/google` | Google OAuth login |
+
+#### Protected (Bearer token required)
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/products` | List products |
+| `POST` | `/api/products` | Add product |
+| `GET` | `/api/customers` | List customers |
+| `POST` | `/api/customers` | Add customer |
+| `GET` | `/api/orders` | List orders |
+| `POST` | `/api/orders` | Create order |
+| `GET` | `/api/sales` | List sales |
+| `POST` | `/api/sales` | Record sale |
+| `GET` | `/api/expenses` | List expenses |
+| `POST` | `/api/expenses` | Add expense |
+| `POST` | `/api/payments/initiate` | M-Pesa STK Push |
+| `GET` | `/api/analytics/dashboard` | Analytics bundle |
+| `GET` | `/api/credit/trust-preview` | Credit score |
+| `POST` | `/api/chatbot/chat` | Chat with AI |
+| `GET` | `/api/chatbot/insights` | AI insights |
+
+#### Public
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/health` | Core API health |
+| `POST` | `/api/webhook/mpesa` | M-Pesa callback |
+
+### AI Service (`:8000`)
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/health` | AI service health + model info |
+| `POST` | `/chat` | Chat with Gemini agent |
+| `GET` | `/insights?business_id=N` | Business health insights |
+| `GET` | `/analytics-insights?business_id=N` | Deep strategic analysis |
+| `POST` | `/clear-history` | Clear conversation history |
+| `GET` | `/docs` | Interactive API docs (Swagger) |
+
+---
+
+## Process Management (PM2)
+
+```bash
+pm2 start ecosystem.config.js    # Start all services
+pm2 status                        # View running processes
+pm2 logs finai-core-api           # Tail Core API logs
+pm2 logs finai-ai-service         # Tail AI service logs
+pm2 restart all                   # Restart everything
+pm2 save && pm2 startup           # Auto-start on reboot
+pm2 monit                         # Live monitoring dashboard
+```
+
+---
+
+## Local M-Pesa Testing
+
+```bash
+# Install ngrok
+npm install -g ngrok
+
+# Expose local server
+ngrok http 3000
+
+# Set in backend/.env:
+MPESA_CALLBACK_URL=https://YOUR-NGROK-URL.ngrok.io/api/webhook/mpesa
+```
 
 ---
 
 ## Project Structure
 
-```text
-├── backend/                # Express API, Database logic, and AI Agent
-│   ├── chatbot/            # AI Agent logic, MCP server, and prompts
-│   ├── prisma/             # Database schema and migrations
-│   ├── services/           # Business logic layer
-│   ├── workflows/          # BullMQ background workers
-│   └── main.ts             # Backend entry point
-├── mobile/                 # React Native (Expo) Mobile Application
-│   ├── app/                # Expo Router screens (Dashboard, Sales, AI Coach)
-│   ├── components/         # Reusable UI components
-│   └── contexts/           # Global state (Auth, Business context)
-├── frontend/               # React (Vite) Web Management Dashboard
-└── ...
 ```
-
----
-
-## Setup & Installation
-
-### Prerequisites
-- **Node.js** (v18+)
-- **Bun** (Recommended for backend performance)
-- **PostgreSQL** (Running instance)
-- **Redis** (Required for background workers)
-
-### 1. Environment Configuration
-Navigate to both `backend/` and `mobile/` directories and set up your environment files:
-```bash
-# In backend/
-cp .env.example .env
-# Update DATABASE_URL, JWT_SECRET, and REDIS_URL
-
-# In mobile/
-cp .env.example .env
-# Set EXPO_PUBLIC_API_URL to your machine's LAN IP
+FinAI/
+├── backend/                # TypeScript — Fastify Core API
+│   ├── src/
+│   │   ├── routes/         # Domain-separated route modules
+│   │   │   ├── auth/
+│   │   │   ├── products/
+│   │   │   ├── customers/
+│   │   │   ├── orders/
+│   │   │   ├── sales/
+│   │   │   ├── expenses/
+│   │   │   ├── payments/
+│   │   │   ├── analytics/
+│   │   │   ├── credit/
+│   │   │   └── chatbot/    # Proxy to AI service
+│   │   └── server.ts
+│   ├── chatbot/            # MCP-based agent (legacy, kept for WhatsApp)
+│   ├── services/           # Business logic services
+│   ├── routes/             # Legacy Express routes (kept for reference)
+│   └── prisma/             # Database schema
+│
+├── ai-service/             # Python — FastAPI + LangGraph
+│   ├── app/
+│   │   ├── agents/         # LangGraph agent definition
+│   │   ├── tools/          # Tool functions (products, orders, etc.)
+│   │   ├── services/       # Redis + Database services
+│   │   └── routes/         # FastAPI endpoints
+│   ├── requirements.txt
+│   └── Dockerfile
+│
+├── frontend/               # React web app
+├── mobile/                 # React Native mobile app
+├── docker-compose.yml      # Local dev stack (Postgres + Redis)
+├── ecosystem.config.js     # PM2 process manager config
+└── .env.example            # All environment variables documented
 ```
-
-### 2. Database Initialization
-In the `backend/` directory:
-```bash
-npm install
-npx prisma migrate dev --name init
-npx prisma db seed
-```
-
-### 3. Running Services
-
-#### **Redis (Required)**
-```bash
-# Using Docker (Recommended)
-docker run --name final-redis -p 6379:6379 -d redis
-```
-
-#### **Backend**
-```bash
-# In backend/
-bun run start  # or npm start
-```
-
-#### **Mobile App**
-```bash
-# In mobile/
-npx expo start
-```
-
-#### **Frontend**
-```bash
-# In frontend/
-npm install
-npm run dev
-```
-
----
-
-## Production (Render)
-
-Set your live backend URL only in the **Render dashboard** and **EAS secrets** — do not commit production URLs or credentials to this repository.
-
-### Render build and start commands
-
-**Root directory:** `backend`
-
-**Build command** (use `&&`, not spaces — avoid `bun install bunx prisma generate`, which installs Prisma 7):
-
-```bash
-bun install && bunx prisma@6.16.3 generate
-```
-
-**Start command:**
-
-```bash
-bunx prisma@6.16.3 migrate deploy && bun start
-```
-
-Alternative using locked `node_modules` Prisma (see [`backend/package.json`](backend/package.json) scripts):
-
-```bash
-# Build: bun install
-# Start: bun run db:migrate:deploy && bun start
-```
-
-Optional: apply [`render.yaml`](render.yaml) as a Render Blueprint for the same commands.
-
-### Render environment variables
-
-| Variable | Purpose |
-| :--- | :--- |
-| `DATABASE_URL` | Postgres connection for the running app |
-| `DIRECT_URL` | Same **external** Postgres URL for `prisma migrate deploy` (required by schema) |
-| `JWT_SECRET` | Auth token signing |
-| `REDIS_URL` | BullMQ / Redis subscriber |
-| `PORT` | Set by Render (usually `10000`) |
-
-**Render Postgres:** use the **External** connection string (hostname like `dpg-....frankfurt-postgres.render.com`) for both `DATABASE_URL` and `DIRECT_URL`. Do not use the internal `dpg-...-a` host outside Render’s private network.
-
-**Supabase:** use the pooler URL for `DATABASE_URL` and `db.<ref>.supabase.co:5432` for `DIRECT_URL`.
-
-### Expo mobile (production builds)
-
-Set in EAS secrets or a local `.env` file (gitignored), not in tracked files:
-
-```bash
-EXPO_PUBLIC_API_URL=https://your-render-service.onrender.com
-```
-
-See [`mobile/.env.example`](mobile/.env.example). Rebuild the app after changing this value.
-
-### Post-deploy smoke checks
-
-Replace `YOUR_API_HOST` with the host from your Render service URL:
-
-```bash
-export API_HOST=https://your-render-service.onrender.com
-
-# Public uptime ping (no auth) — use for Render/cron keep-alive
-curl -s "$API_HOST/api/public/health"
-curl -s "$API_HOST/health"
-curl -s -X POST "$API_HOST/api/auth/login" \
-  -H "Content-Type: application/json" -d '{}'
-# Expect HTTP 400 with a validation message, not 500
-```
-
-### Bun postinstall (build logs)
-
-If Render logs `Blocked 1 postinstall`, run `bun pm untrusted` locally, review the package, and trust only if required for your deployment.
-
----
-
-## Core API Modules
-
-All backend API requests should be prefixed with `/api`. Ensure `businessId` is included in relevant requests for multi-tenancy.
-
-| Module | Endpoints | Description |
-| :--- | :--- | :--- |
-| **Business** | `/api/business` | Manage business registration and M-Pesa config. |
-| **Customers** | `/api/customers` | Manage customer records per business. |
-| **Products** | `/api/products` | Inventory management and AI image generation. |
-| **Orders** | `/api/orders` | Sales transactions and M-Pesa STK Push. |
-| **Expenses** | `/api/expenses` | Track operational costs and recurring bills. |
-| **Chatbot** | `/api/chatbot/chat` | AI-powered financial assistant interface. |
-
----
-
-## Development Commands
-
-| Task | Command |
-| :--- | :--- |
-| **Backend Test** | `npm test` |
-| **Database Studio** | `npx prisma studio` |
-| **Chatbot CLI** | `bun run chatbot` |
-| **Seed Data** | `npx prisma db seed` |
-| **Mobile Web** | `npx expo start --web` |
-
----
-
-## Important Notes
-- **Asynchronous Processing**: Inventory updates and sales logging are handled by background workers. Allow a few seconds for data to reflect after a successful payment.
-- **Error Handling**: The API returns standard JSON errors: `{ "status": "error", "message": "..." }`.
-- **Branding**: All components should align with the **FinAI** brand identity.

@@ -1,13 +1,13 @@
 // src/app.ts
-// Main Express app serving APIs with non-blocking background workers (BullMQ, Redis subscribers).
+// Main Fastify-compatible Express app serving APIs with non-blocking background workers.
 // Features: Clustering for scalability, Winston logging, BullMQ dashboard, graceful shutdown.
-// Dependencies: npm install express body-parser dotenv winston @bull-board/express @bull-board/api bullmq ioredis @prisma/client mpesa-node-library fs-extra csv-writer node-cron
+import dotenv from "dotenv";
+dotenv.config(); // MUST be first — loads .env before any service reads process.env
 
 import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import dotenv from "dotenv";
 import prisma from "./utils/prisma.js";
 import winston from "winston";
 import cluster from "cluster";
@@ -42,11 +42,8 @@ import achievementRoutes from "./routes/achievement-route.js";
 import { authenticate } from "./utils/auth-middleware.js";
 import { validateEnv } from "./utils/env-validator.js";
 
-// Validate environment variables on startup
+// Validate environment variables on startup (dotenv already loaded at top)
 validateEnv();
-
-// Load environment variables
-dotenv.config();
 
 // Prisma client
 
