@@ -21,6 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.services.database import close_pool
 from app.services.redis_history import conversation_history
+from app.services.langsmith_setup import setup_langsmith
 from app.routes.chat import router as chat_router
 from app.routes.insights import router as insights_router
 from app.routes.health import router as health_router
@@ -31,8 +32,8 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown lifecycle manager."""
+    setup_langsmith()  # Enable LangSmith tracing if configured
     print(f"[AI Service] Starting — model: {settings.gemini_model}")
-    print(f"[AI Service] LangSmith: {'enabled' if settings.langchain_tracing_v2 == 'true' else 'disabled'}")
     yield
     # Cleanup on shutdown
     print("[AI Service] Shutting down...")
