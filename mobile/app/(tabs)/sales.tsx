@@ -289,7 +289,7 @@ export default function SalesTab() {
         setOrderItems([]);
         setIsOrderDialogOpen(false);
       } catch (error: any) {
-        Alert.alert("Error", error.message || "Failed to create order");
+        Alert.alert("Error", error.friendlyMessage || error.message || "Failed to create order");
       }
     } else {
       Alert.alert("Error", "Please select a customer for M-Pesa order and add items");
@@ -307,7 +307,7 @@ export default function SalesTab() {
         await initiatePayment({ orderId: paymentOrder.id, phone: formattedPhone, amount: paymentOrder.amount });
         Alert.alert("Info", "M-Pesa push prompt sent to customer phone");
       } catch (error: any) {
-        Alert.alert("Error", error.message || "Failed to initiate payment");
+        Alert.alert("Error", error.friendlyMessage || error.message || "Failed to initiate payment");
       }
     }
   };
@@ -321,7 +321,7 @@ export default function SalesTab() {
         setPaymentOrder(null);
         refetchSales();
       } catch (error: any) {
-        Alert.alert("Error", "Failed to record payment");
+        Alert.alert("Error", error.friendlyMessage || error.message || "Failed to record payment");
       }
     }
   };
