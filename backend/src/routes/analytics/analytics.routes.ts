@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify';
+import axios from 'axios';
 import { AnalyticsService } from '../../services/analytics-service.js';
 
 const analyticsService = new AnalyticsService();
@@ -57,6 +58,36 @@ export async function analyticsRoutes(fastify: FastifyInstance) {
     const { id: businessId } = req.user as { id: number };
     const data = await analyticsService.getWeeklyOverview(businessId);
     return reply.send({ success: true, data });
+  });
+
+  fastify.get('/analytics/overview', async (req, reply) => {
+    const { id: businessId } = req.user as { id: number };
+    const data = await analyticsService.getWeeklyOverview(businessId);
+    return reply.send({ success: true, data });
+  });
+
+  fastify.get('/analytics/ai-insights', async (req, reply) => {
+    const { id: businessId } = req.user as { id: number };
+    const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+    const INTERNAL_SECRET = process.env.INTERNAL_API_SECRET || '';
+
+    try {
+      const response = await axios.get(
+        `${AI_SERVICE_URL}/analytics-insights`,
+        {
+          params: { businessId },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-internal-secret': INTERNAL_SECRET,
+          },
+          timeout: 90_000,
+        }
+      );
+      return reply.send({ success: true, data: response.data });
+    } catch (err: any) {
+      fastify.log.error({ err }, '[Analytics AI Insights] Error proxying to AI service');
+      return reply.status(503).send({ success: false, error: 'AI insights temporarily unavailable' });
+    }
   });
 
   /**
