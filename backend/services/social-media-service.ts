@@ -1,4 +1,5 @@
 import { cfGenerateText, cfGenerateImage } from './cloudflare-service.js';
+import { pollinationsService } from './pollinations-service.js';
 
 export interface SocialMediaContentRequest {
   platform: string;
@@ -13,6 +14,8 @@ export interface SocialMediaContentResponse {
   content: string;
   hashtags: string[];
   imageBase64?: string;
+  imageUrl?: string;
+  source: 'cloudflare' | 'pollinations' | 'template';
 }
 
 export class SocialMediaService {
@@ -20,40 +23,66 @@ export class SocialMediaService {
     const systemPrompt = this.buildSystemPrompt(data.platform, data.type, data.tone);
     const userPrompt   = this.buildUserPrompt(data.description, data.platform, data.type, data.tone);
 
-    // Run text + image in parallel
-    const [rawText, imageBuffer] = await Promise.allSettled([
-      cfGenerateText(userPrompt, systemPrompt),
-      cfGenerateImage(`${data.description}, ${data.platform} marketing style, professional product photo`),
-    ]);
+    const hasCF = !!(process.env.CF_ACCOUNT_ID && process.env.CF_API_TOKEN);
 
-    // Debug logging — remove once image is confirmed working
-    console.log('[SocialMedia] text status:', rawText.status);
-    console.log('[SocialMedia] image status:', imageBuffer.status);
-    if (imageBuffer.status === 'rejected') {
-      console.error('[SocialMedia] image failed:', imageBuffer.reason);
+    if (hasCF) {
+      console.log('[SocialMedia] Generating content via Cloudflare Workers AI');
+      // Run text + image in parallel
+      const [rawText, imageBuffer] = await Promise.allSettled([
+        cfGenerateText(userPrompt, systemPrompt),
+        cfGenerateImage(`${data.description}, ${data.platform} marketing style, professional product photo`),
+      ]);
+
+      if (rawText.status === 'fulfilled') {
+        const { content, hashtags } = this.parseResponse(rawText.value);
+        const imageBase64 =
+          imageBuffer.status === 'fulfilled'
+            ? imageBuffer.value.toString('base64')
+            : undefined;
+
+        return {
+          platform: data.platform,
+          type: data.type,
+          content,
+          hashtags,
+          imageBase64,
+          source: 'cloudflare',
+        };
+      }
+      console.warn('[SocialMedia] Cloudflare text generation failed. Falling back to Pollinations.');
     }
-    if (rawText.status === 'rejected') {
-      console.error('[SocialMedia] text failed:', rawText.reason);
+
+    console.log('[SocialMedia] Generating content via Pollinations AI (free tier fallback)');
+    try {
+      const text = await pollinationsService.generateText(userPrompt, systemPrompt);
+      const { content, hashtags } = this.parseResponse(text);
+      const imageUrl = pollinationsService.generateImageUrl(
+        `${data.description}, ${data.platform} marketing style, professional product photo`,
+        { width: 512, height: 512 }
+      );
+
+      return {
+        platform: data.platform,
+        type: data.type,
+        content,
+        hashtags,
+        imageUrl,
+        source: 'pollinations',
+      };
+    } catch (err: any) {
+      console.error('[SocialMedia] Pollinations generation failed:', err);
+      // Final fallback to offline templates
+      const fallbackContent = this.getTemplateContent(data.platform, data.type, data.tone, data.description);
+      const hashtags = ['#SmallBusiness', '#AfricanTech', '#Entrepreneurs'];
+
+      return {
+        platform: data.platform,
+        type: data.type,
+        content: fallbackContent,
+        hashtags,
+        source: 'template',
+      };
     }
-
-    if (rawText.status === 'rejected') {
-      throw new Error('Failed to generate text content');
-    }
-
-    const { content, hashtags } = this.parseResponse(rawText.value);
-
-    const imageBase64 =
-      imageBuffer.status === 'fulfilled'
-        ? imageBuffer.value.toString('base64')
-        : undefined;
-
-    return {
-      platform: data.platform,
-      type: data.type,
-      content,
-      hashtags,
-      imageBase64,
-    };
   }
 
   private buildSystemPrompt(platform: string, type: string, tone: string): string {
@@ -111,6 +140,14 @@ export class SocialMediaService {
     }
 
     return { content, hashtags };
+  }
+
+  private getTemplateContent(platform: string, type: string, tone: string, desc: string): string {
+    return (
+      `${desc}\n\n` +
+      `Proudly serving our customers with high quality products. ` +
+      `Built for African small businesses. Built for growth.`
+    );
   }
 }
 
