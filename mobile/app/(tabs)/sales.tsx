@@ -71,6 +71,14 @@ interface Order {
   notes?: string;
 }
 
+function formatMpesaPhoneNumber(phone: string): string {
+  let cleaned = phone.replace(/\D/g, "");
+  if (cleaned.startsWith("0")) {
+    cleaned = "254" + cleaned.slice(1);
+  }
+  return cleaned;
+}
+
 export default function SalesTab() {
   const params = useLocalSearchParams<{ segment?: string; action?: string }>();
   const [activeTab, setActiveTab] = useState<"sales" | "orders">("sales");
@@ -289,11 +297,16 @@ export default function SalesTab() {
 
   const handleInitiatePayment = async () => {
     if (paymentOrder) {
+      const formattedPhone = formatMpesaPhoneNumber(paymentOrder.phone);
+      if (!/^(254)(7|1|0)\d{8}$/.test(formattedPhone)) {
+        Alert.alert("Validation", "Please enter a valid Kenyan phone number (e.g. 07XXXXXXXX or 2547XXXXXXXX)");
+        return;
+      }
       try {
-        await initiatePayment({ orderId: paymentOrder.id, phone: paymentOrder.phone, amount: paymentOrder.amount });
-        Alert.alert("Info", "Payment request sent to customer phone");
+        await initiatePayment({ orderId: paymentOrder.id, phone: formattedPhone, amount: paymentOrder.amount });
+        Alert.alert("Info", "M-Pesa push prompt sent to customer phone");
       } catch (error: any) {
-        Alert.alert("Error", error.response?.data?.error || "Failed to initiate payment");
+        Alert.alert("Error", error.message || "Failed to initiate payment");
       }
     }
   };
