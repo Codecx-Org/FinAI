@@ -85,7 +85,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (credentials: { email: string; password: string }) => {
     try {
-      console.log("Login attempt:", credentials);
       const response = await api.post("/auth/login", credentials);
       handleAuthResponse(response.data);
     } catch (error: any) {
