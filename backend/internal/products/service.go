@@ -111,16 +111,42 @@ func (s *Service) Update(ctx context.Context, businessID, productID uuid.UUID, r
 	if err != nil {
 		return nil, err
 	}
+
 	product.Name = updated.Name
-	product.Description = updated.Description
-	product.SKU = updated.SKU
-	product.Category = updated.Category
-	product.Barcode = updated.Barcode
-	product.ImageURL = updated.ImageURL
-	product.TaxRuleID = updated.TaxRuleID
-	product.Price = updated.Price
-	product.Cost = updated.Cost
+
+	if updated.Description != "" {
+		product.Description = updated.Description	
+	}
+
+	if updated.SKU != "" {
+		product.SKU = updated.SKU
+	}
+	 
+	if updated.Category != "" {
+		product.Category = updated.Category
+	}
+	
+	if updated.Barcode != "" {
+		product.Barcode = updated.Barcode
+	}
+	
+	if updated.ImageURL != "" {
+		product.ImageURL = updated.ImageURL
+	}
+
+	if updated.TaxRuleID != nil {
+		product.TaxRuleID = updated.TaxRuleID
+	}	
+
+	if updated.Price.GreaterThan(decimal.Zero){
+     product.Price = updated.Price  
+	}
+
+	if updated.Price.GreaterThan(decimal.Zero) {
+		product.Cost = updated.Cost
+	}
 	product.IsActive = updated.IsActive
+
 	if err := s.repo.Update(ctx, product); err != nil {
 		return nil, err
 	}

@@ -3,6 +3,10 @@ package orders
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"time"
+
 	"github.com/Codecx-Org/FinAI/backend/internal/inventory"
 	"github.com/Codecx-Org/FinAI/backend/internal/sales"
 	shareddb "github.com/Codecx-Org/FinAI/backend/internal/shared/db"
@@ -12,7 +16,6 @@ import (
 	"github.com/Codecx-Org/FinAI/backend/internal/shared/pagination"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
-	"time"
 )
 
 type InventoryWriter interface {
@@ -28,7 +31,9 @@ type Service struct {
 	outbox    outbox.Repository
 }
 
+
 func NewService(repo *Repository, inventory InventoryWriter, sales SaleCreator, outboxRepo outbox.Repository) *Service {
+	//@todo: here you will right instances of the order machine
 	return &Service{repo: repo, inventory: inventory, sales: sales, outbox: outboxRepo}
 }
 
@@ -49,23 +54,28 @@ func (s *Service) Create(ctx context.Context, businessID uuid.UUID, req CreateOr
 		if existing, err := s.repo.FindByIdempotency(ctx, businessID, key); err == nil {
 			return existing, nil
 		}
+	} else {
+		return nil, apperrors.ErrForbidden.WithCause(errors.New("IdempotencyKey not provided"))
 	}
 	if len(req.Lines) == 0 {
 		return nil, apperrors.ErrUnprocessable.WithMessage("order requires at least one line")
 	}
 	subtotal := decimal.Zero
 	lines := make([]OrderLine, 0, len(req.Lines))
+
 	for _, line := range req.Lines {
 		total := line.Quantity.Mul(line.UnitPrice).Round(2)
 		subtotal = subtotal.Add(total)
 		lines = append(lines, OrderLine{BaseModel: shareddb.BaseModel{TenantID: businessID}, BusinessID: businessID, ProductID: line.ProductID, Quantity: line.Quantity, UnitPrice: line.UnitPrice, LineTotal: total})
 	}
+
 	tax := subtotal.Mul(decimal.NewFromFloat(0.16)).Round(2)
 	pay := req.PaymentMethod
 	if pay == "" {
 		pay = "cash"
 	}
 	order := &Order{BaseModel: shareddb.BaseModel{TenantID: businessID}, BusinessID: businessID, CustomerID: req.CustomerID, Status: StatusDraft, Subtotal: subtotal, TaxAmount: tax, Total: subtotal.Add(tax), PaymentMethod: pay, IdempotencyKey: key}
+
 	if err := s.repo.Create(ctx, order, lines); err != nil {
 		return nil, err
 	}
@@ -82,21 +92,25 @@ func (s *Service) Confirm(ctx context.Context, businessID, orderID uuid.UUID) (*
 	if err != nil {
 		return nil, err
 	}
+
 	if order.Status == StatusConfirmed || order.Status == StatusFulfilled {
 		return order, nil
 	}
 	if order.Status != StatusDraft {
 		return nil, apperrors.ErrConflict.WithMessage("order cannot be confirmed from current status")
 	}
+
 	lines := make([]inventory.DecrementLine, 0, len(order.Lines))
 	for _, line := range order.Lines {
 		lines = append(lines, inventory.DecrementLine{ProductID: line.ProductID, Quantity: line.Quantity})
 	}
+
 	if s.inventory != nil {
 		if err := s.inventory.DecrementForOrder(ctx, businessID, order.ID, lines); err != nil {
 			return nil, err
 		}
 	}
+
 	now := time.Now().UTC()
 	order.Status = StatusConfirmed
 	order.ConfirmedAt = &now
@@ -106,6 +120,7 @@ func (s *Service) Confirm(ctx context.Context, businessID, orderID uuid.UUID) (*
 	s.emit(ctx, businessID, order.ID, "order.confirmed")
 	return s.repo.Find(ctx, businessID, order.ID)
 }
+
 func (s *Service) Fulfill(ctx context.Context, businessID, staffID, orderID uuid.UUID) (*Order, error) {
 	order, err := s.Confirm(ctx, businessID, orderID)
 	if err != nil {
@@ -132,16 +147,25 @@ func (s *Service) Fulfill(ctx context.Context, businessID, staffID, orderID uuid
 	s.emit(ctx, businessID, order.ID, "order.fulfilled")
 	return s.repo.Find(ctx, businessID, order.ID)
 }
+
 func (s *Service) Cancel(ctx context.Context, businessID, orderID uuid.UUID) error {
 	return s.repo.SetStatus(ctx, businessID, orderID, StatusCancelled)
 }
+
 func (s *Service) Refund(ctx context.Context, businessID, orderID uuid.UUID) error {
 	return s.repo.SetStatus(ctx, businessID, orderID, StatusRefunded)
 }
-func (s *Service) emit(ctx context.Context, businessID, orderID uuid.UUID, eventType string) {
+
+func (s *Service) emit(ctx context.Context, businessID, orderID uuid.UUID, eventType string) (error){
 	if s.outbox == nil {
-		return
+		return apperrors.ErrInternal.WithCause(errors.New("outbox repository is missing"))
 	}
 	payload, _ := json.Marshal(map[string]any{"orderId": orderID, "businessId": businessID})
-	_ = s.outbox.Insert(ctx, &outbox.Event{TenantID: businessID, AggregateID: orderID.String(), AggregateType: "order", EventType: eventType, Stream: "orders", Payload: payload})
+	err := s.outbox.Insert(ctx, &outbox.Event{TenantID: businessID, AggregateID: orderID.String(), AggregateType: "order", EventType: eventType, Stream: "orders", Payload: payload})
+
+	if err != nil {
+		return apperrors.ErrInternal.WithCause(err)
+	}
+
+	return nil
 }

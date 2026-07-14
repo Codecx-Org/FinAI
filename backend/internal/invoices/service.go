@@ -56,20 +56,49 @@ func (s *Service) Create(ctx context.Context, businessID uuid.UUID, req CreateIn
 	}
 	subtotal := decimal.Zero
 	lines := make([]InvoiceLine, 0, len(req.Lines))
+
 	for _, line := range req.Lines {
 		if line.Description == "" {
 			return nil, apperrors.ErrUnprocessable.WithMessage("invoice line description is required")
 		}
 		lineTotal := line.Quantity.Mul(line.UnitPrice).Round(2)
 		subtotal = subtotal.Add(lineTotal)
-		lines = append(lines, InvoiceLine{BaseModel: shareddb.BaseModel{TenantID: businessID}, BusinessID: businessID, ProductID: line.ProductID, Description: line.Description, Quantity: line.Quantity, UnitPrice: line.UnitPrice, LineTotal: lineTotal})
+		lines = append(lines, InvoiceLine{
+			BaseModel: shareddb.BaseModel{
+				TenantID: businessID,
+			}, BusinessID: businessID, 
+			ProductID: line.ProductID, 
+			Description: line.Description, 
+			Quantity: line.Quantity, 
+			UnitPrice: line.UnitPrice, 
+			LineTotal: lineTotal,
+		})
 	}
+
 	tax := subtotal.Mul(decimal.NewFromFloat(0.16)).Round(2)
 	currency := req.Currency
 	if currency == "" {
 		currency = "KES"
 	}
-	invoice := &Invoice{BaseModel: shareddb.BaseModel{TenantID: businessID}, BusinessID: businessID, CustomerID: req.CustomerID, InvoiceNumber: number, Status: StatusDraft, Subtotal: subtotal, TaxAmount: tax, Total: subtotal.Add(tax), AmountPaid: decimal.Zero, AmountDue: subtotal.Add(tax), Currency: currency, Notes: req.Notes, DueAt: req.DueAt}
+
+	invoice := &Invoice{
+		BaseModel: shareddb.BaseModel{
+			TenantID: businessID,
+		}, 
+		BusinessID: businessID, 
+		CustomerID: req.CustomerID, 
+		InvoiceNumber: number, 
+		Status: StatusDraft, 
+		Subtotal: subtotal, 
+		TaxAmount: tax, 
+		Total: subtotal.Add(tax), 
+		AmountPaid: decimal.Zero, 
+		AmountDue: subtotal.Add(tax), 
+		Currency: currency, 
+		Notes: req.Notes, 
+		DueAt: req.DueAt,
+	}
+
 	if err := s.repo.Create(ctx, invoice, lines); err != nil {
 		return nil, err
 	}

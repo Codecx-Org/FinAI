@@ -43,7 +43,6 @@ func (h Handler) List(w http.ResponseWriter, r *http.Request) {
 	}
 	sharedhttp.JSON(w, http.StatusOK, sharedhttp.Envelope{"payments": items})
 }
-
 func (h Handler) Get(w http.ResponseWriter, r *http.Request) {
 	bid, ok := middleware.BusinessIDFromCtx(r.Context())
 	if !ok {

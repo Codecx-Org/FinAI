@@ -28,7 +28,7 @@ type TokenService struct {
 
 func NewTokenService(cfg Config) *TokenService {
 	if cfg.AccessTTL == 0 {
-		cfg.AccessTTL = 15 * time.Minute
+		cfg.AccessTTL = 60 * time.Minute
 	}
 	if cfg.RefreshTTL == 0 {
 		cfg.RefreshTTL = 5 * 24 * time.Hour

@@ -60,11 +60,30 @@ func (s *Service) Initiate(ctx context.Context, businessID uuid.UUID, req Initia
 	if len(payload) == 0 {
 		payload = []byte(`{}`)
 	}
-	cmd := &PaymentCommand{BaseModel: shareddb.BaseModel{TenantID: businessID}, BusinessID: businessID, InvoiceID: req.InvoiceID, Type: req.Type, Status: StatusPending, IdempotencyKey: key, Amount: req.Amount, Currency: currency, Phone: req.Phone, AccountReference: req.AccountReference, Provider: "mpesa", Payload: payload}
+	cmd := &PaymentCommand{
+		BaseModel: shareddb.BaseModel{
+			TenantID: businessID,
+		}, 
+		BusinessID: businessID, 
+		InvoiceID: req.InvoiceID, 
+		Type: req.Type, 
+		Status: StatusPending, 
+		IdempotencyKey: key, 
+		Amount: req.Amount, 
+		Currency: currency, 
+		Phone: req.Phone, 
+		AccountReference: req.AccountReference, 
+		Provider: "mpesa", 
+		Payload: payload,
+	}
 	if err := s.repo.Create(ctx, cmd); err != nil {
 		return nil, err
 	}
-	s.emitCommand(ctx, cmd)
+
+	err := s.emitCommand(ctx, cmd)
+	if err != nil {
+		return nil, err
+	}
 	return cmd, nil
 }
 
@@ -88,7 +107,12 @@ func (s *Service) MarkSucceeded(ctx context.Context, cmd PaymentCommand, result 
 	if err := s.repo.MarkSucceeded(ctx, cmd.ID, result.RequestID, result.Receipt, raw); err != nil {
 		return err
 	}
-	s.emitResult(ctx, cmd, StatusSucceeded, result.RequestID, result.Receipt, "", "")
+
+	err := s.emitResult(ctx, cmd, StatusSucceeded, result.RequestID, result.Receipt, "", "")
+	if err != nil {
+		return nil
+	}
+
 	return nil
 }
 
@@ -99,22 +123,64 @@ func (s *Service) MarkFailed(ctx context.Context, cmd PaymentCommand, code, mess
 	if err := s.repo.MarkFailed(ctx, cmd.ID, code, message, raw); err != nil {
 		return err
 	}
-	s.emitResult(ctx, cmd, StatusFailed, "", "", code, message)
+
+	err := s.emitResult(ctx, cmd, StatusFailed, "", "", code, message)
+	if err != nil {
+		return nil
+	}
+
 	return nil
 }
 
-func (s *Service) emitCommand(ctx context.Context, cmd *PaymentCommand) {
+func (s *Service) emitCommand(ctx context.Context, cmd *PaymentCommand) (error) {
 	if s.outbox == nil {
-		return
+		return apperrors.ErrInternal.WithMessage("service outbox not available")
 	}
-	raw, _ := json.Marshal(map[string]any{"paymentId": cmd.ID, "businessId": cmd.BusinessID, "type": cmd.Type, "amount": cmd.Amount.String(), "currency": cmd.Currency, "phone": cmd.Phone, "invoiceId": cmd.InvoiceID})
-	_ = s.outbox.Insert(ctx, &outbox.Event{TenantID: cmd.BusinessID, AggregateID: cmd.ID.String(), AggregateType: "payment_command", EventType: "payment.command.created", Stream: "payments.commands", Payload: raw})
+	raw, _ := json.Marshal(
+		map[string]any{
+		"paymentId": cmd.ID, 
+		"businessId": cmd.BusinessID, 
+		"type": cmd.Type, 
+		"amount": cmd.Amount.String(), 
+		"currency": cmd.Currency, 
+		"phone": cmd.Phone, 
+		"invoiceId": cmd.InvoiceID,
+	})
+	err := s.outbox.Insert(ctx, &outbox.Event{
+		TenantID: cmd.BusinessID, 
+		AggregateID: cmd.ID.String(), 
+		AggregateType: "payment_command", 
+		EventType: "payment.command.created", 
+		Stream: "payments.commands", 
+		Payload: raw,
+	})
+
+	if err != nil {
+		return apperrors.ErrInternal.WithMessage("error while emmiting command")
+	}
+	return nil
 }
 
-func (s *Service) emitResult(ctx context.Context, cmd PaymentCommand, status Status, requestID, receipt, code, message string) {
+func (s *Service) emitResult(ctx context.Context, cmd PaymentCommand, status Status, requestID, receipt, code, message string) (error){
 	if s.outbox == nil {
-		return
+		return nil
 	}
-	raw, _ := json.Marshal(ResultEvent{PaymentID: cmd.ID, BusinessID: cmd.BusinessID, Status: status, Provider: cmd.Provider, ProviderRequestID: requestID, ProviderReceipt: receipt, Amount: cmd.Amount, FailureCode: code, FailureMessage: message})
-	_ = s.outbox.Insert(ctx, &outbox.Event{TenantID: cmd.BusinessID, AggregateID: cmd.ID.String(), AggregateType: "payment_command", EventType: "payment.result", Stream: "payments.results", Payload: raw})
+	raw, _ := json.Marshal(
+		ResultEvent{
+			PaymentID: cmd.ID, 
+			BusinessID: cmd.BusinessID, 
+			Status: status, 
+			Provider: cmd.Provider, 
+			ProviderRequestID: requestID, 
+			ProviderReceipt: receipt, 
+			Amount: cmd.Amount, 
+			FailureCode: code, 
+			FailureMessage: message,
+		})
+		err := s.outbox.Insert(ctx, &outbox.Event{TenantID: cmd.BusinessID, AggregateID: cmd.ID.String(), AggregateType: "payment_command", EventType: "payment.result", Stream: "payments.results", Payload: raw})
+		if err != nil {
+			return apperrors.ErrInternal.WithMessage("error while emmiting result command")
+		}
+
+		return nil
 }
