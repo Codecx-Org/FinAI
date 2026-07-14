@@ -16,14 +16,12 @@ export interface Business {
   updatedAt: string;
 }
 
-export function useBusiness(id?: number) {
+export function useBusiness() {
   return useQuery({
-    queryKey: ["business", id],
+    queryKey: ["business"],
     queryFn: async () => {
-      if (!id) return null;
-      const response = await api.get<Business>(`/business/${id}`);
+      const response = await api.get<Business>("/business");
       return response.data;
     },
-    enabled: !!id,
   });
 }
