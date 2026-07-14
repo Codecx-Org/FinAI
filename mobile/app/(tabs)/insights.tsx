@@ -23,6 +23,7 @@ import {
   Users,
   PieChart as PieChartIcon,
   Activity,
+  Trash2,
 } from "lucide-react-native";
 import {
   Card,
@@ -45,6 +46,8 @@ export default function InsightsTab() {
   const [showPredictionModal, setShowPredictionModal] = useState(false);
   const [showPricingModal, setShowPricingModal] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
+  const [showGoalsModal, setShowGoalsModal] = useState(false);
+  const [editingGoals, setEditingGoals] = useState<any[]>([]);
   const [expenseType, setExpenseType] = useState("");
   const [expenseDescription, setExpenseDescription] = useState("");
   const [expenseAmount, setExpenseAmount] = useState("");
@@ -213,11 +216,22 @@ export default function InsightsTab() {
             <Card className="mb-4">
               <CardHeader>
                 <CardTitle>
-                  <View className="flex-row items-center">
-                    <View className="mr-2">
-                      <Target size={16} color="#374151" />
+                  <View className="flex-row items-center justify-between">
+                    <View className="flex-row items-center">
+                      <View className="mr-2">
+                        <Target size={16} color="#374151" />
+                      </View>
+                      <Text className="font-bold">Monthly Goals</Text>
                     </View>
-                    <Text className="font-bold">Monthly Goals</Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setEditingGoals(JSON.parse(JSON.stringify(goals)));
+                        setShowGoalsModal(true);
+                      }}
+                      className="p-1"
+                    >
+                      <Edit2 size={16} color="#006b5f" />
+                    </TouchableOpacity>
                   </View>
                 </CardTitle>
               </CardHeader>
@@ -721,6 +735,129 @@ export default function InsightsTab() {
                 </View>
               )}
             </View>
+          </ScrollView>
+        </View>
+      </Modal>
+
+      {/* Goals Editor Modal */}
+      <Modal
+        visible={showGoalsModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowGoalsModal(false)}
+      >
+        <View className="flex-1 bg-gray-50">
+          <View className="flex-row justify-between items-center p-4 bg-white border-b border-gray-200 shadow-sm">
+            <Text className="text-lg font-bold text-primary-800">
+              Edit Business Goals
+            </Text>
+            <TouchableOpacity onPress={() => setShowGoalsModal(false)}>
+              <Text className="text-gray-500 font-bold text-lg">X</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+            {editingGoals.map((g, idx) => (
+              <Card key={g.id || idx} className="mb-4">
+                <CardContent className="p-4">
+                  <View className="flex-row justify-between items-center mb-3">
+                    <Text className="font-bold text-gray-700">Goal #{idx + 1}</Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setEditingGoals(prev => prev.filter((_, i) => i !== idx));
+                      }}
+                      className="p-1"
+                    >
+                      <Trash2 size={16} color="#ef4444" />
+                    </TouchableOpacity>
+                  </View>
+                  <Text className="text-xs text-gray-500 mb-1">Title</Text>
+                  <TextInput
+                    className="border border-gray-200 rounded-lg px-3 py-2 mb-2 text-gray-900 bg-white"
+                    placeholder="Goal Title"
+                    value={g.title}
+                    onChangeText={text => {
+                      setEditingGoals(prev => prev.map((item, i) => i === idx ? { ...item, title: text } : item));
+                    }}
+                  />
+                  <View className="flex-row gap-2 mb-2">
+                    <View className="flex-1">
+                      <Text className="text-xs text-gray-500 mb-1">Current</Text>
+                      <TextInput
+                        className="border border-gray-200 rounded-lg px-3 py-2 text-gray-900 bg-white"
+                        placeholder="0"
+                        keyboardType="numeric"
+                        value={g.current.toString()}
+                        onChangeText={text => {
+                          const val = parseFloat(text) || 0;
+                          setEditingGoals(prev => prev.map((item, i) => i === idx ? { ...item, current: val } : item));
+                        }}
+                      />
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-xs text-gray-500 mb-1">Target</Text>
+                      <TextInput
+                        className="border border-gray-200 rounded-lg px-3 py-2 text-gray-900 bg-white"
+                        placeholder="0"
+                        keyboardType="numeric"
+                        value={g.target.toString()}
+                        onChangeText={text => {
+                          const val = parseFloat(text) || 0;
+                          setEditingGoals(prev => prev.map((item, i) => i === idx ? { ...item, target: val } : item));
+                        }}
+                      />
+                    </View>
+                  </View>
+                  <Text className="text-xs text-gray-500 mb-1">Unit (e.g. KES, customers, items)</Text>
+                  <TextInput
+                    className="border border-gray-200 rounded-lg px-3 py-2 text-gray-900 bg-white"
+                    placeholder="Unit"
+                    value={g.unit}
+                    onChangeText={text => {
+                      setEditingGoals(prev => prev.map((item, i) => i === idx ? { ...item, unit: text } : item));
+                    }}
+                  />
+                </CardContent>
+              </Card>
+            ))}
+
+            <TouchableOpacity
+              onPress={() => {
+                setEditingGoals(prev => [
+                  ...prev,
+                  {
+                    id: Date.now(),
+                    title: "New Goal",
+                    current: 0,
+                    target: 100,
+                    unit: "items"
+                  }
+                ]);
+              }}
+              className="border-2 border-dashed border-primary-300 rounded-xl p-4 items-center justify-center mb-6 bg-white"
+            >
+              <Text className="text-primary-700 font-bold">+ Add Goal</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={async () => {
+                try {
+                  const currentMetadata = business?.metadata || {};
+                  await updateBusiness({
+                    metadata: {
+                      ...currentMetadata,
+                      goals: editingGoals,
+                    },
+                  });
+                  setShowGoalsModal(false);
+                  Alert.alert("Success", "Goals updated successfully!");
+                } catch (err: any) {
+                  Alert.alert("Error", err.message || "Failed to update goals");
+                }
+              }}
+              className="bg-primary-600 py-4 rounded-xl items-center justify-center shadow"
+            >
+              <Text className="text-white font-bold text-base">Save Changes</Text>
+            </TouchableOpacity>
           </ScrollView>
         </View>
       </Modal>
