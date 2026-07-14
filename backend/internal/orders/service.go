@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/Codecx-Org/FinAI/backend/internal/inventory"
@@ -100,60 +99,65 @@ func (s *Service) Confirm(ctx context.Context, businessID, orderID uuid.UUID) (*
 		return nil, apperrors.ErrConflict.WithMessage("order cannot be confirmed from current status")
 	}
 
-	lines := make([]inventory.DecrementLine, 0, len(order.Lines))
-	for _, line := range order.Lines {
-		lines = append(lines, inventory.DecrementLine{ProductID: line.ProductID, Quantity: line.Quantity})
-	}
-
-	if s.inventory != nil {
-		if err := s.inventory.DecrementForOrder(ctx, businessID, order.ID, lines); err != nil {
-			return nil, err
-		}
-	}
-
-	now := time.Now().UTC()
-	order.Status = StatusConfirmed
-	order.ConfirmedAt = &now
-	if err := s.repo.Update(ctx, order); err != nil {
+	sm := s.buildOrderMachine(businessID, order)
+	if err := sm.FireCtx(ctx, TriggerConfirm); err != nil {
 		return nil, err
 	}
-	s.emit(ctx, businessID, order.ID, "order.confirmed")
+
 	return s.repo.Find(ctx, businessID, order.ID)
 }
 
 func (s *Service) Fulfill(ctx context.Context, businessID, staffID, orderID uuid.UUID) (*Order, error) {
-	order, err := s.Confirm(ctx, businessID, orderID)
+	order, err := s.repo.Find(ctx, businessID, orderID)
 	if err != nil {
 		return nil, err
 	}
-	if order.Status == StatusFulfilled {
-		return order, nil
-	}
-	saleLines := make([]sales.OrderLineInput, 0, len(order.Lines))
-	for _, line := range order.Lines {
-		saleLines = append(saleLines, sales.OrderLineInput{ProductID: line.ProductID, Quantity: line.Quantity, UnitPrice: line.UnitPrice})
-	}
-	if s.sales != nil {
-		if _, err := s.sales.CreateFromOrder(ctx, businessID, staffID, order.ID, order.CustomerID, order.PaymentMethod, saleLines); err != nil {
+
+	sm := s.buildOrderMachine(businessID, order);
+	 
+	if order.Status == StatusDraft {
+		if err := sm.FireCtx(ctx, TriggerConfirm); err != nil {
 			return nil, err
 		}
 	}
-	now := time.Now().UTC()
-	order.Status = StatusFulfilled
-	order.FulfilledAt = &now
-	if err := s.repo.Update(ctx, order); err != nil {
+
+
+	if err := sm.FireCtx(ctx, TriggerFullfill, staffID); err != nil {
 		return nil, err
 	}
-	s.emit(ctx, businessID, order.ID, "order.fulfilled")
+
 	return s.repo.Find(ctx, businessID, order.ID)
 }
 
 func (s *Service) Cancel(ctx context.Context, businessID, orderID uuid.UUID) error {
-	return s.repo.SetStatus(ctx, businessID, orderID, StatusCancelled)
+	order, err := s.repo.Find(ctx, businessID, orderID)
+	
+	if err != nil {
+		return err
+	}
+
+	sm := s.buildOrderMachine(businessID, order)
+
+	if err := sm.FireCtx(ctx, TriggerCancel); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *Service) Refund(ctx context.Context, businessID, orderID uuid.UUID) error {
-	return s.repo.SetStatus(ctx, businessID, orderID, StatusRefunded)
+	order, err := s.repo.Find(ctx, businessID, orderID)
+	if err != nil {
+		return err
+	}
+
+	sm := s.buildOrderMachine(businessID, order)
+
+	if err := sm.FireCtx(ctx, TriggerRequestRefund); err != nil {
+		return nil
+	}
+
+	return nil
 }
 
 func (s *Service) emit(ctx context.Context, businessID, orderID uuid.UUID, eventType string) (error){
