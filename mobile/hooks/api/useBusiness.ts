@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 
 export interface Business {
@@ -11,7 +11,7 @@ export interface Business {
   ownerPhone?: string | null;
   businessType?: string | null;
   yearsInBusiness?: string | null;
-  metadata?: Record<string, unknown> | null;
+  metadata?: Record<string, any> | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -22,6 +22,19 @@ export function useBusiness() {
     queryFn: async () => {
       const response = await api.get<Business>("/business");
       return response.data;
+    },
+  });
+}
+
+export function useUpdateBusiness() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: Partial<Business>) => {
+      const response = await api.put<Business>("/business", data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["business"] });
     },
   });
 }
