@@ -17,10 +17,41 @@ export class AchievementService {
   }
 
   async getAllAchievements(businessId: number) {
-    return await prisma.businessAchievement.findMany({
+    const list = await prisma.businessAchievement.findMany({
       where: { businessId },
       orderBy: { createdAt: 'desc' },
     });
+
+    if (list.length === 0) {
+      // Auto-seed default achievements for new businesses
+      const defaults = [
+        { title: 'Consistent Earner', description: '6 months of steady revenue', earned: true, earnedAt: new Date() },
+        { title: 'Payment Master', description: 'No late payments in 3 months', earned: true, earnedAt: new Date() },
+        { title: 'Growth Champion', description: '20% month-over-month growth', earned: false },
+        { title: 'Customer Favorite', description: '4.5+ customer rating', earned: true, earnedAt: new Date() },
+      ];
+      
+      try {
+        await prisma.businessAchievement.createMany({
+          data: defaults.map(d => ({
+            title: d.title,
+            description: d.description,
+            earned: d.earned,
+            earnedAt: d.earnedAt,
+            businessId,
+          })),
+        });
+        
+        return await prisma.businessAchievement.findMany({
+          where: { businessId },
+          orderBy: { createdAt: 'desc' },
+        });
+      } catch (error) {
+        console.error('Failed to seed achievements:', error);
+      }
+    }
+
+    return list;
   }
 
   async updateAchievement(
