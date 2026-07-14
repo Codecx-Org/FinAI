@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
 import {
   TrendingUp,
   TrendingDown,
@@ -62,6 +62,8 @@ export default function InsightsTab() {
     
     if (params.action === "new-expense") {
       setShowExpenseModal(true);
+      // Clear action param so modal doesn't reopen unexpectedly on back navigation/reload
+      router.setParams({ action: undefined, tab: undefined });
     }
   }, [params.tab, params.action]);
 
