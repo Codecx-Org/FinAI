@@ -80,6 +80,18 @@ export default function Dashboard() {
     `KES ${amount.toLocaleString("en-KE")}`;
 
   // Calculate metrics from real data
+  const todayRevenue = useMemo(() => {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    return (sales || []).reduce((sum, s) => {
+      const saleDate = new Date(s.createdAt);
+      if (saleDate >= startOfToday) {
+        return sum + s.totalAmount;
+      }
+      return sum;
+    }, 0);
+  }, [sales]);
+
   const weeklyRevenue = weeklyOverview.reduce((sum, day) => sum + day.sales, 0);
   const weeklyExpenses = (expensesData || []).reduce((sum, e) => sum + e.amount, 0);
   
@@ -221,7 +233,7 @@ export default function Dashboard() {
         {[
           {
             label: "Today's Sales",
-            val: formatCurrency(weeklyRevenue / 7), // Daily average
+            val: formatCurrency(todayRevenue),
             icon: TrendingUp,
             color: "#16a34a",
             bg: "bg-green-100",
