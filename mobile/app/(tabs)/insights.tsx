@@ -34,6 +34,7 @@ import { Badge } from "../../components/ui/Badge";
 import { Progress } from "../../components/ui/Progress";
 import { useAnalytics } from "../../hooks/api/useAnalytics";
 import { useExpenses } from "../../hooks/api/useExpenses";
+import { useBusiness, useUpdateBusiness } from "../../hooks/api/useBusiness";
 import { TAB_BAR_SCROLL_PADDING } from "../../constants/tabBar";
 
 export default function InsightsTab() {
@@ -78,31 +79,42 @@ export default function InsightsTab() {
     isCreating: isCreatingExpense,
   } = useExpenses();
 
-  // Default goals (will be replaced with API later)
-  const defaultGoals = [
+  // Business profile hooks
+  const { data: business } = useBusiness();
+  const { mutateAsync: updateBusiness } = useUpdateBusiness();
+
+  // Default goals
+  const defaultGoals = useMemo(() => [
     {
       id: 1,
-      title: "Monthly Feed Sales Target",
+      title: "Monthly Sales Target",
       current: 450000,
       target: 600000,
       unit: "KES",
     },
     {
       id: 2,
-      title: "New Farmer Customers",
+      title: "New Customers",
       current: 23,
       target: 30,
       unit: "farmers",
     },
     {
       id: 3,
-      title: "Feed Inventory Turnover",
+      title: "Inventory Turnover",
       current: 2.3,
       target: 3.0,
       unit: "times",
     },
-  ];
-  const [goals, setGoals] = useState(defaultGoals);
+  ], []);
+
+  // Resolve goals dynamically from business metadata
+  const goals = useMemo(() => {
+    if (business?.metadata?.goals && Array.isArray(business.metadata.goals)) {
+      return business.metadata.goals;
+    }
+    return defaultGoals;
+  }, [business?.metadata?.goals, defaultGoals]);
 
   // Map category performance from API
   const productCategories = useMemo(() => {
