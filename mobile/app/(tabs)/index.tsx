@@ -39,20 +39,20 @@ import { TAB_BAR_SCROLL_PADDING } from "../../constants/tabBar";
 const growthTips = [
   {
     icon: Target,
-    title: "Poultry Feed Focus",
-    tip: "Promote chick mash, layers mash, and growers mash as your premium poultry feed line.",
+    title: "Optimize Product Pricing",
+    tip: "Review your profit margins periodically and adjust pricing based on supplier costs.",
     impact: "High",
   },
   {
     icon: Truck,
-    title: "Bulk Poultry Orders",
-    tip: "Offer volume discounts on 10+ bags of layers mash.",
+    title: "Clear Low-Stock Alerts",
+    tip: "Restock items that are below minimum thresholds to prevent missed sales.",
     impact: "Medium",
   },
   {
     icon: Heart,
-    title: "Feed Quality Guarantee",
-    tip: "Highlight that your chick mash and growers mash meet KEB standards.",
+    title: "Customer Loyalty",
+    tip: "Consider rewarding repeat customers with simple volume discounts to drive retention.",
     impact: "High",
   },
 ];
