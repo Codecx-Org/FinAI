@@ -41,7 +41,7 @@ export default function RewardsScreen() {
       return;
     }
     try {
-      await addAchievement(newTitle, newDesc);
+      await addAchievement({ title: newTitle.trim(), description: newDesc.trim() || undefined });
       setNewTitle("");
       setNewDesc("");
       setIsAdding(false);
@@ -160,7 +160,7 @@ export default function RewardsScreen() {
                 >
                   <CardContent className="p-4 flex-row items-center">
                     <TouchableOpacity
-                      onPress={() => toggleAchievement(item.id, !item.earned)}
+                      onPress={() => toggleAchievement({ id: item.id, earned: !item.earned })}
                       className={`w-10 h-10 rounded-full items-center justify-center mr-4 ${item.earned ? "bg-green-100" : "bg-gray-100"}`}
                     >
                       {item.earned ? (

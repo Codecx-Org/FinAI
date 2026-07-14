@@ -14,62 +14,9 @@ import {
 } from "react-native";
 import { ArrowLeft, Sparkles, AlertCircle, Share as ShareIcon } from "lucide-react-native";
 import { router } from "expo-router";
-// import { useAuth } from "../contexts/AuthContext";
-// import { api } from "../lib/api";
-// import Toast from "react-native-toast-message";
+import { api } from "../lib/api";
 
-// Platform aware proxy URL avoiding emulator localhost crashing
-const PROXY_URL: string =
-  process.env.EXPO_PUBLIC_PROXY_URL ||
-  (Platform.OS === "android"
-    ? "http://10.0.2.2:3001"
-    : "http://localhost:3001");
-
-const generateTextViaProxy = async (
-  platform: string,
-  contentType: string,
-  tone: string,
-  description: string,
-  goalLabel: string,
-): Promise<string> => {
-  const charLimits: Record<string, number> = {
-    twitter: 280,
-    instagram: 2200,
-    linkedin: 3000,
-  };
-  const limit = charLimits[platform] || 1000;
-
-  const prompt =
-    `Write a ${tone} social media ${contentType} for ${platform} about: "${description}". ` +
-    `Goal: ${goalLabel}. African small business context. ` +
-    `Include relevant emojis. Keep it under ${limit} characters. Return ONLY the post text, nothing else.`;
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 18000);
-
-  try {
-    const res = await fetch(
-      `${PROXY_URL}/api/generate-text?prompt=${encodeURIComponent(prompt)}`,
-      { signal: controller.signal },
-    );
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err?.error || `Proxy error ${res.status}`);
-    }
-
-    const data = await res.json();
-    if (!data.text) throw new Error("Empty response from proxy");
-    return data.text;
-  } finally {
-    clearTimeout(timeoutId);
-  }
-};
-
-const generatePollinationsImage = (prompt: string): string => {
-  const imagePrompt = `${prompt}, African small business, vibrant colors, professional marketing style, high quality`;
-  return `${PROXY_URL}/api/generate-image?prompt=${encodeURIComponent(imagePrompt)}&width=512&height=512&seed=${Date.now()}`;
-};
+// Text/image content generation is handled via backend API integration
 
 const platforms = [
   { id: "instagram", label: "Instagram", color: "bg-pink-500" },
@@ -78,12 +25,18 @@ const platforms = [
 ];
 
 export default function SocialMediaModal() {
-  const [selectedGoal, setSelectedGoal] = useState<any>(null);
+  const [selectedGoal, setSelectedGoal] = useState<any>({
+    id: "grow",
+    label: "Grow My Business",
+    sublabel: "Expand reach & revenue",
+    color: "border-emerald-500",
+  });
   const [selectedPlatform, setSelectedPlatform] = useState<string>("instagram");
-  const [tone, setTone] = useState<string>("");
+  const [tone, setTone] = useState<string>("casual");
   const [description, setDescription] = useState<string>("");
   const [generatedContent, setGeneratedContent] = useState<any>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   const goals = [
@@ -217,48 +170,49 @@ export default function SocialMediaModal() {
     setErrorMsg("");
     setGeneratedContent(null);
 
-    const imageUrl = generatePollinationsImage(description);
-    let textContent = "";
-    let source = "template";
-
     try {
-      textContent = await generateTextViaProxy(
+      const response = await api.post("/content/generate-social-media", {
         platform,
-        contentType,
+        type: contentType,
         tone,
-        description,
-        selectedGoal.label,
-      );
-      source = "ai";
-    } catch (err: any) {
-      console.warn("[Generate] Text failed, using template:", err?.message);
-      setErrorMsg(
-        `AI failure (${err?.message}) - Generated via local template instead.`,
-      );
-      textContent = getTemplateContent(
-        platform,
-        contentType,
-        tone,
-        description,
-      );
-      source = "template";
-    }
+        description: description.trim(),
+      });
 
-    const hashtags = generateSmartHashtags(
-      platform,
-      tone,
-      description,
-      textContent,
-    );
-    setGeneratedContent({
-      platform,
-      type: contentType,
-      content: textContent,
-      hashtags,
-      imageUrl,
-      source,
-    });
-    setIsGenerating(false);
+      const { content, hashtags, imageBase64, imageUrl, source } = response.data;
+
+      // Handle image: either base64 or imageUrl from Pollinations
+      const displayImageUrl = imageUrl || (imageBase64 ? `data:image/png;base64,${imageBase64}` : null);
+
+      setGeneratedContent({
+        platform,
+        type: contentType,
+        content,
+        hashtags,
+        imageUrl: displayImageUrl,
+        source: source || "ai",
+      });
+    } catch (err: any) {
+      console.warn("[Generate] Failed:", err);
+      // Fallback to local template content
+      const textContent = getTemplateContent(platform, contentType, tone, description.trim());
+      const hashtags = generateSmartHashtags(platform, tone, description.trim(), textContent);
+      const displayImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(description)}, ${platform} marketing style, professional product photo?width=512&height=512&enhance=true`;
+
+      setErrorMsg(
+        `AI failure (${err.friendlyMessage || err.message || "server error"}) - Generated via local template instead.`,
+      );
+
+      setGeneratedContent({
+        platform,
+        type: contentType,
+        content: textContent,
+        hashtags,
+        imageUrl: displayImageUrl,
+        source: "template",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleShare = async () => {
@@ -421,11 +375,20 @@ export default function SocialMediaModal() {
                   </Text>
                 </View>
                 {generatedContent.imageUrl && (
-                  <Image
-                    source={{ uri: generatedContent.imageUrl }}
-                    className="w-full h-64 bg-gray-100"
-                    resizeMode="cover"
-                  />
+                  <View className="relative w-full h-64 bg-gray-100">
+                    <Image
+                      source={{ uri: generatedContent.imageUrl }}
+                      className="w-full h-full"
+                      resizeMode="cover"
+                      onLoadStart={() => setIsImageLoading(true)}
+                      onLoadEnd={() => setIsImageLoading(false)}
+                    />
+                    {isImageLoading && (
+                      <View className="absolute inset-0 items-center justify-center bg-gray-200/50">
+                        <ActivityIndicator size="small" color="#006b5f" />
+                      </View>
+                    )}
+                  </View>
                 )}
                 <View className="p-4">
                   <Text className="text-sm text-gray-800 mb-2 leading-tight">

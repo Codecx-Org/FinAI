@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-import { api } from '../../lib/api';
-import { useAuth } from '../../contexts/AuthContext';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { api, ApiError } from '../../lib/api';
 
 export interface Achievement {
   id: number;
@@ -9,67 +8,68 @@ export interface Achievement {
   earned: boolean;
   earnedAt: string | null;
   createdAt: string;
+  businessId: number;
 }
 
-export function useAchievements() {
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { authTokens } = useAuth();
+export interface CreateAchievementInput {
+  title: string;
+  description?: string;
+}
 
-  const fetchAchievements = async () => {
-    if (!authTokens?.access) return;
-    setIsLoading(true);
-    try {
-      const response = await api.get('/achievements');
-      setAchievements(response.data);
-      setError(null);
-    } catch (err) {
-      setError('Failed to load achievements');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+export interface UpdateAchievementInput {
+  earned: boolean;
+}
 
-  useEffect(() => {
-    fetchAchievements();
-  }, [authTokens?.access]);
+export const useAchievements = () => {
+  const queryClient = useQueryClient();
 
-  const addAchievement = async (title: string, description?: string) => {
-    try {
-      const response = await api.post('/achievements', { title, description });
-      setAchievements([response.data, ...achievements]);
+  const getAchievements = useQuery({
+    queryKey: ['achievements'],
+    queryFn: async () => {
+      const response = await api.get<Achievement[]>('/achievements');
       return response.data;
-    } catch (err) {
-      throw new Error('Failed to add achievement');
-    }
-  };
+    },
+  });
 
-  const toggleAchievement = async (id: number, earned: boolean) => {
-    try {
-      const response = await api.patch(`/achievements/${id}`, { earned });
-      setAchievements(achievements.map((a) => (a.id === id ? response.data : a)));
-    } catch (err) {
-      throw new Error('Failed to update achievement');
-    }
-  };
+  const createAchievement = useMutation({
+    mutationFn: async (data: CreateAchievementInput) => {
+      const response = await api.post<Achievement>('/achievements', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['achievements'] });
+    },
+  });
 
-  const deleteAchievement = async (id: number) => {
-    try {
+  const toggleAchievement = useMutation({
+    mutationFn: async ({ id, earned }: { id: number; earned: boolean }) => {
+      const response = await api.patch<Achievement>(`/achievements/${id}`, { earned });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['achievements'] });
+    },
+  });
+
+  const deleteAchievement = useMutation({
+    mutationFn: async (id: number) => {
       await api.delete(`/achievements/${id}`);
-      setAchievements(achievements.filter((a) => a.id !== id));
-    } catch (err) {
-      throw new Error('Failed to delete achievement');
-    }
-  };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['achievements'] });
+    },
+  });
 
   return {
-    achievements,
-    isLoading,
-    error,
-    refetch: fetchAchievements,
-    addAchievement,
-    toggleAchievement,
-    deleteAchievement,
+    achievements: getAchievements.data || [],
+    isLoading: getAchievements.isLoading,
+    error: (getAchievements.error as ApiError)?.friendlyMessage || null,
+    refetch: getAchievements.refetch,
+    addAchievement: createAchievement.mutateAsync,
+    isAdding: createAchievement.isPending,
+    toggleAchievement: toggleAchievement.mutateAsync,
+    isToggling: toggleAchievement.isPending,
+    deleteAchievement: deleteAchievement.mutateAsync,
+    isDeleting: deleteAchievement.isPending,
   };
-}
+};

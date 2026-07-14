@@ -33,25 +33,26 @@ import { Progress } from "../../components/ui/Progress";
 import { useAuth } from "../../contexts/AuthContext";
 import { useAnalytics } from "../../hooks/api/useAnalytics";
 import { useProducts } from "../../hooks/api/useProducts";
+import { useSales } from "../../hooks/api/useSales";
 import { TAB_BAR_SCROLL_PADDING } from "../../constants/tabBar";
 
 const growthTips = [
   {
     icon: Target,
-    title: "Poultry Feed Focus",
-    tip: "Promote chick mash, layers mash, and growers mash as your premium poultry feed line.",
+    title: "Optimize Product Pricing",
+    tip: "Review your profit margins periodically and adjust pricing based on supplier costs.",
     impact: "High",
   },
   {
     icon: Truck,
-    title: "Bulk Poultry Orders",
-    tip: "Offer volume discounts on 10+ bags of layers mash.",
+    title: "Clear Low-Stock Alerts",
+    tip: "Restock items that are below minimum thresholds to prevent missed sales.",
     impact: "Medium",
   },
   {
     icon: Heart,
-    title: "Feed Quality Guarantee",
-    tip: "Highlight that your chick mash and growers mash meet KEB standards.",
+    title: "Customer Loyalty",
+    tip: "Consider rewarding repeat customers with simple volume discounts to drive retention.",
     impact: "High",
   },
 ];
@@ -70,6 +71,7 @@ export default function Dashboard() {
     profitAnalytics
   } = useAnalytics();
   const { products, isLoading: productsLoading } = useProducts();
+  const { sales, isLoading: salesLoading } = useSales();
 
   const { data: expensesData } = expenseAnalytics("week");
   const { data: profitData } = profitAnalytics("week");
@@ -78,6 +80,18 @@ export default function Dashboard() {
     `KES ${amount.toLocaleString("en-KE")}`;
 
   // Calculate metrics from real data
+  const todayRevenue = useMemo(() => {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    return (sales || []).reduce((sum, s) => {
+      const saleDate = new Date(s.createdAt);
+      if (saleDate >= startOfToday) {
+        return sum + s.totalAmount;
+      }
+      return sum;
+    }, 0);
+  }, [sales]);
+
   const weeklyRevenue = weeklyOverview.reduce((sum, day) => sum + day.sales, 0);
   const weeklyExpenses = (expensesData || []).reduce((sum, e) => sum + e.amount, 0);
   
@@ -111,20 +125,37 @@ export default function Dashboard() {
 
   // Top products calculation
   const topProducts = useMemo(() => {
-    return [...products]
-      .sort((a, b) => (b.stockQuantity || 0) - (a.stockQuantity || 0))
-      .slice(0, 4)
-      .map((p) => ({
+    const salesCount: Record<number, { name: string; category: string; sold: number; revenue: number }> = {};
+    
+    // Seed with all products
+    products.forEach(p => {
+      salesCount[p.id] = {
         name: p.name,
-        sold: p.stockQuantity,
-        revenue: p.stockQuantity * p.price,
         category: p.category || "Uncategorized",
-      }));
-  }, [products]);
+        sold: 0,
+        revenue: 0
+      };
+    });
+
+    // Populate actual sold counts and revenue from sales
+    (sales || []).forEach(s => {
+      const pid = s.productId;
+      if (salesCount[pid]) {
+        salesCount[pid].sold += s.quantity;
+        salesCount[pid].revenue += s.totalAmount;
+      }
+    });
+
+    // Sort by sold count descending and take top 4
+    return Object.values(salesCount)
+      .filter(p => p.sold > 0)
+      .sort((a, b) => b.sold - a.sold)
+      .slice(0, 4);
+  }, [products, sales]);
 
   const firstName = userData?.ownerName?.split(" ")[0] || "there";
 
-  if (isOverviewLoading || productsLoading) {
+  if (isOverviewLoading || productsLoading || salesLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
         <ActivityIndicator size="large" color="#006b5f" />
@@ -202,7 +233,7 @@ export default function Dashboard() {
         {[
           {
             label: "Today's Sales",
-            val: formatCurrency(weeklyRevenue / 7), // Daily average
+            val: formatCurrency(todayRevenue),
             icon: TrendingUp,
             color: "#16a34a",
             bg: "bg-green-100",

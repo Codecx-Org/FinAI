@@ -159,6 +159,10 @@ export function standardizeApiError(error: any): string {
 api.interceptors.response.use(
   (response) => {
     console.log("API Response:", response.status, response.config.url);
+    // If the response is wrapped in standard API envelope { success: true, data: ... }
+    if (response.data && response.data.success === true && response.data.data !== undefined) {
+      response.data = response.data.data;
+    }
     return response;
   },
   async (error: ApiError) => {

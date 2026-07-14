@@ -85,7 +85,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (credentials: { email: string; password: string }) => {
     try {
-      console.log("Login attempt:", credentials);
       const response = await api.post("/auth/login", credentials);
       handleAuthResponse(response.data);
     } catch (error: any) {
@@ -119,8 +118,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const handleAuthResponse = async (data: { token: string; business: any }) => {
-    const { token, business } = data;
+  const handleAuthResponse = async (data: any) => {
+    const payload = data?.data && data?.success === true ? data.data : (data?.token ? data : data?.data || data);
+    const token = payload?.token;
+    const business = payload?.business;
+
+    if (!token || !business) {
+      console.error("[Auth] Missing token or business in response payload:", data);
+      throw new Error("Invalid authentication response from server");
+    }
+
     await AsyncStorage.setItem("bizsawa_token", token);
     await AsyncStorage.setItem("bizsawa_userdata", JSON.stringify(business));
     setUserData(business);
