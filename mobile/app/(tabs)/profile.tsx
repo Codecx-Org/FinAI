@@ -23,14 +23,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { useAuth } from "../../contexts/AuthContext";
 import { useBusiness } from "../../hooks/api/useBusiness";
+import { useAchievements } from "../../hooks/api/useAchievements";
 import { TAB_BAR_SCROLL_PADDING } from "../../constants/tabBar";
-
-const achievements = [
-  { title: "Consistent Earner", description: "6 months of steady revenue", earned: true },
-  { title: "Payment Master", description: "No late payments in 3 months", earned: true },
-  { title: "Growth Champion", description: "20% month-over-month growth", earned: false },
-  { title: "Customer Favorite", description: "4.5+ customer rating", earned: true },
-];
 
 function metadataLocation(metadata: unknown): string | null {
   if (!metadata || typeof metadata !== "object") return null;
@@ -43,7 +37,8 @@ function metadataLocation(metadata: unknown): string | null {
 export default function ProfileTab() {
   const router = useRouter();
   const { userData, logout } = useAuth();
-  const { data: business, isLoading, isError, refetch } = useBusiness(userData?.id);
+  const { data: business, isLoading, isError, refetch } = useBusiness();
+  const { achievements, isLoading: isLoadingAchievements } = useAchievements();
 
   const ownerParts = useMemo(() => {
     const name = business?.ownerName || userData?.ownerName || "";
@@ -65,6 +60,8 @@ export default function ProfileTab() {
   const location = metadataLocation(business?.metadata) || "Not set in profile";
   const businessType = business?.businessType?.trim() || "—";
   const years = business?.yearsInBusiness?.trim() || "—";
+
+  const earnedAchievements = useMemo(() => achievements.filter(a => a.earned), [achievements]);
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -184,6 +181,45 @@ export default function ProfileTab() {
                 <LogOut size={18} color="#dc2626" />
                 <Text className="text-red-600 font-bold ml-2">Sign Out</Text>
               </TouchableOpacity>
+            </CardContent>
+          </Card>
+
+          {/* Unlocked Achievements Card */}
+          <Card className="mb-4">
+            <CardHeader className="pb-2">
+              <CardTitle>
+                <View className="flex-row items-center">
+                  <View className="mr-2">
+                    <Trophy size={16} color="#006b5f" />
+                  </View>
+                  <Text className="font-bold text-gray-900">Unlocked Badges</Text>
+                </View>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoadingAchievements ? (
+                <ActivityIndicator size="small" color="#006b5f" className="my-2" />
+              ) : earnedAchievements.length === 0 ? (
+                <Text className="text-xs text-gray-500 italic py-2">
+                  No achievements unlocked yet. Keep growing your sales to earn rewards!
+                </Text>
+              ) : (
+                <View className="space-y-3">
+                  {earnedAchievements.map((item, idx) => (
+                    <View key={item.id || idx} className="flex-row items-center mb-3 last:mb-0">
+                      <View className="w-8 h-8 rounded-full bg-green-50 items-center justify-center mr-3 border border-green-200">
+                        <CheckCircle size={16} color="#16a34a" />
+                      </View>
+                      <View className="flex-1">
+                        <Text className="text-sm font-bold text-gray-900">{item.title}</Text>
+                        {item.description && (
+                          <Text className="text-xs text-gray-500 mt-0.5">{item.description}</Text>
+                        )}
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              )}
             </CardContent>
           </Card>
 
