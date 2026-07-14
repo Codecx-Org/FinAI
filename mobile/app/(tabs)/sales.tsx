@@ -145,6 +145,7 @@ export default function SalesTab() {
       Alert.alert("Success", "Payment received successfully!");
       setShowPaymentDialog(false);
       setPaymentOrder(null);
+      setActiveTab("sales");
       void refetchSales();
     } else if (status === "failed" || status === "canceled" || status === "cancelled") {
       paymentOutcomeHandledRef.current = true;
