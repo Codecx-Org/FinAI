@@ -37,6 +37,7 @@ import { creditRoutes } from './routes/credit/credit.routes.js';
 import { chatbotRoutes } from './routes/chatbot/chatbot.routes.js';
 import { businessRoutes } from './routes/business/business.routes.js';
 import { achievementsRoutes } from './routes/achievements/achievements.routes.js';
+import { contentGenerationRoutes } from './routes/content/content-generation.routes.js';
 import errorHandlerPlugin from './plugins/error-handler.plugin.js';
 
 validateEnv();
@@ -170,6 +171,7 @@ export async function buildServer(): Promise<FastifyInstance> {
     await protectedFastify.register(chatbotRoutes, { prefix: '/api' });
     await protectedFastify.register(businessRoutes, { prefix: '/api' });
     await protectedFastify.register(achievementsRoutes, { prefix: '/api' });
+    await protectedFastify.register(contentGenerationRoutes, { prefix: '/api' });
   };
 
   await fastify.register(protectedPlugin);
