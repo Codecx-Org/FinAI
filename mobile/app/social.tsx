@@ -31,6 +31,7 @@ export default function SocialMediaModal() {
   const [description, setDescription] = useState<string>("");
   const [generatedContent, setGeneratedContent] = useState<any>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   const goals = [
@@ -369,11 +370,20 @@ export default function SocialMediaModal() {
                   </Text>
                 </View>
                 {generatedContent.imageUrl && (
-                  <Image
-                    source={{ uri: generatedContent.imageUrl }}
-                    className="w-full h-64 bg-gray-100"
-                    resizeMode="cover"
-                  />
+                  <View className="relative w-full h-64 bg-gray-100">
+                    <Image
+                      source={{ uri: generatedContent.imageUrl }}
+                      className="w-full h-full"
+                      resizeMode="cover"
+                      onLoadStart={() => setIsImageLoading(true)}
+                      onLoadEnd={() => setIsImageLoading(false)}
+                    />
+                    {isImageLoading && (
+                      <View className="absolute inset-0 items-center justify-center bg-gray-200/50">
+                        <ActivityIndicator size="small" color="#006b5f" />
+                      </View>
+                    )}
+                  </View>
                 )}
                 <View className="p-4">
                   <Text className="text-sm text-gray-800 mb-2 leading-tight">
