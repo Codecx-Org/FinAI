@@ -249,17 +249,22 @@ export default function SalesTab() {
     orderItems.reduce((sum, item) => sum + item.total, 0);
 
   const handleCreateOrder = async () => {
-    if (newOrder.customerId && orderItems.length > 0) {
+    const hasItems = orderItems.length > 0;
+    const mpesaValid = newOrder.paymentMethod !== "mpesa" || !!newOrder.customerId;
+
+    if (hasItems && mpesaValid) {
       try {
         const order: any = await createOrder({
-          customerId: parseInt(newOrder.customerId),
+          customerId: newOrder.customerId ? parseInt(newOrder.customerId) : undefined,
           totalAmount: calculateOrderTotal(),
           status: OrderStatus.pending,
           paymentMethod: newOrder.paymentMethod as any,
-          orderItems: orderItems.map(i => ({ productId: parseInt(i.id), quantity: i.quantity })) // Simplified product matching
+          orderItems: orderItems.map(i => ({ productId: parseInt(i.id), quantity: i.quantity }))
         });
         
-        const selectedCustomer = customers.find(c => c.id.toString() === newOrder.customerId);
+        const selectedCustomer = newOrder.customerId 
+          ? customers.find(c => c.id.toString() === newOrder.customerId)
+          : null;
         
         if (newOrder.paymentMethod === "mpesa" && selectedCustomer?.phone) {
           setPaymentOrder({ id: order.id, amount: calculateOrderTotal(), phone: selectedCustomer.phone, method: "mpesa" });
@@ -278,7 +283,7 @@ export default function SalesTab() {
         Alert.alert("Error", error.message || "Failed to create order");
       }
     } else {
-      Alert.alert("Error", "Please select a customer and add items");
+      Alert.alert("Error", "Please select a customer for M-Pesa order and add items");
     }
   };
 
@@ -1022,10 +1027,11 @@ export default function SalesTab() {
             <TouchableOpacity
               onPress={handleCreateOrder}
               disabled={
-                !newOrder.customerId ||
-                orderItems.length === 0
+                orderItems.length === 0 || (newOrder.paymentMethod === "mpesa" && !newOrder.customerId)
               }
-              className={`py-4 rounded-xl items-center flex-row justify-center mt-4 ${!newOrder.customerId || orderItems.length === 0 ? "bg-gray-300" : "bg-green-600"}`}
+              className={`py-4 rounded-xl items-center flex-row justify-center mt-4 ${
+                orderItems.length === 0 || (newOrder.paymentMethod === "mpesa" && !newOrder.customerId) ? "bg-gray-300" : "bg-green-600"
+              }`}
             >
               <View className="mr-2">
                 <ShoppingCart size={20} color="white" />
