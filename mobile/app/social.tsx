@@ -25,9 +25,14 @@ const platforms = [
 ];
 
 export default function SocialMediaModal() {
-  const [selectedGoal, setSelectedGoal] = useState<any>(null);
+  const [selectedGoal, setSelectedGoal] = useState<any>({
+    id: "grow",
+    label: "Grow My Business",
+    sublabel: "Expand reach & revenue",
+    color: "border-emerald-500",
+  });
   const [selectedPlatform, setSelectedPlatform] = useState<string>("instagram");
-  const [tone, setTone] = useState<string>("");
+  const [tone, setTone] = useState<string>("casual");
   const [description, setDescription] = useState<string>("");
   const [generatedContent, setGeneratedContent] = useState<any>(null);
   const [isGenerating, setIsGenerating] = useState(false);
