@@ -36,6 +36,7 @@ import { Progress } from "../../components/ui/Progress";
 import { useAnalytics } from "../../hooks/api/useAnalytics";
 import { useExpenses } from "../../hooks/api/useExpenses";
 import { useBusiness, useUpdateBusiness } from "../../hooks/api/useBusiness";
+import { useCustomers } from "../../hooks/api/useCustomers";
 import { TAB_BAR_SCROLL_PADDING } from "../../constants/tabBar";
 
 export default function InsightsTab() {
@@ -85,6 +86,7 @@ export default function InsightsTab() {
   // Business profile hooks
   const { data: business } = useBusiness();
   const { mutateAsync: updateBusiness } = useUpdateBusiness();
+  const { data: customers = [] } = useCustomers();
 
   // Default goals
   const defaultGoals = useMemo(() => [
@@ -135,22 +137,37 @@ export default function InsightsTab() {
   const weeklyRevenue = weeklyOverview.reduce((sum, day) => sum + day.sales, 0);
   const weeklyTransactions = weeklyOverview.length;
 
-  // Customer segments (derived from sales data - simplified for now)
-  const customerSegments = [
-    {
-      segment: "Regular Farmers",
-      count: 156,
-      growth: 12,
-      color: "text-green-600",
-    },
-    { segment: "New Farmers", count: 23, growth: 8, color: "text-blue-600" },
-    {
-      segment: "Large-Scale Farms",
-      count: 67,
-      growth: -3,
-      color: "text-orange-600",
-    },
-  ];
+  // Calculate customer segments dynamically from real customers list
+  const customerSegments = useMemo(() => {
+    const totalCount = customers.length;
+    
+    // Group customers by recency
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const newCustomers = (customers || []).filter(c => {
+      if (!c.createdAt) return false;
+      return new Date(c.createdAt) >= sevenDaysAgo;
+    });
+
+    const newCount = newCustomers.length;
+    const regularCount = Math.max(0, totalCount - newCount);
+
+    return [
+      {
+        segment: "Regular Customers",
+        count: regularCount,
+        growth: totalCount > 0 ? Math.round((regularCount / totalCount) * 100) : 0,
+        color: "text-green-600",
+      },
+      {
+        segment: "New Customers (This Week)",
+        count: newCount,
+        growth: totalCount > 0 ? Math.round((newCount / totalCount) * 100) : 0,
+        color: "text-blue-600",
+      },
+    ];
+  }, [customers]);
 
   const formatCurrency = (amount: number) =>
     `KES ${amount.toLocaleString("en-KE")}`;
