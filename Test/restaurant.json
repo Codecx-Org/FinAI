@@ -1,0 +1,22 @@
+[
+  { "name": "Espresso Blend Coffee Beans 1kg", "category": "Ingredients", "currentStock": 10, "unitPrice": 1400, "supplier": "Nairobi Coffee Millers" },
+  { "name": "Medium Roast Coffee Beans 1kg", "category": "Ingredients", "currentStock": 12, "unitPrice": 1350, "supplier": "Nairobi Coffee Millers" },
+  { "name": "Premium Black Tea 500g", "category": "Ingredients", "currentStock": 15, "unitPrice": 480, "supplier": "Ketepa" },
+  { "name": "Cooking Cream 1L", "category": "Ingredients", "currentStock": 20, "unitPrice": 620, "supplier": "Brookside Dairy" },
+  { "name": "Mozzarella Cheese Grated 2kg", "category": "Ingredients", "currentStock": 8, "unitPrice": 2200, "supplier": "Brookside Dairy" },
+  { "name": "Brioche Burger Buns (Pack of 12)", "category": "Bakery", "currentStock": 15, "unitPrice": 380, "supplier": "Nairobi Bakers" },
+  { "name": "Fresh Beef Burger Patties 150g (10 pcs)", "category": "Meat & Poultry", "currentStock": 10, "unitPrice": 2400, "supplier": "Quality Meat Packers" },
+  { "name": "Chicken Breast Boneless 1kg", "category": "Meat & Poultry", "currentStock": 12, "unitPrice": 850, "supplier": "Kenchic Ltd" },
+  { "name": "Frozen French Fries 2.5kg", "category": "Frozen Foods", "currentStock": 16, "unitPrice": 1250, "supplier": "Farmers Choice" },
+  { "name": "Pork Sausages Premium 1kg", "category": "Meat & Poultry", "currentStock": 14, "unitPrice": 950, "supplier": "Farmers Choice" },
+  { "name": "Soda Coca-Cola 350ml Glass (24 bottles)", "category": "Beverages", "currentStock": 8, "unitPrice": 1440, "supplier": "Coca-Cola" },
+  { "name": "Soda Fanta Orange 350ml Glass (24 bottles)", "category": "Beverages", "currentStock": 6, "unitPrice": 1440, "supplier": "Coca-Cola" },
+  { "name": "Soda Sprite 350ml Glass (24 bottles)", "category": "Beverages", "currentStock": 7, "unitPrice": 1440, "supplier": "Coca-Cola" },
+  { "name": "Fresh Orange Juice 5L", "category": "Beverages", "currentStock": 4, "unitPrice": 1800, "supplier": "Del Monte Kenya" },
+  { "name": "Tomato Paste 800g", "category": "Ingredients", "currentStock": 25, "unitPrice": 320, "supplier": "Peptang" },
+  { "name": "Extra Virgin Olive Oil 1L", "category": "Ingredients", "currentStock": 10, "unitPrice": 1250, "supplier": "Kapa Oil Refineries" },
+  { "name": "Whole Wheat Pizza Dough 200g (10 pcs)", "category": "Bakery", "currentStock": 8, "unitPrice": 850, "supplier": "Nairobi Bakers" },
+  { "name": "Mayonnaise Squeeze Bottle 1L", "category": "Ingredients", "currentStock": 12, "unitPrice": 650, "supplier": "Unilever" },
+  { "name": "Chili Sauce Hot 1L", "category": "Ingredients", "currentStock": 15, "unitPrice": 480, "supplier": "Peptang" },
+  { "name": "Salted Butter 500g", "category": "Ingredients", "currentStock": 20, "unitPrice": 450, "supplier": "Brookside Dairy" }
+]

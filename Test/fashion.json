@@ -1,0 +1,22 @@
+[
+  { "name": "Classic Cotton T-Shirt Men", "category": "Apparel", "currentStock": 45, "unitPrice": 1200, "supplier": "Mombasa Textiles" },
+  { "name": "Classic Cotton T-Shirt Women", "category": "Apparel", "currentStock": 40, "unitPrice": 1200, "supplier": "Mombasa Textiles" },
+  { "name": "Casual Denim Jeans Men", "category": "Apparel", "currentStock": 25, "unitPrice": 2500, "supplier": "Kamirithu Jeans" },
+  { "name": "Slim Fit Denim Jeans Women", "category": "Apparel", "currentStock": 20, "unitPrice": 2400, "supplier": "Kamirithu Jeans" },
+  { "name": "Floral Summer Dress", "category": "Apparel", "currentStock": 15, "unitPrice": 2800, "supplier": "East African Garments" },
+  { "name": "Formal Dress Shirt Men", "category": "Apparel", "currentStock": 30, "unitPrice": 1800, "supplier": "Mombasa Textiles" },
+  { "name": "Khaki Chino Trousers Men", "category": "Apparel", "currentStock": 22, "unitPrice": 2200, "supplier": "Mombasa Textiles" },
+  { "name": "Athletic Sports Shoes", "category": "Footwear", "currentStock": 12, "unitPrice": 3800, "supplier": "Bata Kenya" },
+  { "name": "Classic Leather Loafers Men", "category": "Footwear", "currentStock": 8, "unitPrice": 4500, "supplier": "Bata Kenya" },
+  { "name": "Casual Canvas Sneakers", "category": "Footwear", "currentStock": 18, "unitPrice": 1800, "supplier": "Bata Kenya" },
+  { "name": "Winter Knit Sweater Unisex", "category": "Apparel", "currentStock": 15, "unitPrice": 2900, "supplier": "East African Garments" },
+  { "name": "Windbreaker Jacket Hooded", "category": "Apparel", "currentStock": 10, "unitPrice": 3500, "supplier": "East African Garments" },
+  { "name": "Leather Dress Belt Men", "category": "Accessories", "currentStock": 25, "unitPrice": 1200, "supplier": "Bata Kenya" },
+  { "name": "Polarized Sunglasses Unisex", "category": "Accessories", "currentStock": 15, "unitPrice": 1500, "supplier": "Nairobi Optics" },
+  { "name": "Stainless Steel Analog Watch", "category": "Accessories", "currentStock": 6, "unitPrice": 6200, "supplier": "Nairobi Watch Co." },
+  { "name": "Woolen Scarf Winter Soft", "category": "Accessories", "currentStock": 20, "unitPrice": 950, "supplier": "Mombasa Textiles" },
+  { "name": "Baseball Cap Sport Unisex", "category": "Accessories", "currentStock": 35, "unitPrice": 750, "supplier": "Mombasa Textiles" },
+  { "name": "Ankle Socks (Pack of 3)", "category": "Accessories", "currentStock": 50, "unitPrice": 600, "supplier": "Mombasa Textiles" },
+  { "name": "Large Canvas Tote Bag", "category": "Accessories", "currentStock": 14, "unitPrice": 1400, "supplier": "East African Garments" },
+  { "name": "Silk Necktie Classic Men", "category": "Accessories", "currentStock": 18, "unitPrice": 1100, "supplier": "Mombasa Textiles" }
+]

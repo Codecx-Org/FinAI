@@ -1,0 +1,22 @@
+[
+  { "name": "Dairy Meal 50kg", "category": "Dairy Feed", "currentStock": 45, "unitPrice": 2300, "supplier": "Kenchic Ltd" },
+  { "name": "Chick Start Crumble 50kg", "category": "Poultry Feed", "currentStock": 30, "unitPrice": 2850, "supplier": "Kenchic Ltd" },
+  { "name": "Growers Mash 50kg", "category": "Poultry Feed", "currentStock": 25, "unitPrice": 2450, "supplier": "Kenchic Ltd" },
+  { "name": "Layers Complete Meal 50kg", "category": "Poultry Feed", "currentStock": 60, "unitPrice": 2600, "supplier": "Kenchic Ltd" },
+  { "name": "Sow & Weaner Meal 50kg", "category": "Swine Feed", "currentStock": 15, "unitPrice": 2150, "supplier": "Ungá Group" },
+  { "name": "Pig Finisher Meal 50kg", "category": "Swine Feed", "currentStock": 20, "unitPrice": 2050, "supplier": "Ungá Group" },
+  { "name": "Tilapia Pellets 20kg", "category": "Aquaculture", "currentStock": 12, "unitPrice": 3200, "supplier": "Sigma Feeds" },
+  { "name": "DAP Fertilizer 50kg", "category": "Seeds & Fertilizer", "currentStock": 80, "unitPrice": 6500, "supplier": "Amiran Kenya" },
+  { "name": "CAN Fertilizer 50kg", "category": "Seeds & Fertilizer", "currentStock": 75, "unitPrice": 5200, "supplier": "Amiran Kenya" },
+  { "name": "NPK 17:17:17 50kg", "category": "Seeds & Fertilizer", "currentStock": 40, "unitPrice": 5800, "supplier": "Amiran Kenya" },
+  { "name": "Certified Maize Seed H614 2kg", "category": "Seeds & Fertilizer", "currentStock": 110, "unitPrice": 520, "supplier": "Kenya Seed Co." },
+  { "name": "Certified Bean Seed Wairimu 2kg", "category": "Seeds & Fertilizer", "currentStock": 55, "unitPrice": 450, "supplier": "Kenya Seed Co." },
+  { "name": "Milking Salve 1kg", "category": "Veterinary", "currentStock": 35, "unitPrice": 380, "supplier": "Coopers Kenya" },
+  { "name": "Dewormer Bolus 10 tabs", "category": "Veterinary", "currentStock": 90, "unitPrice": 850, "supplier": "Coopers Kenya" },
+  { "name": "Acaricide Tick Spray 1L", "category": "Veterinary", "currentStock": 18, "unitPrice": 1650, "supplier": "Twiga Chemical" },
+  { "name": "Foliar Feed Multipurpose 1L", "category": "Seeds & Fertilizer", "currentStock": 22, "unitPrice": 1200, "supplier": "Syngenta" },
+  { "name": "Tomato Seeds MoneyMaker 50g", "category": "Seeds & Fertilizer", "currentStock": 50, "unitPrice": 850, "supplier": "Royal Seed" },
+  { "name": "Cabbage Seed Gloria F1 10g", "category": "Seeds & Fertilizer", "currentStock": 40, "unitPrice": 1850, "supplier": "Royal Seed" },
+  { "name": "Spading Fork Heavy Duty", "category": "Tools", "currentStock": 8, "unitPrice": 1500, "supplier": "Chillington" },
+  { "name": "Jembe Hoe Head 3lb", "category": "Tools", "currentStock": 15, "unitPrice": 650, "supplier": "Chillington" }
+]

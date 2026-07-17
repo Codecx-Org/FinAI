@@ -1,0 +1,22 @@
+[
+  { "name": "Fresh Milk 1L", "category": "Beverages", "currentStock": 35, "unitPrice": 110, "supplier": "Brookside Dairy" },
+  { "name": "White Bread 400g", "category": "Daily Essentials", "currentStock": 20, "unitPrice": 65, "supplier": "Superloaf Bakery" },
+  { "name": "Brown Bread 400g", "category": "Daily Essentials", "currentStock": 15, "unitPrice": 70, "supplier": "Superloaf Bakery" },
+  { "name": "White Sugar 1kg", "category": "Groceries", "currentStock": 40, "unitPrice": 180, "supplier": "Kabras Sugar" },
+  { "name": "White Sugar 2kg", "category": "Groceries", "currentStock": 25, "unitPrice": 350, "supplier": "Kabras Sugar" },
+  { "name": "Bar Soap Yellow 800g", "category": "Household", "currentStock": 30, "unitPrice": 150, "supplier": "Bidco Africa" },
+  { "name": "Liquid Hand Wash 500ml", "category": "Household", "currentStock": 12, "unitPrice": 250, "supplier": "Unilever" },
+  { "name": "Cooking Oil 1L", "category": "Groceries", "currentStock": 28, "unitPrice": 320, "supplier": "Bidco Africa" },
+  { "name": "Cooking Oil 2L", "category": "Groceries", "currentStock": 18, "unitPrice": 610, "supplier": "Bidco Africa" },
+  { "name": "Premium Tea Leaves 250g", "category": "Beverages", "currentStock": 30, "unitPrice": 190, "supplier": "Ketepa" },
+  { "name": "Instant Coffee 100g", "category": "Beverages", "currentStock": 15, "unitPrice": 420, "supplier": "Nestle" },
+  { "name": "Mineral Water 500ml", "category": "Beverages", "currentStock": 80, "unitPrice": 40, "supplier": "Coca-Cola" },
+  { "name": "Mineral Water 1.5L", "category": "Beverages", "currentStock": 45, "unitPrice": 90, "supplier": "Coca-Cola" },
+  { "name": "Salt Fine 1kg", "category": "Groceries", "currentStock": 50, "unitPrice": 45, "supplier": "Kensalt" },
+  { "name": "Long Grain Rice 2kg", "category": "Groceries", "currentStock": 30, "unitPrice": 380, "supplier": "Mwea Growers" },
+  { "name": "Sifted Maize Meal 2kg", "category": "Groceries", "currentStock": 60, "unitPrice": 160, "supplier": "Ungá Group" },
+  { "name": "All Purpose Wheat Flour 2kg", "category": "Groceries", "currentStock": 40, "unitPrice": 195, "supplier": "Ungá Group" },
+  { "name": "Tomato Sauce 400g", "category": "Groceries", "currentStock": 22, "unitPrice": 180, "supplier": "Peptang" },
+  { "name": "Dishwashing Paste 400g", "category": "Household", "currentStock": 25, "unitPrice": 140, "supplier": "Bidco Africa" },
+  { "name": "Washing Powder 1kg", "category": "Household", "currentStock": 20, "unitPrice": 390, "supplier": "Unilever" }
+]

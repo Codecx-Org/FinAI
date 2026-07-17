@@ -1,0 +1,22 @@
+[
+  { "name": "Smart Phone 6.5 Inch 128GB", "category": "Devices", "currentStock": 8, "unitPrice": 18500, "supplier": "Samsung East Africa" },
+  { "name": "USB-C Fast Charger 20W", "category": "Accessories", "currentStock": 25, "unitPrice": 1200, "supplier": "Anker Kenya" },
+  { "name": "Lightning Charging Cable 1.2m", "category": "Accessories", "currentStock": 35, "unitPrice": 850, "supplier": "Anker Kenya" },
+  { "name": "Micro-USB Charging Cable 1.2m", "category": "Accessories", "currentStock": 40, "unitPrice": 450, "supplier": "Anker Kenya" },
+  { "name": "Wireless Bluetooth Earbuds", "category": "Accessories", "currentStock": 15, "unitPrice": 3500, "supplier": "Oraimo Kenya" },
+  { "name": "Over-Ear Wireless Headset", "category": "Accessories", "currentStock": 10, "unitPrice": 5800, "supplier": "Oraimo Kenya" },
+  { "name": "Power Bank 10000mAh", "category": "Accessories", "currentStock": 18, "unitPrice": 2200, "supplier": "Anker Kenya" },
+  { "name": "Power Bank 20000mAh", "category": "Accessories", "currentStock": 12, "unitPrice": 3800, "supplier": "Anker Kenya" },
+  { "name": "Bluetooth Wireless Speaker 10W", "category": "Accessories", "currentStock": 14, "unitPrice": 4500, "supplier": "JBL Kenya" },
+  { "name": "Smart Watch Fitness Tracker", "category": "Devices", "currentStock": 7, "unitPrice": 6500, "supplier": "Oraimo Kenya" },
+  { "name": "HDMI High Speed Cable 2m", "category": "Accessories", "currentStock": 30, "unitPrice": 600, "supplier": "TP-Link East Africa" },
+  { "name": "Wireless Optical Mouse", "category": "Accessories", "currentStock": 20, "unitPrice": 1500, "supplier": "Logitech Kenya" },
+  { "name": "Wireless Keyboard Layout", "category": "Accessories", "currentStock": 12, "unitPrice": 2800, "supplier": "Logitech Kenya" },
+  { "name": "Wi-Fi Router 300Mbps", "category": "Devices", "currentStock": 6, "unitPrice": 3200, "supplier": "TP-Link East Africa" },
+  { "name": "Extension Power Strip 5-Way", "category": "Accessories", "currentStock": 15, "unitPrice": 1850, "supplier": "Schneider Electric" },
+  { "name": "AA Alkaline Batteries (Pack of 4)", "category": "Accessories", "currentStock": 50, "unitPrice": 450, "supplier": "Energizer Kenya" },
+  { "name": "AAA Alkaline Batteries (Pack of 4)", "category": "Accessories", "currentStock": 45, "unitPrice": 450, "supplier": "Energizer Kenya" },
+  { "name": "OTG Adapter USB to USB-C", "category": "Accessories", "currentStock": 60, "unitPrice": 250, "supplier": "Anker Kenya" },
+  { "name": "Laptop Backpack Water Resistant", "category": "Accessories", "currentStock": 10, "unitPrice": 2800, "supplier": "Harleys Ltd" },
+  { "name": "USB Flash Drive 64GB USB 3.0", "category": "Accessories", "currentStock": 30, "unitPrice": 1200, "supplier": "SanDisk East Africa" }
+]

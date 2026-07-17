@@ -1,0 +1,22 @@
+[
+  { "name": "Paracetamol 500mg (100 Tabs)", "category": "OTC Medicine", "currentStock": 50, "unitPrice": 250, "supplier": "Beta Healthcare" },
+  { "name": "Ibuprofen 400mg (20 Tabs)", "category": "OTC Medicine", "currentStock": 40, "unitPrice": 180, "supplier": "Beta Healthcare" },
+  { "name": "Aspirin 75mg (100 Tabs)", "category": "OTC Medicine", "currentStock": 30, "unitPrice": 350, "supplier": "GlaxoSmithKline" },
+  { "name": "Cough Syrup 100ml", "category": "OTC Medicine", "currentStock": 15, "unitPrice": 450, "supplier": "Harleys Ltd" },
+  { "name": "Amoxicillin 250mg (20 Caps)", "category": "Prescriptions", "currentStock": 25, "unitPrice": 420, "supplier": "Cosmos Ltd" },
+  { "name": "Cetirizine 10mg (30 Tabs)", "category": "OTC Medicine", "currentStock": 60, "unitPrice": 150, "supplier": "Beta Healthcare" },
+  { "name": "Antacid Gel Suspension 200ml", "category": "OTC Medicine", "currentStock": 18, "unitPrice": 380, "supplier": "Harleys Ltd" },
+  { "name": "Multi-Vitamin Gummies (60 counts)", "category": "Supplements", "currentStock": 12, "unitPrice": 1250, "supplier": "Vitabiotics" },
+  { "name": "Vitamin C 1000mg Effervescent (20 tabs)", "category": "Supplements", "currentStock": 35, "unitPrice": 750, "supplier": "Vitabiotics" },
+  { "name": "Blood Pressure Monitor Digital", "category": "Medical Equipment", "currentStock": 5, "unitPrice": 4500, "supplier": "Omron Medical" },
+  { "name": "Adhesive Bandages (Box of 50)", "category": "First Aid", "currentStock": 20, "unitPrice": 300, "supplier": "Johnson & Johnson" },
+  { "name": "Antiseptic Disinfectant Liquid 500ml", "category": "First Aid", "currentStock": 15, "unitPrice": 480, "supplier": "Reckitt Benckiser" },
+  { "name": "Surgical Face Masks (Box of 50)", "category": "First Aid", "currentStock": 45, "unitPrice": 500, "supplier": "Kenyatta Supplies" },
+  { "name": "Hand Sanitizer 100ml", "category": "First Aid", "currentStock": 100, "unitPrice": 150, "supplier": "Beta Healthcare" },
+  { "name": "Digital Thermometer", "category": "Medical Equipment", "currentStock": 15, "unitPrice": 850, "supplier": "Omron Medical" },
+  { "name": "Eye Drops Lubricating 10ml", "category": "OTC Medicine", "currentStock": 22, "unitPrice": 620, "supplier": "Allergan" },
+  { "name": "Medicated Antidandruff Shampoo 200ml", "category": "Hygiene", "currentStock": 10, "unitPrice": 1150, "supplier": "Harleys Ltd" },
+  { "name": "Baby Moisturizing Cream 200g", "category": "Hygiene", "currentStock": 14, "unitPrice": 780, "supplier": "Johnson & Johnson" },
+  { "name": "Zinc Tablet 20mg (30 Tabs)", "category": "Supplements", "currentStock": 40, "unitPrice": 320, "supplier": "Cosmos Ltd" },
+  { "name": "ORS Hydration Salts (10 Sachets)", "category": "First Aid", "currentStock": 80, "unitPrice": 350, "supplier": "Beta Healthcare" }
+]
