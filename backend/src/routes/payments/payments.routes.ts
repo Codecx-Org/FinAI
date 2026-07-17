@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { PaymentService } from '../../services/payment-service.js';
+import { PaymentService } from '../../../services/payment-service.js';
 
 const paymentService = new PaymentService();
 
