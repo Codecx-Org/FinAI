@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
-import { CreditTrustService, getWeightsExplained } from '../../services/credit-trust-service.js';
-import { generateCreditNarration } from '../../services/credit-narration-service.js';
-import { LOAN_PRODUCTS } from '../../data/loan-products.js';
+import { CreditTrustService, getWeightsExplained } from '../../../services/credit-trust-service.js';
+import { generateCreditNarration } from '../../../services/credit-narration-service.js';
+import { LOAN_PRODUCTS } from '../../../data/loan-products.js';
 
 const DISCLAIMER =
   'This trust score is illustrative and based only on data recorded in FinAI. It is not a credit bureau report, a loan approval, or financial advice. Confirm rates, limits, and eligibility with each lender.';

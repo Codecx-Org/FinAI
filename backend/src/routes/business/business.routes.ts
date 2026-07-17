@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { businessService, toPublicBusiness } from '../../services/business-service.js';
+import { businessService, toPublicBusiness } from '../../../services/business-service.js';
 
 /**
  * Business Routes (protected — require JWT)
