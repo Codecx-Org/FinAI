@@ -47,6 +47,7 @@ export default function LoginScreen() {
   };
 
   const handleSubmit = async () => {
+    if (isLoading) return;
     if (!validateForm()) return;
 
     setIsLoading(true);

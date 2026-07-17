@@ -100,6 +100,7 @@ export default function RegisterScreen() {
   };
 
   const handleSubmit = async () => {
+    if (isLoading) return;
     if (!validateForm()) return;
 
     setIsLoading(true);
