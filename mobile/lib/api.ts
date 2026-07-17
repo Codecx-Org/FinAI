@@ -4,7 +4,7 @@ import { Platform } from "react-native";
 import Constants from "expo-constants";
 import * as Device from "expo-device";
 
-const DEFAULT_API_PORT = 3000;
+const DEFAULT_API_PORT = 3001;
 
 /**
  * LAN / dev troubleshooting (manual checks):
