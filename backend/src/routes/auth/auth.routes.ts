@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
-import { AuthService } from '../../services/auth-service.js';
-import { rateLimit } from '@fastify/rate-limit';
+import { AuthService } from '../../../services/auth-service.js';
+import rateLimit from '@fastify/rate-limit';
 
 const authService = new AuthService();
 
@@ -22,14 +22,15 @@ export async function authRoutes(fastify: FastifyInstance) {
     schema: {
       body: {
         type: 'object',
-        required: ['ownerName', 'ownerEmail', 'password'],
+        required: ['ownerName', 'ownerEmail', 'password', 'name'],
         properties: {
           ownerName: { type: 'string', minLength: 1 },
           ownerEmail: { type: 'string', format: 'email' },
-          password: { type: 'string', minLength: 8 },
-          businessName: { type: 'string' },
+          password: { type: 'string', minLength: 6 },
+          name: { type: 'string', minLength: 1 },
           businessType: { type: 'string' },
-          ownerPhone: { type: 'string' },
+          whatsappNumber: { type: 'string' },
+          yearsInBusiness: { type: 'string' },
         },
       },
     },
