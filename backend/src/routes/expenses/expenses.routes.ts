@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { ExpenseService } from '../../services/expense-service.js';
+import { ExpenseService } from '../../../services/expense-service.js';
 
 const expenseService = new ExpenseService();
 

@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { CustomerService } from '../../services/customer-service.js';
+import { CustomerService } from '../../../services/customer-service.js';
 
 const customerService = new CustomerService();
 

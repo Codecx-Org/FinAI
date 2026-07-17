@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
-import { OrderService } from '../../services/orders-services.js';
-import { OrderItemService } from '../../services/orders-items-services.js';
+import { OrderService } from '../../../services/orders-services.js';
+import { OrderItemService } from '../../../services/orders-items-services.js';
 
 const orderService = new OrderService();
 const orderItemService = new OrderItemService();
