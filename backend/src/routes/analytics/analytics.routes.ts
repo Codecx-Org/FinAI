@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import axios from 'axios';
-import { AnalyticsService } from '../../services/analytics-service.js';
+import { AnalyticsService } from '../../../services/analytics-service.js';
 
 const analyticsService = new AnalyticsService();
 
