@@ -35,7 +35,7 @@
     "start": "bun main.ts",
     "chatbot": "bun chatbot/cli.ts",
     "whatsapp": "bun chatbot/whatsapp-service.ts",
-    "seed": "bun prisma/seed.ts",
+    "seed": "bun run db:generate && bun prisma/seed.ts",
     "db:generate": "prisma generate",
     "db:migrate:deploy": "prisma migrate deploy",
     "postinstall": "prisma generate"
